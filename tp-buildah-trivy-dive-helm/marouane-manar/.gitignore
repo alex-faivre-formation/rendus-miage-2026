@@ -3,8 +3,7 @@ trivy
 dive
 
 # Rapports générés localement
-rapports_trivy/
-rapports_dive/
+build-reports/
 *.tar
 
 # Dossiers standards à ignorer (au cas où)

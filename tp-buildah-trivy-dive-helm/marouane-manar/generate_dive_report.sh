@@ -20,7 +20,7 @@ fi
 
 IMAGES=("miage-bank-front" "banque-annuaire" "banque-configserver" "banque-clientservice" "banque-compteservice" "banque-compositeservice" "banque-apigateway")
 
-mkdir -p rapports_dive
+mkdir -p build-reports/dive
 
 for IMG in "${IMAGES[@]}"; do
     echo "----------------------------------------"
@@ -31,10 +31,10 @@ for IMG in "${IMAGES[@]}"; do
     buildah push ${IMG}:${VERSION} docker-archive:${IMG}.tar
     
     # On exécute dive en mode CI (texte brut) et on capture le output
-    $DIVE_CMD docker-archive://${IMG}.tar --ci --ci-config .dive-ci > rapports_dive/${IMG}.txt || true
+    $DIVE_CMD docker-archive://${IMG}.tar --ci --ci-config .dive-ci > build-reports/dive/${IMG}.txt || true
     
     # On affiche également dans le terminal pour que vous puissiez voir
-    cat rapports_dive/${IMG}.txt | grep -E "Image size|Wasted Space|Efficiency" || true
+    cat build-reports/dive/${IMG}.txt | grep -E "Image size|Wasted Space|Efficiency" || true
     
     # Nettoyage
     rm ${IMG}.tar
@@ -43,5 +43,5 @@ done
 rm -f dive_0.12.0_linux_amd64.tar.gz
 
 echo "========================================="
-echo "Terminé ! Les métriques complètes se trouvent dans 'rapports_dive/'"
+echo "Terminé ! Les métriques complètes se trouvent dans 'build-reports/dive/'"
 echo "========================================="

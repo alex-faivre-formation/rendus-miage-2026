@@ -21,7 +21,7 @@ fi
 IMAGES=("miage-bank-front" "banque-annuaire" "banque-configserver" "banque-clientservice" "banque-compteservice" "banque-compositeservice" "banque-apigateway")
 
 # Création d'un dossier propre pour stocker tous les rapports
-mkdir -p rapports_trivy
+mkdir -p build-reports/trivy
 
 for IMG in "${IMAGES[@]}"; do
     echo "----------------------------------------"
@@ -35,13 +35,13 @@ for IMG in "${IMAGES[@]}"; do
     $TRIVY_CMD image --input ${IMG}.tar --severity HIGH,CRITICAL
     
     # 3. Export JSON / SARIF
-    $TRIVY_CMD image --input ${IMG}.tar --format json --output rapports_trivy/${IMG}.json --severity HIGH,CRITICAL
-    $TRIVY_CMD image --input ${IMG}.tar --format sarif --output rapports_trivy/${IMG}.sarif --severity HIGH,CRITICAL
+    $TRIVY_CMD image --input ${IMG}.tar --format json --output build-reports/trivy/${IMG}.json --severity HIGH,CRITICAL
+    $TRIVY_CMD image --input ${IMG}.tar --format sarif --output build-reports/trivy/${IMG}.sarif --severity HIGH,CRITICAL
     
     # 4. Nettoyage de l'archive tar
     rm ${IMG}.tar
 done
 
 echo "========================================="
-echo "Terminé ! Tous les rapports (JSON/SARIF) ont été générés dans le dossier 'rapports_trivy'."
+echo "Terminé ! Tous les rapports (JSON/SARIF) ont été générés dans le dossier 'build-reports/trivy'."
 echo "========================================="

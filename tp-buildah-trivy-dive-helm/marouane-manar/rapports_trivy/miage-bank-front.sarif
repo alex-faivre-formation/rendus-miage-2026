@@ -1,0 +1,198 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Trivy Vulnerability Scanner",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
+          "rules": [
+            {
+              "id": "CVE-2026-33416",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libpng: libpng: Arbitrary code execution due to use-after-free vulnerability"
+              },
+              "fullDescription": {
+                "text": "LIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. In versions 1.2.1 through 1.6.55, `png_set_tRNS` and `png_set_PLTE` each alias a heap-allocated buffer between `png_struct` and `png_info`, sharing a single allocation across two structs with independent lifetimes. The `trans_alpha` aliasing has been present since at least libpng 1.0, and the `palette` aliasing since at least 1.2.1. Both affect all prior release lines `png_set_tRNS` sets `png_ptr-\u003etrans_alpha = info_ptr-\u003etrans_alpha` (256-byte buffer) and `png_set_PLTE` sets `info_ptr-\u003epalette = png_ptr-\u003epalette` (768-byte buffer). In both cases, calling `png_free_data` (with `PNG_FREE_TRNS` or `PNG_FREE_PLTE`) frees the buffer through `info_ptr` while the corresponding `png_ptr` pointer remains dangling. Subsequent row-transform functions dereference and, in some code paths, write to the freed memory. A second call to `png_set_tRNS` or `png_set_PLTE` has the same effect, because both functions call `png_free_data` internally before reallocating the `info_ptr` buffer. Version 1.6.56 fixes the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-33416",
+              "help": {
+                "text": "Vulnerability CVE-2026-33416\nSeverity: HIGH\nPackage: libpng\nFixed Version: 1.6.56-r0\nLink: [CVE-2026-33416](https://avd.aquasec.com/nvd/cve-2026-33416)\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. In versions 1.2.1 through 1.6.55, `png_set_tRNS` and `png_set_PLTE` each alias a heap-allocated buffer between `png_struct` and `png_info`, sharing a single allocation across two structs with independent lifetimes. The `trans_alpha` aliasing has been present since at least libpng 1.0, and the `palette` aliasing since at least 1.2.1. Both affect all prior release lines `png_set_tRNS` sets `png_ptr-\u003etrans_alpha = info_ptr-\u003etrans_alpha` (256-byte buffer) and `png_set_PLTE` sets `info_ptr-\u003epalette = png_ptr-\u003epalette` (768-byte buffer). In both cases, calling `png_free_data` (with `PNG_FREE_TRNS` or `PNG_FREE_PLTE`) frees the buffer through `info_ptr` while the corresponding `png_ptr` pointer remains dangling. Subsequent row-transform functions dereference and, in some code paths, write to the freed memory. A second call to `png_set_tRNS` or `png_set_PLTE` has the same effect, because both functions call `png_free_data` internally before reallocating the `info_ptr` buffer. Version 1.6.56 fixes the issue.",
+                "markdown": "**Vulnerability CVE-2026-33416**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libpng|1.6.56-r0|[CVE-2026-33416](https://avd.aquasec.com/nvd/cve-2026-33416)|\n\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. In versions 1.2.1 through 1.6.55, `png_set_tRNS` and `png_set_PLTE` each alias a heap-allocated buffer between `png_struct` and `png_info`, sharing a single allocation across two structs with independent lifetimes. The `trans_alpha` aliasing has been present since at least libpng 1.0, and the `palette` aliasing since at least 1.2.1. Both affect all prior release lines `png_set_tRNS` sets `png_ptr-\u003etrans_alpha = info_ptr-\u003etrans_alpha` (256-byte buffer) and `png_set_PLTE` sets `info_ptr-\u003epalette = png_ptr-\u003epalette` (768-byte buffer). In both cases, calling `png_free_data` (with `PNG_FREE_TRNS` or `PNG_FREE_PLTE`) frees the buffer through `info_ptr` while the corresponding `png_ptr` pointer remains dangling. Subsequent row-transform functions dereference and, in some code paths, write to the freed memory. A second call to `png_set_tRNS` or `png_set_PLTE` has the same effect, because both functions call `png_free_data` internally before reallocating the `info_ptr` buffer. Version 1.6.56 fixes the issue."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-33636",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libpng: libpng: Information disclosure and denial of service via out-of-bounds read/write in Neon palette expansion"
+              },
+              "fullDescription": {
+                "text": "LIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. In versions 1.6.36 through 1.6.55, an out-of-bounds read and write exists in libpng's ARM/AArch64 Neon-optimized palette expansion path. When expanding 8-bit paletted rows to RGB or RGBA, the Neon loop processes a final partial chunk without verifying that enough input pixels remain. Because the implementation works backward from the end of the row, the final iteration dereferences pointers before the start of the row buffer (OOB read) and writes expanded pixel data to the same underflowed positions (OOB write). This is reachable via normal decoding of attacker-controlled PNG input if Neon is enabled. Version 1.6.56 fixes the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-33636",
+              "help": {
+                "text": "Vulnerability CVE-2026-33636\nSeverity: HIGH\nPackage: libpng\nFixed Version: 1.6.56-r0\nLink: [CVE-2026-33636](https://avd.aquasec.com/nvd/cve-2026-33636)\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. In versions 1.6.36 through 1.6.55, an out-of-bounds read and write exists in libpng's ARM/AArch64 Neon-optimized palette expansion path. When expanding 8-bit paletted rows to RGB or RGBA, the Neon loop processes a final partial chunk without verifying that enough input pixels remain. Because the implementation works backward from the end of the row, the final iteration dereferences pointers before the start of the row buffer (OOB read) and writes expanded pixel data to the same underflowed positions (OOB write). This is reachable via normal decoding of attacker-controlled PNG input if Neon is enabled. Version 1.6.56 fixes the issue.",
+                "markdown": "**Vulnerability CVE-2026-33636**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libpng|1.6.56-r0|[CVE-2026-33636](https://avd.aquasec.com/nvd/cve-2026-33636)|\n\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. In versions 1.6.36 through 1.6.55, an out-of-bounds read and write exists in libpng's ARM/AArch64 Neon-optimized palette expansion path. When expanding 8-bit paletted rows to RGB or RGBA, the Neon loop processes a final partial chunk without verifying that enough input pixels remain. Because the implementation works backward from the end of the row, the final iteration dereferences pointers before the start of the row buffer (OOB read) and writes expanded pixel data to the same underflowed positions (OOB write). This is reachable via normal decoding of attacker-controlled PNG input if Neon is enabled. Version 1.6.56 fixes the issue."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-22184",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "zlib: zlib: Arbitrary code execution via buffer overflow in untgz utility"
+              },
+              "fullDescription": {
+                "text": "zlib versions up to and including 1.3.1.2 include a global buffer overflow in the untgz utility located under contrib/untgz. The vulnerability is limited to the standalone demonstration utility and does not affect the core zlib compression library. The flaw occurs when a user executes the untgz command with an excessively long archive name supplied via the command line, leading to an out-of-bounds write in a fixed-size global buffer."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-22184",
+              "help": {
+                "text": "Vulnerability CVE-2026-22184\nSeverity: HIGH\nPackage: zlib\nFixed Version: 1.3.2-r0\nLink: [CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184)\nzlib versions up to and including 1.3.1.2 include a global buffer overflow in the untgz utility located under contrib/untgz. The vulnerability is limited to the standalone demonstration utility and does not affect the core zlib compression library. The flaw occurs when a user executes the untgz command with an excessively long archive name supplied via the command line, leading to an out-of-bounds write in a fixed-size global buffer.",
+                "markdown": "**Vulnerability CVE-2026-22184**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|zlib|1.3.2-r0|[CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184)|\n\nzlib versions up to and including 1.3.1.2 include a global buffer overflow in the untgz utility located under contrib/untgz. The vulnerability is limited to the standalone demonstration utility and does not affect the core zlib compression library. The flaw occurs when a user executes the untgz command with an excessively long archive name supplied via the command line, leading to an out-of-bounds write in a fixed-size global buffer."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.8,
+                "cvssv3_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "7.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            }
+          ],
+          "version": "0.69.3"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2026-33416",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Package: libpng\nInstalled Version: 1.6.55-r0\nVulnerability CVE-2026-33416\nSeverity: HIGH\nFixed Version: 1.6.56-r0\nLink: [CVE-2026-33416](https://avd.aquasec.com/nvd/cve-2026-33416)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "library/miage-bank-front.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "library/miage-bank-front.tar: libpng@1.6.55-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-33636",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "Package: libpng\nInstalled Version: 1.6.55-r0\nVulnerability CVE-2026-33636\nSeverity: HIGH\nFixed Version: 1.6.56-r0\nLink: [CVE-2026-33636](https://avd.aquasec.com/nvd/cve-2026-33636)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "library/miage-bank-front.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "library/miage-bank-front.tar: libpng@1.6.55-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-22184",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Package: zlib\nInstalled Version: 1.3.1-r2\nVulnerability CVE-2026-22184\nSeverity: HIGH\nFixed Version: 1.3.2-r0\nLink: [CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "library/miage-bank-front.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "library/miage-bank-front.tar: zlib@1.3.1-r2"
+              }
+            }
+          ]
+        }
+      ],
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "file:///"
+        }
+      },
+      "properties": {
+        "imageID": "sha256:b9b96383dce6d7027caaa7130fe92cfb55b26f6e05c6703304b2920ef57d341d",
+        "imageName": "miage-bank-front.tar",
+        "repoDigests": null,
+        "repoTags": [
+          "localhost/miage-bank-front:1.0.0"
+        ]
+      }
+    }
+  ]
+}
