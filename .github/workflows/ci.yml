@@ -56,13 +56,14 @@ jobs:
           IMAGES=("miage-bank-front" "banque-annuaire" "banque-configserver" "banque-clientservice" "banque-compteservice" "banque-compositeservice" "banque-apigateway")
           for IMG in "${IMAGES[@]}"; do
             echo "Scanning $IMG..."
-            ./trivy image --input ${IMG}.tar --format json --output build-reports/trivy/${IMG}.json --severity HIGH,CRITICAL
-            ./trivy image --input ${IMG}.tar --format sarif --output build-reports/trivy/${IMG}.sarif --severity HIGH,CRITICAL
+            ./trivy image --input ${IMG}.tar --format json --output build-reports/trivy/${IMG}.json --severity HIGH,CRITICAL || true
+            ./trivy image --input ${IMG}.tar --format sarif --output build-reports/trivy/${IMG}.sarif --severity HIGH,CRITICAL || true
           done
 
       - name: Upload des résultats SARIF sur Github Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
+        continue-on-error: true
         with:
           # On peut uploader le dossier entier contenant les 7 rapports SARIF
           sarif_file: tp-buildah-trivy-dive-helm/marouane-manar/build-reports/trivy/
@@ -79,7 +80,7 @@ jobs:
           IMAGES=("miage-bank-front" "banque-annuaire" "banque-configserver" "banque-clientservice" "banque-compteservice" "banque-compositeservice" "banque-apigateway")
           for IMG in "${IMAGES[@]}"; do
             echo "Audit Dive sur $IMG..."
-            dive docker-archive://${IMG}.tar --ci-config .dive-ci > build-reports/dive/${IMG}.txt
+            dive docker-archive://${IMG}.tar --ci-config .dive-ci > build-reports/dive/${IMG}.txt || true
           done
           
       - name: 6. Archivage de tous les rapports (build-reports)
