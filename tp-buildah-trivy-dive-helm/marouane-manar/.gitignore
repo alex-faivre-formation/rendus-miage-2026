@@ -1,0 +1,16 @@
+# Outils locaux
+trivy
+dive
+
+# Rapports générés localement
+rapports_trivy/
+rapports_dive/
+*.tar
+
+# Dossiers standards à ignorer (au cas où)
+node_modules/
+target/
+.DS_Store
+
+CHANGELOG.md
+LICENSE

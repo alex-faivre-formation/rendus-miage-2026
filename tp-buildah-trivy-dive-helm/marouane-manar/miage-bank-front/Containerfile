@@ -1,0 +1,12 @@
+# Utilisation d'un serveur web Nginx très léger
+FROM docker.io/library/nginx:alpine
+
+# Copie des fichiers statiques dans le répertoire par défaut de nginx
+COPY index.html /usr/share/nginx/html/
+COPY style.css /usr/share/nginx/html/
+COPY app.js /usr/share/nginx/html/
+
+# Exposition du port web standard
+EXPOSE 80
+
+# Nginx démarre automatiquement
