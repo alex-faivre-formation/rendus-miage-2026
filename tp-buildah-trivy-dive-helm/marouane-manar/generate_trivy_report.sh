@@ -7,6 +7,7 @@ echo "========================================="
 echo " Génération des rapports Trivy (Local)"
 echo "========================================="
 
+
 echo "1. Vérification de la présence de Trivy..."
 if ! command -v trivy &> /dev/null
 then
