@@ -73,10 +73,9 @@ jobs:
           CI: "true"
         run: |
           cd tp-buildah-trivy-dive-helm/marouane-manar
-          wget -q https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.tar.gz
-          tar -xzf dive_0.12.0_linux_amd64.tar.gz -C /usr/local/bin
-          
           mkdir -p build-reports/dive
+          wget https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb
+          sudo apt install ./dive_0.12.0_linux_amd64.deb
           IMAGES=("miage-bank-front" "banque-annuaire" "banque-configserver" "banque-clientservice" "banque-compteservice" "banque-compositeservice" "banque-apigateway")
           for IMG in "${IMAGES[@]}"; do
             echo "Audit Dive sur $IMG..."
