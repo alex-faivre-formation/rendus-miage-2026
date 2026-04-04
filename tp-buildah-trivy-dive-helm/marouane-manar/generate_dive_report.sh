@@ -20,7 +20,7 @@ fi
 
 IMAGES=("miage-bank-front" "banque-annuaire" "banque-configserver" "banque-clientservice" "banque-compteservice" "banque-compositeservice" "banque-apigateway")
 
-#r
+
 mkdir -p build-reports/dive 
 
 for IMG in "${IMAGES[@]}"; do
