@@ -18,8 +18,8 @@ microservices:
     env: []
 
   # serveur de config
-  banque-configsrv:
-    image: "banque-configsrv:1.0.0"
+  banque-configserver:
+    image: "banque-configserver:1.0.0"
     port: 10003
     replicas: 1
     env:
