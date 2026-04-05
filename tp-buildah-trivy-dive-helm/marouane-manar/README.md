@@ -44,16 +44,17 @@ L'image de base (`eclipse-temurin:17-jre-alpine`) s'avère robuste (quelques fai
 * **CVE-2022-22965 (Spring4Shell)** : Faille de type Remote Code Execution (RCE) via le Data Binding de Spring MVC ou WebFlux fonctionnant sur JDK 9+. C'est la vulnérabilité la plus critique identifiée.
 * **CVE-2016-1000027** : Faille liée à la désérialisation non sécurisée d'objets Java via `HttpInvokerServiceExporter` dans `spring-web`. Cela peut permettre l'exécution de code arbitraire s'il est exploité.
 * **CVE-2023-20873** : Vulnérabilité de contournement de sécurité (Security Bypass) sur Spring Boot Actuator.
+* **CVE-2023-20860** : Faille de contournement de sécurité (Security Bypass) liée au filtrage `mvcRequestMatcher` de Spring Security via un motif non préfixé. Elle affecte le paquet `spring-webmvc`.
 
-*(Il existe également 36 failles HIGH portant principalement sur les bibliothèques embarquées `snakeyaml` et `jackson`)*.
+*(Il existe également environ 36 failles HIGH portant principalement sur des bibliothèques comme `tomcat-embed-core`, diverses librairies `spring-web`/`spring-core`, `jettison` et `snakeyaml`)*.
 
 ### Plan de remédiation global
 Ces vulnérabilités découlent toutes d'une seule et même racine : **L'utilisation d'une version très obsolète de Spring Boot (la 2.6.4)** dans le fichier `pom.xml` parent du projet fourni pour le TP.
-1. **Action requise** : Il conviendrait de migrer globalement le projet vers une version moderne et sécurisée comme **Spring Boot 3.3.x ou 3.4.x**. Cela mettra instantanément à jour toutes les dépendances transitives (`spring-core`, `snakeyaml`, `jackson`) vers des versions patchées.
+1. **Action requise** : Il conviendrait de migrer globalement le projet vers une version moderne et sécurisée comme **Spring Boot 3.3.x ou 3.4.x**. Cela mettra instantanément à jour toutes les dépendances transitives (dont `tomcat-embed-core`, `spring-web`, `snakeyaml`, etc.) vers des versions patchées.
 2. **Pour le système OS (Alpine)** : Mettre à jour l'image de base (`temurin:17-jre-alpine`) régulièrement pour embarquer les derniers correctifs de paquets via l'utilisation rigoureuse des derniers *digests* OCI.
 
 > **Remarque sur la gate de sécurité** :
-> En temps normal, une vraie pipeline exige de configurer Trivy pour faire échouer le build en cas de faille détectée (via l'option `--exit-code 1`). Le problème ici, c'est que le code du TP utilise des versions de Spring tellement anciennes qu'il y a d'office 4 failles CRITICAL bloquantes. J'ai donc dû "baisser le niveau de sécurité attendu". Les rapports JSON et SARIF sont générés pour audit, mais la pipeline CI n'est pas bloquée.
+> En temps normal, une pipeline exige de configurer Trivy pour faire échouer le build en cas de faille détectée (via l'option `--exit-code 1`). Le problème ici, c'est que le code du TP utilise des versions de Spring tellement anciennes qu'il y a d'office 4 failles CRITICAL bloquantes. J'ai donc dû "baisser le niveau de sécurité attendu". Les rapports JSON et SARIF sont générés pour audit, mais la pipeline CI n'est pas bloquée.
 
 ## 4. Audit de l'image avec Dive
 
@@ -92,7 +93,7 @@ Pour le micro-service Front-end, l'image est basée sur `nginx:alpine` avec la s
 ### Optimisation et approche "Avant / Après"
 Pour répondre à l'exigence d'optimisation, j'ai fait le choix de ne pas faire d'avant/après classique. En effet, le projet a été conçu pour qu'il soit optimisé dès le départ (à l'étape 2) en séparant la compilation du packaging.
 
-Si j'avais compilé le projet directement dans le `ContainerFile` avec une image de base très lourde (`openjdk:17`), Dive aurait détecté beaucoup de fichiers superflus,ce qui aurait fait chuter le score d'efficacité et créé une image beaucoup plus lourde. 
+Si le projet avait directement été compilé dans le `ContainerFile` avec une image de base très lourde (`openjdk:17`), Dive aurait détecté beaucoup de fichiers superflus,ce qui aurait fait chuter le score d'efficacité et créé une image beaucoup plus lourde. 
 
 A la place, j'ai externalisé la compilation (via le script `build_all.sh`) sur la machine hôte. Le `ContainerFile` ne s'occupe que de copier le fichier `app.jar` généré dans une image minimale `eclipse-temurin:17-jre-alpine`. Cela simule le comportement d'un *multi-stage build*, ce qui me garantit de ne copier aucun élément superflu et d'avoir un très bon score sur l'audit Dive.
 
