@@ -95,7 +95,7 @@ Pour répondre à l'exigence d'optimisation, j'ai fait le choix de ne pas faire 
 
 Si le projet avait directement été compilé dans le `ContainerFile` avec une image de base très lourde (`openjdk:17`), Dive aurait détecté beaucoup de fichiers superflus,ce qui aurait fait chuter le score d'efficacité et créé une image beaucoup plus lourde. 
 
-A la place, j'ai externalisé la compilation (via le script `build_all.sh`) sur la machine hôte. Le `ContainerFile` ne s'occupe que de copier le fichier `app.jar` généré dans une image minimale `eclipse-temurin:17-jre-alpine`. Cela simule le comportement d'un *multi-stage build*, ce qui me garantit de ne copier aucun élément superflu et d'avoir un très bon score sur l'audit Dive.
+A la place, j'ai externalisé la compilation (via le script `build_all.sh`) sur la machine hôte. Le `ContainerFile` ne s'occupe que de copier le fichier `app.jar` généré dans une image minimale `eclipse-temurin:17-jre-alpine`. Cela simule le comportement d'un *multi-stage build*, ce qui garantit de ne copier aucun élément superflu et d'avoir un très bon score sur l'audit Dive.
 
 ## 5. Script de build intégré (CI Github Actions)
 
