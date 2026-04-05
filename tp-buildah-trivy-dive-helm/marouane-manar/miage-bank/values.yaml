@@ -24,9 +24,9 @@ microservices:
     replicas: 1
     env:
       - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: "http://miage-bank-banque-annuaire:10001/eureka/"
+        value: "http://miage-bank-app-banque-annuaire:10001/eureka/"
       - name: WAIT_HOSTS
-        value: "miage-bank-banque-annuaire:10001"
+        value: "miage-bank-app-banque-annuaire:10001"
 
   # client service
   banque-clientservice:
@@ -35,7 +35,7 @@ microservices:
     replicas: 1
     env:
       - name: WAIT_HOSTS
-        value: "miage-bank-banque-configserver:10003, miage-bank-banque-mysql:3306"
+        value: "miage-bank-app-banque-configserver:10003, miage-bank-app-banque-mysql:3306"
 
   # compte service
   banque-compteservice:
@@ -44,7 +44,7 @@ microservices:
     replicas: 1
     env:
       - name: WAIT_HOSTS
-        value: "miage-bank-banque-configserver:10003, miage-bank-banque-mongo:27017"
+        value: "miage-bank-app-banque-configserver:10003, miage-bank-app-banque-mongo:27017"
 
   # service composite
   banque-compositeservice:
@@ -53,7 +53,7 @@ microservices:
     replicas: 1
     env:
       - name: WAIT_HOSTS
-        value: "miage-bank-banque-configserver:10003, miage-bank-banque-mongo:27017, miage-bank-banque-compteservice:10021, miage-bank-banque-clientservice:10011"
+        value: "miage-bank-app-banque-configserver:10003, miage-bank-app-banque-mongo:27017, miage-bank-app-banque-compteservice:10021, miage-bank-app-banque-clientservice:10011"
 
   # API Gateway
   banque-apigateway:
@@ -62,7 +62,7 @@ microservices:
     replicas: 1
     env:
       - name: WAIT_HOSTS
-        value: "miage-bank-banque-configserver:10003, miage-bank-banque-mongo:27017, miage-bank-banque-compteservice:10021, miage-bank-banque-clientservice:10011"
+        value: "miage-bank-app-banque-configserver:10003, miage-bank-app-banque-mongo:27017, miage-bank-app-banque-compteservice:10021, miage-bank-app-banque-clientservice:10011"
 
   # Frontend Nginx (pour le front)
   miage-bank-front:
