@@ -34,6 +34,8 @@ spec:
           envFrom:
             - secretRef:
                 name: miage-bank-secrets
+            - configMapRef:
+                name: {{ include "miage-bank.fullname" $ }}-config
           # probe liveness et readiness
           livenessProbe:
             tcpSocket:

@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: v2
 name: miage-bank
 description: chart pour le déploiement de l'application MIAGE-Bank
 type: application

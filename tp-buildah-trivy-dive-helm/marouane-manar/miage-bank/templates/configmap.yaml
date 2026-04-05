@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "miage-bank.fullname" . }}-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+data:
+  # Configurations globales communes
+  EUREKA_DEFAULT_ZONE: "http://{{ include "miage-bank.fullname" . }}-banque-annuaire:10001/eureka/"
+  SPRING_PROFILES_ACTIVE: "default"
