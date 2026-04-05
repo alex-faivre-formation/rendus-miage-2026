@@ -1,0 +1,31 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "miage-bank.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.hostname }}
+      http:
+        paths:
+          # On route l'interface web vers le port 80 du nginx front
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "miage-bank.fullname" . }}-miage-bank-front
+                port:
+                  number: 80
+          # On route les requêtes API vers la Gateway
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "miage-bank.fullname" . }}-banque-apigateway
+                port:
+                  number: 10000
+{{- end }}

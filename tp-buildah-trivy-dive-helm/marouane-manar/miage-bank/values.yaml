@@ -1,0 +1,88 @@
+# Configuration globale
+global:
+  namespace: miage-bank
+  imagePullPolicy: Never # "Never" car images buildées en local via minikube
+
+ingress:
+  enabled: true
+  className: "traefik"
+  hostname: "miage-bank.local"
+
+# 6 backends + 1 front + 2 BDDs (mysql et mongo)
+microservices:
+  # annuaire
+  banque-annuaire:
+    image: "banque-annuaire:1.0.0"
+    port: 10001
+    replicas: 1
+    env: []
+
+  # serveur de config
+  banque-configsrv:
+    image: "banque-configsrv:1.0.0"
+    port: 10003
+    replicas: 1
+    env:
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://miage-bank-banque-annuaire:10001/eureka/"
+      - name: WAIT_HOSTS
+        value: "miage-bank-banque-annuaire:10001"
+
+  # client service
+  banque-clientservice:
+    image: "banque-clientservice:1.0.0"
+    port: 10011
+    replicas: 1
+    env:
+      - name: WAIT_HOSTS
+        value: "miage-bank-banque-configsrv:10003, miage-bank-banque-mysql:3306"
+
+  # compte service
+  banque-compteservice:
+    image: "banque-compteservice:1.0.0"
+    port: 10021
+    replicas: 1
+    env:
+      - name: WAIT_HOSTS
+        value: "miage-bank-banque-configsrv:10003, miage-bank-banque-mongo:27017"
+
+  # service composite
+  banque-compositeservice:
+    image: "banque-compositeservice:1.0.0"
+    port: 10031
+    replicas: 1
+    env:
+      - name: WAIT_HOSTS
+        value: "miage-bank-banque-configsrv:10003, miage-bank-banque-mongo:27017, miage-bank-banque-compteservice:10021, miage-bank-banque-clientservice:10011"
+
+  # API Gateway
+  banque-apigateway:
+    image: "banque-apigateway:1.0.0"
+    port: 10000
+    replicas: 1
+    env:
+      - name: WAIT_HOSTS
+        value: "miage-bank-banque-configsrv:10003, miage-bank-banque-mongo:27017, miage-bank-banque-compteservice:10021, miage-bank-banque-clientservice:10011"
+
+  # Frontend Nginx (pour le front)
+  miage-bank-front:
+    image: "miage-bank-front:1.0.0"
+    port: 80
+    replicas: 1
+    env: []
+
+  # base de données mysql
+  banque-mysql:
+    image: "mysql:oracle" #image externe car pas de ContainerFile etant donné que c'est une image distante et que je ne l'ai pas buildé
+    pullPolicy: IfNotPresent # si l'image n'est pas présente, il va essayer de la pull
+    port: 3306
+    replicas: 1
+    env: []
+
+  # base de données mongo
+  banque-mongo:
+    image: "mongo:latest" #image externe car pas de ContainerFile etant donné que c'est une image distante et que je ne l'ai pas buildé
+    pullPolicy: IfNotPresent # si l'image n'est pas présente, il va essayer de la pull
+    port: 27017
+    replicas: 1
+    env: []

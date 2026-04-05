@@ -1,0 +1,19 @@
+{{- range $name, $svc := .Values.microservices }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "miage-bank.fullname" $ }}-{{ $name }}
+  labels:
+    {{- include "miage-bank.labels" $ | nindent 4 }}
+    app: {{ $name }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ $svc.port }}
+      targetPort: {{ $svc.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ $name }}
+{{- end }}
