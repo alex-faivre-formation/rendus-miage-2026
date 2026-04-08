@@ -48,10 +48,14 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 15
           resources:
+            {{- if $svc.resources }}
+            {{- toYaml $svc.resources | nindent 12 }}
+            {{- else }}
             requests:
               cpu: "100m"
               memory: "256Mi"
             limits:
               cpu: "500m"
               memory: "512Mi"
+            {{- end }}
 {{- end }}
