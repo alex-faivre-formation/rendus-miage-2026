@@ -127,7 +127,9 @@ Cette pipeline se déclenche sur `push` et `pull_request` vers la branche `main`
 7. **Audit de gaspillage (Dive)** : Exécution de l'audit Dive respectant les seuils fixés (fichier `.dive-ci`) sur l'ensemble des archives.
 8. **Archivage des rapports** : Upload de tous les artefacts (`build-reports`) en fin de pipeline.
 
-> **Note** : les alertes peuvent ne pas apparaître dans l'onglet *Security* car je n'ai pas GitHub Advanced Security sur ce dépôt privé, même avec l'offre GitHub for Student. Dans tout les cas, les rapports SARIF/JSON restent disponibles dans les artefacts de la pipeline.
+> **Note** : les alertes peuvent ne pas apparaître dans l'onglet *Security* car je n'ai pas GitHub Advanced Security sur ce dépôt privé, même avec l'offre GitHub for Student. Dans tout les cas, les rapports SARIF/JSON restent disponibles dans les artefacts de la pipeline. Si le repo est en public, on a accès à l'onglet security. 
+
+![image montrant l'onglet Security and quality de github](assets/images/github-security-tab.png)
 
 ---
 
