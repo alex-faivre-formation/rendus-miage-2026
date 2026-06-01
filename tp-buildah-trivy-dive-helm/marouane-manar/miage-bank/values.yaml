@@ -43,7 +43,7 @@ microservices:
       - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: "http://miage-bank-app-banque-annuaire:10001/eureka/"
       - name: SPRING_DATASOURCE_URL
-        value: "jdbc:mysql://miage-bank-app-banque-mysql:3306/miagebank"
+        value: "jdbc:mysql://miage-bank-app-banque-mysql:3306/$(MYSQL_DATABASE)"
       - name: SPRING_DATASOURCE_USERNAME
         value: "root"
       - name: SPRING_DATASOURCE_PASSWORD
@@ -64,7 +64,7 @@ microservices:
       - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: "http://miage-bank-app-banque-annuaire:10001/eureka/"
       - name: SPRING_DATA_MONGODB_URI
-        value: "mongodb://miage-bank-app-banque-mongo:27017/miagebank"
+        value: "mongodb://miage-bank-app-banque-mongo:27017/$(MONGO_DATABASE)"
 
   # service composite
   banque-compositeservice:
