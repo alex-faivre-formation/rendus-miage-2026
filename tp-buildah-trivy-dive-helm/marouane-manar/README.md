@@ -215,3 +215,23 @@ miage-bank-app-miage-bank-front-cc4cbbd47-dqnmg           0/1     Terminating   
 ```
 
 Ce test permet de certifier que le dépôt Git conserve bien son rôle de Single Source of Truth, neutralisant de fait toute modification manuelle non suivie.
+
+## 6. Résolution des anomalies de démarrage (Troubleshooting K8s)
+
+Durant la phase de déploiement, plusieurs problèmes de compatibilité entre le code historique de l'application (prévu pour Docker Compose) et l'environnement Kubernetes ont provoqué des crashs en boucle (`CrashLoopBackOff`). Voici les 4 optimisations architecturales mises en place pour stabiliser le cluster :
+
+### A. Rétrocompatibilité DNS (Alias Kubernetes)
+**Le problème :** Dans l'ancien `docker-compose.yml`, les microservices communiquaient via des noms d'hôtes courts (`bnkmysql`, `bnkmongo`, `bnkconfigsrv`, `bnkannuaire`). Sur Kubernetes, ces hôtes n'existent pas (les services s'appellent `miage-bank-app-banque-mysql`, etc.), ce qui provoquait des `UnknownHostException`.
+**La solution :** Plutôt que de modifier le code Java de chaque microservice, un fichier `aliases.yaml` a été créé dans le chart Helm. Il déploie des services de type `ExternalName` qui interceptent les requêtes vers les anciens noms (ex: `bnkmysql`) et les redirigent dynamiquement vers les vrais services Kubernetes internes (FQDN).
+
+### B. Forçage du profil Spring Boot (`docker`)
+**Le problème :** Le Config Server chargeait par défaut le profil Spring `default`. Ce profil ne contenant aucune URL de base de données, les microservices plantaient au démarrage en indiquant `'url' attribute is not specified`.
+**La solution :** La variable `SPRING_PROFILES_ACTIVE: "docker"` a été injectée globalement via la `ConfigMap` du Helm Chart. Ainsi, le Config Server distribue la bonne configuration réseau prévue pour les conteneurs.
+
+### C. Injection dynamique des ports (Tomcat vs Kubernetes)
+**Le problème :** Kubernetes s'attendait à vérifier la santé des applications sur des ports spécifiques (ex: `10021` pour compteservice). Cependant, sans consigne explicite, le serveur Tomcat embarqué dans Spring Boot démarrait sur le port par défaut `8080`. La sonde de santé (`livenessProbe`) Kubernetes échouait donc systématiquement et K8s "tuait" le pod.
+**La solution :** Une variable d'environnement dynamique `SERVER_PORT: "{{ $svc.port }}"` a été ajoutée dans le `deployment.yaml`. Helm injecte ainsi automatiquement le port attendu directement dans Tomcat.
+
+### D. Optimisation des Sondes K8s (Éviter le "Cascade Failure")
+**Le problème :** Les sondes `readinessProbe` (qui ouvrent le trafic réseau) et `livenessProbe` (qui redémarrent le pod en cas de freeze) étaient mal calibrées. En appliquant un délai de 120 secondes sur la `readinessProbe`, l'Annuaire bloquait toutes les connexions entrantes pendant 2 minutes. Cela faisait expirer en cascade les timeouts des scripts `wait-for-it.sh` des autres services.
+**La solution :** Le délai de la `readinessProbe` a été réduit à 30 secondes pour permettre une découverte rapide des services, tandis que la `livenessProbe` a été maintenue à 120 secondes pour laisser le temps aux lourds contextes Spring Boot de démarrer sans se faire tuer par l'orchestrateur.
