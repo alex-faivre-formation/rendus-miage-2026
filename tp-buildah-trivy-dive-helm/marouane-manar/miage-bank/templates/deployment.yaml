@@ -27,6 +27,8 @@ spec:
             - containerPort: {{ $svc.port }}
               protocol: TCP
           env:
+            - name: SERVER_PORT
+              value: "{{ $svc.port }}"
             {{- if $svc.env }}
             {{- toYaml $svc.env | nindent 12 }}
             {{- end }}
@@ -40,7 +42,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: {{ $svc.port }}
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 15
           readinessProbe:
             tcpSocket:

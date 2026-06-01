@@ -36,6 +36,18 @@ microservices:
     env:
       - name: WAIT_HOSTS
         value: "miage-bank-app-banque-configserver:10003, miage-bank-app-banque-mysql:3306"
+      - name: SPRING_CLOUD_CONFIG_URI
+        value: "http://miage-bank-app-banque-configserver:10003"
+      - name: SPRING_CONFIG_IMPORT
+        value: "configserver:http://miage-bank-app-banque-configserver:10003"
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://miage-bank-app-banque-annuaire:10001/eureka/"
+      - name: SPRING_DATASOURCE_URL
+        value: "jdbc:mysql://miage-bank-app-banque-mysql:3306/miagebank"
+      - name: SPRING_DATASOURCE_USERNAME
+        value: "root"
+      - name: SPRING_DATASOURCE_PASSWORD
+        value: "$(MYSQL_ROOT_PASSWORD)"
 
   # compte service
   banque-compteservice:
@@ -45,6 +57,14 @@ microservices:
     env:
       - name: WAIT_HOSTS
         value: "miage-bank-app-banque-configserver:10003, miage-bank-app-banque-mongo:27017"
+      - name: SPRING_CLOUD_CONFIG_URI
+        value: "http://miage-bank-app-banque-configserver:10003"
+      - name: SPRING_CONFIG_IMPORT
+        value: "configserver:http://miage-bank-app-banque-configserver:10003"
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://miage-bank-app-banque-annuaire:10001/eureka/"
+      - name: SPRING_DATA_MONGODB_URI
+        value: "mongodb://miage-bank-app-banque-mongo:27017/miagebank"
 
   # service composite
   banque-compositeservice:
@@ -54,6 +74,12 @@ microservices:
     env:
       - name: WAIT_HOSTS
         value: "miage-bank-app-banque-configserver:10003, miage-bank-app-banque-mongo:27017, miage-bank-app-banque-compteservice:10021, miage-bank-app-banque-clientservice:10011"
+      - name: SPRING_CLOUD_CONFIG_URI
+        value: "http://miage-bank-app-banque-configserver:10003"
+      - name: SPRING_CONFIG_IMPORT
+        value: "configserver:http://miage-bank-app-banque-configserver:10003"
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://miage-bank-app-banque-annuaire:10001/eureka/"
 
   # API Gateway
   banque-apigateway:
@@ -63,6 +89,12 @@ microservices:
     env:
       - name: WAIT_HOSTS
         value: "miage-bank-app-banque-configserver:10003, miage-bank-app-banque-mongo:27017, miage-bank-app-banque-compteservice:10021, miage-bank-app-banque-clientservice:10011"
+      - name: SPRING_CLOUD_CONFIG_URI
+        value: "http://miage-bank-app-banque-configserver:10003"
+      - name: SPRING_CONFIG_IMPORT
+        value: "configserver:http://miage-bank-app-banque-configserver:10003"
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://miage-bank-app-banque-annuaire:10001/eureka/"
 
   # Frontend Nginx (pour le front)
   miage-bank-front:

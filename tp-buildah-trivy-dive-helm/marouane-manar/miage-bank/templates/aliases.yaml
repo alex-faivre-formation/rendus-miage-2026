@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bnkconfigsrv
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ include "miage-bank.fullname" . }}-banque-configserver.{{ .Release.Namespace }}.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bnkannuaire
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ include "miage-bank.fullname" . }}-banque-annuaire.{{ .Release.Namespace }}.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bnkmysql
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ include "miage-bank.fullname" . }}-banque-mysql.{{ .Release.Namespace }}.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bnkmongo
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ include "miage-bank.fullname" . }}-banque-mongo.{{ .Release.Namespace }}.svc.cluster.local
