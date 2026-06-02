@@ -1,311 +1,420 @@
-# dive
-[![GitHub release](https://img.shields.io/github/release/wagoodman/dive.svg)](https://github.com/wagoodman/dive/releases/latest)
-[![Validations](https://github.com/wagoodman/dive/actions/workflows/validations.yaml/badge.svg)](https://github.com/wagoodman/dive/actions/workflows/validations.yaml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/wagoodman/dive)](https://goreportcard.com/report/github.com/wagoodman/dive)
-[![License: MIT](https://img.shields.io/badge/License-MIT%202.0-blue.svg)](https://github.com/wagoodman/dive/blob/main/LICENSE)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=flat)](https://www.paypal.me/wagoodman)
+# Marouane MANAR et BARRY Ibrahima Fello
+## Projet MIAGE Bank - Partie A et B
 
-**A tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image.**
+L'ensemble des livrables de ce TP se trouve dans ce répertoire.
+
+---
+
+# Partie A — Chaîne de build OCI avec Buildah, Trivy et Dive
+
+## 1. Analyse comparative Docker vs Buildah
+L'analyse comparative détaillée entre l'architecture classique de Docker et l'architecture "Daemonless/Rootless" de Buildah est disponible dans le fichier dédié à la racine : [`ANALYSE_COMPARATIVE_DOCKER_BUILDAH.md`](./ANALYSE_COMPARATIVE_DOCKER_BUILDAH.md).
+
+## 2. Build de MIAGE-Bank avec Buildah
+
+L'objectif de cette partie est de faire un build de l'ensemble des services (6 services back et 1 front) de l'application MIAGE-Bank avec Buildah (build OCI)
+
+L'application source `MIAGE-Bank` étant architecturée en micro-services (6 services dans le dossier `miage-bank-back`), j'ai fait le choix de conteneuriser l'ensemble de l'application. Au lieu d'avoir 6 fois le même fichier, j'ai préféré utiliser un seul `ContainerFile` partagé. Cela me permet d'avoir une configuration homogène pour tous les services. Dans le projet Miage Bank, cette approche est suffisante telle quelle, mais on aurait pu avoir plusieurs `ContainerFile` si les services avaient eu des besoins différents.
+
+### Approche 1 : Via un Containerfile
+Le script `build_all.sh` gère cette première approche :
+1. Il compile tout le projet Java globalement avec Maven.
+2. Il construit une image Nginx pour la partie front.
+3. Il boucle sur chaque micro-service pour exécuter Buildah en utilisant le `ContainerFile` commun, en adaptant le contexte de build pour cibler le `.jar` correct. 
+
+> **Note** : le contexte de build correspond aux fichiers rendus accessibles à Buildah au moment de la construction. Ici, il est ajusté pour que chaque service ne copie que les éléments nécessaires, notamment le bon fichier `.jar`.
+
+_Exécution locale :_ `./build_all.sh`
+
+### Approche 2 : Construction layer par layer en mode natif Buildah
+Le script `build_native.sh` gère cette méthode. Il réalise la même boucle sur tous les micro-services, mais utilise les commandes natives (`buildah from`, `buildah config`, `buildah copy`, `buildah commit`) plutôt qu'un `Containerfile`. 
+
+### Comparaison des résultats
+
+Le résultat final est le même, mais la méthode de construction est différente. La méthode avec ContainerFile est plus lisible et portable, tandis que la méthode layer-by-layer est plus flexible et s'intègre mieux dans des pipelines CI/CD. Elle permet d'écrire des scripts plus complexes, de gérer les erreurs de manière plus fine et d'utiliser des variables dynamiques ou des secrets directement dans les commandes, sans les écrire dans un fichier statique comme le ContainerFile.
+
+Pour résumer, l'approche ContainerFile est plus lisible et compréhensible, mais moins flexible. La méthode layer-by-layer est plus flexible et s'intègre mieux dans des pipelines CI/CD, mais elle n'est pas standardisée et peut être plus difficile à maintenir. Il faut donc choisir la méthode de build en fonction du contexte.
+
+| Critère | ContainerFile | Layer-by-layer |
+|---|---|---|
+| Lisibilité | Très bonne | Moyenne |
+| Portabilité | Très bonne | Moyenne |
+| Flexibilité | Plus faible | Très forte |
+| Intégration CI/CD | Bonne | Très bonne |
+| Gestion des variables et secrets | Moins adaptée | Très adaptée |
+| Maintenabilité | Bonne | Plus délicate |
+| Standardisation | Oui | Non |
+
+## 3. Scan de sécurité avec Trivy
+
+Pour automatiser nos audits, le script `generate_trivy_report.sh` va exporter et filtrer nos 7 images générées, afin de produire pour chacune le rapport JSON et SARIF. Les fichiers seront stockés dans le dossier `rapports_trivy/`. Lors d'un push, ces opérations sont exécutées automatiquement par la pipeline Github Actions.
+
+### Analyse des résultats
+L'image de base (`eclipse-temurin:17-jre-alpine`) s'avère robuste (quelques failles OS mineures). La majorité écrasante des failles proviennent des dépendances de l'applicatif Java (`app.jar`), qui totalise environ 40 vulnérabilités de haut niveau (36 HIGH, 4 CRITICAL).
+
+### Détail des failles CRITICAL
+* **CVE-2022-22965 (Spring4Shell)** : Faille de type Remote Code Execution (RCE) via le Data Binding de Spring MVC ou WebFlux fonctionnant sur JDK 9+. C'est la vulnérabilité la plus critique identifiée.
+* **CVE-2016-1000027** : Faille liée à la désérialisation non sécurisée d'objets Java via `HttpInvokerServiceExporter` dans `spring-web`. Cela peut permettre l'exécution de code arbitraire s'il est exploité.
+* **CVE-2023-20873** : Vulnérabilité de contournement de sécurité (Security Bypass) sur Spring Boot Actuator.
+* **CVE-2023-20860** : Faille de contournement de sécurité (Security Bypass) liée au filtrage `mvcRequestMatcher` de Spring Security via un motif non préfixé. Elle affecte le paquet `spring-webmvc`.
+
+*(Il existe également environ 36 failles HIGH portant principalement sur des bibliothèques comme `tomcat-embed-core`, diverses librairies `spring-web`/`spring-core`, `jettison` et `snakeyaml`)*.
+
+### Plan de remédiation global
+Ces vulnérabilités découlent toutes d'une seule et même racine : **L'utilisation d'une version très obsolète de Spring Boot (la 2.6.4)** dans le fichier `pom.xml` parent du projet fourni pour le TP.
+1. **Action requise** : Il faudrait le projet vers une version moderne et sécurisée comme **Spring Boot 3.3.x ou 3.4.x**. Cela mettra instantanément à jour toutes les dépendances (dont `tomcat-embed-core`, `spring-web`, `snakeyaml`, etc.) vers des versions patchées.
+2. **Pour le système OS (Alpine)** : Mettre à jour l'image de base (`temurin:17-jre-alpine`) régulièrement pour embarquer les derniers correctifs de paquets via l'utilisation rigoureuse des derniers *digests* OCI.
+
+> **Note** : un digest OCI est l'identifiant immuable d'une image, calculé à partir de son contenu. Il permet de garantir qu'on télécharge exactement la même version de l'image, sans dépendre d'un simple tag qui peut évoluer.
+
+> **Remarque sur la gate de sécurité** :
+> En temps normal, on aurait du configurer Trivy pour faire échouer le build en cas de faille détectée (via l'option `--exit-code 1`). Le problème ici, c'est que le code du TP utilise des versions de Spring tellement anciennes qu'il y a d'office 4 failles CRITICAL bloquantes. J'ai donc dû "baisser le niveau de sécurité attendu". Les rapports JSON et SARIF sont générés pour audit, mais la pipeline CI n'est pas bloquée.
+
+## 4. Audit de l'image avec Dive
+
+L'outil **Dive** a été configuré via le fichier `.dive-ci` qui servira à la pipeline Github Actions. Les seuils sont :
+- Efficacité minimale : **95%**
+- Espace gaspillé maximum : **20 MB**
+- Pourcentage d'espace gaspillé maximum : **10%**
+
+### Taille de chaque layer et taille totale des images
+
+L'architecture étant standardisée, tous les micro-services back-end (Java) partagent exactement la même structure de layers. Voici la décomposition détaillée d'une image Java type :
+
+> **Note** : dans une image OCI, un *layer* est une couche superposée de fichiers. Chaque instruction du build peut ajouter une couche nouvelle ou une modification à l'image finale. Dans ce projet, l'essentiel de la taille vient de l'image de base Java, puis du fichier `app.jar` copié au moment du build.
+
+- **Taille totale de l'image** : ~180 MB
+- **Layer 1** (image de base `eclipse-temurin:17-jre-alpine`) : ~155 MB
+- **Layer 2** (copie du fichier `app.jar`) : variable selon le service (environ 20 à 30 MB)
+- **Métadonnées de configuration** (`WORKDIR`, `EXPOSE`, `CMD`) : impact négligeable sur la taille
+
+Pour le micro-service Front-end, l'image est basée sur `nginx:alpine` avec la simple copie des fichiers statiques HTML/CSS/JS.
+
+**Tableau récapitulatif des audits pour l'ensemble des conteneurs :**
+
+| Nom de l'image | Espace gaspillé (Wasted) | Score d'Efficience | Passage de la Gate |
+|---|---|---|---|
+| `banque-annuaire` | 645 kB | 99.82 % | ✅ PASS |
+| `banque-configserver` | 645 kB | 99.82 % | ✅ PASS |
+| `banque-clientservice` | 645 kB | 99.83 % | ✅ PASS |
+| `banque-compteservice` | 645 kB | 99.82 % | ✅ PASS |
+| `banque-compositeservice` | 645 kB | 99.82 % | ✅ PASS |
+| `banque-apigateway` | 645 kB | 99.82 % | ✅ PASS |
+| `miage-bank-front` (Nginx) | 638 kB | 99.36 % | ✅ PASS |
+
+*(L'espace gaspillé extrêmement faible provient majoritairement des certificats racines et de quelques fichiers système Alpine).*
+
+*(L'ensemble des exports d'analyse Dive sont disponibles dans le sous-dossier `rapports_dive/`).*
+
+### Optimisation et approche "Avant / Après"
+Pour répondre à l'exigence d'optimisation, j'ai fait le choix de ne pas faire d'avant/après classique. En effet, le projet a été conçu pour qu'il soit optimisé dès le départ (à l'étape 2) en séparant la compilation du packaging.
+
+Si le projet avait directement été compilé dans le `ContainerFile` avec une image de base très lourde (`openjdk:17`), Dive aurait détecté beaucoup de fichiers superflus,ce qui aurait fait chuter le score d'efficacité et créé une image beaucoup plus lourde et finalement, cela aurait peut être empêcher de passer la gate. 
+
+A la place, j'ai externalisé la compilation (via le script `build_all.sh`) sur la machine hôte. Le `ContainerFile` ne s'occupe que de copier le fichier `app.jar` généré dans une image `eclipse-temurin:17-jre-alpine`. Cela simule le comportement d'un *multi-stage build*, ce qui garantit de ne copier aucun élément superflu et d'avoir un très bon score sur l'audit Dive. Dans le cas du projet, c'est la meilleure méthode.
+
+## 5. Script de build intégré (CI Github Actions)
+
+Pour automatiser l'intégralité de la chaîne d'intégration continue, une pipeline Github Actions a été développée dans le fichier `../../.github/workflows/ci.yml`.
+
+Cette pipeline se déclenche sur `push` et `pull_request` vers la branche `main`, puis exécute les étapes suivantes :
+1. **Préparation de l'environnement** : Checkout du code, setup Java 17 et installation de Buildah sur le runner.
+2. **Compilation Java** : Génération des binaires locaux via `mvn clean package`.
+3. **Linting du ContainerFile** : Utilisation de `hadolint/hadolint-action` pour valider les bonnes pratiques OCI.
+4. **Conteneurisation (Buildah)** : Exploitation du script `build_all.sh` pour générer les 7 images (6 Backends + 1 Frontend) et export sous forme d'archives locales (`.tar`).
+5. **Scan de Sécurité (Trivy)** : Exécution du scan pour générer les rapports `JSON` et `SARIF`.
+6. **Upload SARIF** : Publication des résultats dans l'onglet *GitHub Security*.
+7. **Audit de gaspillage (Dive)** : Exécution de l'audit Dive respectant les seuils fixés (fichier `.dive-ci`) sur l'ensemble des archives.
+8. **Archivage des rapports** : Upload de tous les artefacts (`build-reports`) en fin de pipeline.
+
+> **Note** : les alertes peuvent ne pas apparaître dans l'onglet *Security* car je n'ai pas GitHub Advanced Security sur ce dépôt privé, même avec l'offre GitHub for Student. Dans tout les cas, les rapports SARIF/JSON restent disponibles dans les artefacts de la pipeline. Si le repo est en public, on a accès à l'onglet security. 
+
+![image montrant l'onglet Security and quality de github](assets/images/github-security-tab.png)
+
+---
 
 
-![Image](.data/demo.gif)
+# Partie B — Déploiement Kubernetes avec Helm et ArgoCD
 
-To analyze a Docker image simply run dive with an image tag/id/digest:
+L'objectif de cette partie est de déployer l'architecture micro-services sur un cluster Kubernetes (avec Minikube en local), en utilisant démarche Helm. Ce déploiement assurera la  gestion des secrets via Vault et il permettra l'automatisation GitOps avec ArgoCD.
+
+## 1. Création du chart Helm
+
+Plutôt que de créer 7 Helm charts distincts (un pour chaque micro-service + un pour le frontend), j'ai regroupé l'ensemble du déploiement dans un seul Helm chart nommé `miage-bank`. Cela me permet d'éviter la redondance des fichiers YAML et de centraliser la gestion de tous les services. l'approche de faire plusieurs Helm chart était également possible.
+
+Le fichier **template `deployment.yaml` unique** applique une boucle Helm (action `range`) pour générer dynamiquement les configurations de tous les services à partir de leur définition dans le fichier `values.yaml`.
+
+### Fichiers de configuration du chart
+
+- **values.yaml** : Contient la configuration de base pour tous les services : `imagePullPolicy`, ressources, variables d'environnement (telles que `wait_hosts`, ports).
+- **values-prod.yaml** : Surcharge le fichier `values.yaml` pour simuler un environnement de production. Il modifie `imagePullPolicy` en `Always`, ajuste le nombre de réplicas pour certains services et définit des limites de ressources matérielles (CPU/Memory).
+- **ConfigMap** : Regroupe les variables globales communes, comme l'URL du serveur Eureka de l'annuaire. Cette ConfigMap est injectée sur tous les services via le bloc `envFrom`.
+
+## 2. Configuration réseau et sécurité Kubernetes (NetworkPolicy, RBAC, HPA)
+
+Pour sécuriser les flux réseau, j'ai mis en place une `NetworkPolicy`. Le namespace `miage-bank` est ainsi isolé par défaut, avec deux règles principales :
+
+> **Note** : une `NetworkPolicy` est un objet Kubernetes qui définit les règles de communication réseau entre les pods. Elle fonctionne selon le principe du *deny-all* par défaut (tous les flux sont interdits, sauf ceux explicitement autorisés).
+
+- **Trafic interne** : Le trafic entre les pods de `miage-bank` est explicitement autorisé, ce qui est nécessaire à la communication inter-services.
+- **Point d'entrée unique** : Seul le trafic entrant provenant de l'Ingress Controller Traefik (situé dans le namespace `kube-system`) est accepté depuis l'extérieur. Cela constitue notre unique point d'entrée vers l'application.
+
+### RBAC (Role-Based Access Control)
+
+Concernant la gestion des rôles, j'ai créé un compte de service (`ServiceAccount`) dédié à l'application nommé `miage-bank-sa`. Cela permet de :
+- **Isoler les permissions** : Chaque pod de l'application s'authentifie uniquement avec ce compte de service.
+- **Restreindre l'accès** : Les permissions sont limitées au strict nécessaire pour le fonctionnement de l'application, selon le principe du moindre privilège.
+
+### HPA (Horizontal Pod Autoscaler)
+
+J'ai également configuré un `HPA` pour ajuster automatiquement le nombre de réplicas de certains services en fonction de la charge. Cela permet un déploiement plus robuste.
+
+
+
+## 3. Sécurisation des secrets avec Vault et External Secrets Operator
+
+L'objectif de cette étape était de sécuriser la gestion des secrets (identifiants MySQL et MongoDB) sans jamais les commiter en clair dans le dépôt Git. J'ai utilisé Hashicorp Vault couplé à External Secrets Operator (ESO) pour mettre en place un flux d'authentification sécurisé et automatisé :
+
+1. **Stockage des secrets dans Vault** : Les mots de passe des bases de données sont stockés directement dans le moteur KV de Vault. Cela élimine le besoin de les stocker sous forme de fichiers statiques ou de variables d'environnement en clair.
+
+2. **Authentification Kubernetes vers Vault** : Pour que le cluster Kubernetes puisse accéder à Vault de manière sécurisée, j'ai configuré la méthode `kubernetes` auth dans Vault. Cette méthode d'authentification utilise le token de service account Kubernetes pour valider l'identité du cluster. J'ai également créé un rôle qui limite l'accès strictement au compte de service de l'application (`miage-bank-sa`) via une politique spécifique (`miage-policy`).
+
+3. **Récupération automatique par ESO** : L'opérateur External Secrets Operator (ESO) surveille les ressources Kubernetes et interagit avec Vault pour lire les données sécurisées. ESO génère alors des objets `Secret` natifs Kubernetes dans le namespace de l'application, qui sont injectés dans l'environnement des pods via le bloc `envFrom`.
+
+## 4. Déploiement GitOps avec ArgoCD
+
+Le déploiement du chart Helm a été configuré avec ArgoCD via le manifeste `argocd/application.yaml` pointant vers notre dépôt.
+
+La politique de synchronisation a été définie sur `automated` avec deux paramètres importants :
+- **Prune** : Supprime les objets Kubernetes locaux qui ne sont plus déclarés dans les fichiers du dépôt Git.
+- **SelfHeal** : Corrige automatiquement tout écart entre l'état du cluster et le code présent sur GitHub.
+
+Le projet est bien déployé et de nouveau accessible localement via l'Ingress Traefik sur l'adresse `miage-bank.local`.
+
+> **Note** : sous Windows avec WSL, l'accès via l'Ingress peut être problématique. La commande `minikube tunnel` ne fonctionne pas forcément de façon fiable.
+
+
+
+## 5. Exercice de Dérive (Drift) et Auto-Heal
+
+Pour valider l'approche GitOps implémentée par ArgoCD, un test a été fait sur le cluster en modifiant manuellement le nombre de réplicas du pod front-end avec l'outil en ligne de commande :
+
 ```bash
-dive <your-image-tag>
+kubectl scale deployment miage-bank-app-miage-bank-front -n miage-bank --replicas=3
 ```
 
-or you can dive with docker command directly
-```
-alias dive="docker run -ti --rm  -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive"
-dive <your-image-tag>
+**Observation de la réconciliation :**
+## 2. Build de MIAGE-Bank avec Buildah
 
-# for example
-dive nginx:latest
-```
+L'objectif de cette partie est de faire un build de l'ensemble des services (6 services back et 1 front) de l'application MIAGE-Bank avec Buildah (build OCI)
 
-or if you want to build your image then jump straight into analyzing it:
+L'application source `MIAGE-Bank` étant architecturée en micro-services (6 services dans le dossier `miage-bank-back`), j'ai fait le choix de conteneuriser l'ensemble de l'application. Au lieu d'avoir 6 fois le même fichier, j'ai préféré utiliser un seul `ContainerFile` partagé. Cela me permet d'avoir une configuration homogène pour tous les services. Dans le projet Miage Bank, cette approche est suffisante telle quelle, mais on aurait pu avoir plusieurs `ContainerFile` si les services avaient eu des besoins différents.
+
+### Approche 1 : Via un Containerfile
+Le script `build_all.sh` gère cette première approche :
+1. Il compile tout le projet Java globalement avec Maven.
+2. Il construit une image Nginx pour la partie front.
+3. Il boucle sur chaque micro-service pour exécuter Buildah en utilisant le `ContainerFile` commun, en adaptant le contexte de build pour cibler le `.jar` correct. 
+
+> **Note** : le contexte de build correspond aux fichiers rendus accessibles à Buildah au moment de la construction. Ici, il est ajusté pour que chaque service ne copie que les éléments nécessaires, notamment le bon fichier `.jar`.
+
+_Exécution locale :_ `./build_all.sh`
+
+### Approche 2 : Construction layer par layer en mode natif Buildah
+Le script `build_native.sh` gère cette méthode. Il réalise la même boucle sur tous les micro-services, mais utilise les commandes natives (`buildah from`, `buildah config`, `buildah copy`, `buildah commit`) plutôt qu'un `Containerfile`. 
+
+### Comparaison des résultats
+
+Le résultat final est le même, mais la méthode de construction est différente. La méthode avec ContainerFile est plus lisible et portable, tandis que la méthode layer-by-layer est plus flexible et s'intègre mieux dans des pipelines CI/CD. Elle permet d'écrire des scripts plus complexes, de gérer les erreurs de manière plus fine et d'utiliser des variables dynamiques ou des secrets directement dans les commandes, sans les écrire dans un fichier statique comme le ContainerFile.
+
+Pour résumer, l'approche ContainerFile est plus lisible et compréhensible, mais moins flexible. La méthode layer-by-layer est plus flexible et s'intègre mieux dans des pipelines CI/CD, mais elle n'est pas standardisée et peut être plus difficile à maintenir. Il faut donc choisir la méthode de build en fonction du contexte.
+
+| Critère | ContainerFile | Layer-by-layer |
+|---|---|---|
+| Lisibilité | Très bonne | Moyenne |
+| Portabilité | Très bonne | Moyenne |
+| Flexibilité | Plus faible | Très forte |
+| Intégration CI/CD | Bonne | Très bonne |
+| Gestion des variables et secrets | Moins adaptée | Très adaptée |
+| Maintenabilité | Bonne | Plus délicate |
+| Standardisation | Oui | Non |
+
+## 3. Scan de sécurité avec Trivy
+
+Pour automatiser nos audits, le script `generate_trivy_report.sh` va exporter et filtrer nos 7 images générées, afin de produire pour chacune le rapport JSON et SARIF. Les fichiers seront stockés dans le dossier `rapports_trivy/`. Lors d'un push, ces opérations sont exécutées automatiquement par la pipeline Github Actions.
+
+### Analyse des résultats
+L'image de base (`eclipse-temurin:17-jre-alpine`) s'avère robuste (quelques failles OS mineures). La majorité écrasante des failles proviennent des dépendances de l'applicatif Java (`app.jar`), qui totalise environ 40 vulnérabilités de haut niveau (36 HIGH, 4 CRITICAL).
+
+### Détail des failles CRITICAL
+* **CVE-2022-22965 (Spring4Shell)** : Faille de type Remote Code Execution (RCE) via le Data Binding de Spring MVC ou WebFlux fonctionnant sur JDK 9+. C'est la vulnérabilité la plus critique identifiée.
+* **CVE-2016-1000027** : Faille liée à la désérialisation non sécurisée d'objets Java via `HttpInvokerServiceExporter` dans `spring-web`. Cela peut permettre l'exécution de code arbitraire s'il est exploité.
+* **CVE-2023-20873** : Vulnérabilité de contournement de sécurité (Security Bypass) sur Spring Boot Actuator.
+* **CVE-2023-20860** : Faille de contournement de sécurité (Security Bypass) liée au filtrage `mvcRequestMatcher` de Spring Security via un motif non préfixé. Elle affecte le paquet `spring-webmvc`.
+
+*(Il existe également environ 36 failles HIGH portant principalement sur des bibliothèques comme `tomcat-embed-core`, diverses librairies `spring-web`/`spring-core`, `jettison` et `snakeyaml`)*.
+
+### Plan de remédiation global
+Ces vulnérabilités découlent toutes d'une seule et même racine : **L'utilisation d'une version très obsolète de Spring Boot (la 2.6.4)** dans le fichier `pom.xml` parent du projet fourni pour le TP.
+1. **Action requise** : Il faudrait le projet vers une version moderne et sécurisée comme **Spring Boot 3.3.x ou 3.4.x**. Cela mettra instantanément à jour toutes les dépendances (dont `tomcat-embed-core`, `spring-web`, `snakeyaml`, etc.) vers des versions patchées.
+2. **Pour le système OS (Alpine)** : Mettre à jour l'image de base (`temurin:17-jre-alpine`) régulièrement pour embarquer les derniers correctifs de paquets via l'utilisation rigoureuse des derniers *digests* OCI.
+
+> **Note** : un digest OCI est l'identifiant immuable d'une image, calculé à partir de son contenu. Il permet de garantir qu'on télécharge exactement la même version de l'image, sans dépendre d'un simple tag qui peut évoluer.
+
+> **Remarque sur la gate de sécurité** :
+> En temps normal, on aurait du configurer Trivy pour faire échouer le build en cas de faille détectée (via l'option `--exit-code 1`). Le problème ici, c'est que le code du TP utilise des versions de Spring tellement anciennes qu'il y a d'office 4 failles CRITICAL bloquantes. J'ai donc dû "baisser le niveau de sécurité attendu". Les rapports JSON et SARIF sont générés pour audit, mais la pipeline CI n'est pas bloquée.
+
+## 4. Audit de l'image avec Dive
+
+L'outil **Dive** a been configuré via le fichier `.dive-ci` qui servira à la pipeline Github Actions. Les seuils sont :
+- Efficacité minimale : **95%**
+- Espace gaspillé maximum : **20 MB**
+- Pourcentage d'espace gaspillé maximum : **10%**
+
+### Taille de chaque layer et taille totale des images
+
+L'architecture étant standardisée, tous les micro-services back-end (Java) partagent exactement la même structure de layers. Voici la décomposition détaillée d'une image Java type :
+
+> **Note** : dans une image OCI, un *layer* est une couche superposée de fichiers. Chaque instruction du build peut ajouter une couche nouvelle ou une modification à l'image finale. Dans ce projet, l'essentiel de la taille vient de l'image de base Java, puis du fichier `app.jar` copié au moment du build.
+
+- **Taille totale de l'image** : ~180 MB
+- **Layer 1** (image de base `eclipse-temurin:17-jre-alpine`) : ~155 MB
+- **Layer 2** (copie du fichier `app.jar`) : variable selon le service (environ 20 à 30 MB)
+- **Métadonnées de configuration** (`WORKDIR`, `EXPOSE`, `CMD`) : impact négligeable sur la taille
+
+Pour le micro-service Front-end, l'image est basée sur `nginx:alpine` avec la simple copie des fichiers statiques HTML/CSS/JS.
+
+**Tableau récapitulatif des audits pour l'ensemble des conteneurs :**
+
+| Nom de l'image | Espace gaspillé (Wasted) | Score d'Efficience | Passage de la Gate |
+|---|---|---|---|
+| `banque-annuaire` | 645 kB | 99.82 % | ✅ PASS |
+| `banque-configserver` | 645 kB | 99.82 % | ✅ PASS |
+| `banque-clientservice` | 645 kB | 99.83 % | ✅ PASS |
+| `banque-compteservice` | 645 kB | 99.82 % | ✅ PASS |
+| `banque-compositeservice` | 645 kB | 99.82 % | ✅ PASS |
+| `banque-apigateway` | 645 kB | 99.82 % | ✅ PASS |
+| `miage-bank-front` (Nginx) | 638 kB | 99.36 % | ✅ PASS |
+
+*(L'espace gaspillé extrêmement faible provient majoritairement des certificats racines et de quelques fichiers système Alpine).*
+
+*(L'ensemble des exports d'analyse Dive sont disponibles dans le sous-dossier `rapports_dive/`).*
+
+### Optimisation et approche "Avant / Après"
+Pour répondre à l'exigence d'optimisation, j'ai fait le choix de ne pas faire d'avant/après classique. En effet, le projet a été conçu pour qu'il soit optimisé dès le départ (à l'étape 2) en séparant la compilation du packaging.
+
+Si le projet avait directement été compilé dans le `ContainerFile` avec une image de base très lourde (`openjdk:17`), Dive aurait détecté beaucoup de fichiers superflus,ce qui aurait fait chuter le score d'efficacité et créé une image beaucoup plus lourde et finalement, cela aurait peut être empêcher de passer la gate. 
+
+A la place, j'ai externalisé la compilation (via le script `build_all.sh`) sur la machine hôte. Le `ContainerFile` ne s'occupe que de copier le fichier `app.jar` généré dans une image `eclipse-temurin:17-jre-alpine`. Cela simule le comportement d'un *multi-stage build*, ce qui garantit de ne copier aucun élément superflu et d'avoir un très bon score sur l'audit Dive. Dans le cas du projet, c'est la meilleure méthode.
+
+## 5. Script de build intégré (CI Github Actions)
+
+Pour automatiser l'intégralité de la chaîne d'intégration continue, une pipeline Github Actions a été développée dans le fichier `../../.github/workflows/ci.yml`.
+
+Cette pipeline se déclenche sur `push` et `pull_request` vers la branche `main`, puis exécute les étapes suivantes :
+1. **Préparation de l'environnement** : Checkout du code, setup Java 17 et installation de Buildah sur le runner.
+2. **Compilation Java** : Génération des binaires locaux via `mvn clean package`.
+3. **Linting du ContainerFile** : Utilisation de `hadolint/hadolint-action` pour valider les bonnes pratiques OCI.
+4. **Conteneurisation (Buildah)** : Exploitation du script `build_all.sh` pour générer les 7 images (6 Backends + 1 Frontend) et export sous forme d'archives locales (`.tar`).
+5. **Scan de Sécurité (Trivy)** : Exécution du scan pour générer les rapports `JSON` et `SARIF`.
+6. **Upload SARIF** : Publication des résultats dans l'onglet *GitHub Security*.
+7. **Audit de gaspillage (Dive)** : Exécution de l'audit Dive respectant les seuils fixés (fichier `.dive-ci`) sur l'ensemble des archives.
+8. **Archivage des rapports** : Upload de tous les artefacts (`build-reports`) en fin de pipeline.
+
+> **Note** : les alertes peuvent ne pas apparaître dans l'onglet *Security* car je n'ai pas GitHub Advanced Security sur ce dépôt privé, même avec l'offre GitHub for Student. Dans tout les cas, les rapports SARIF/JSON restent disponibles dans les artefacts de la pipeline. Si le repo est en public, on a accès à l'onglet security. 
+
+![image montrant l'onglet Security and quality de github](assets/images/github-security-tab.png)
+
+---
+
+
+# Partie B — Déploiement Kubernetes avec Helm et ArgoCD
+
+L'objectif de cette partie est de déployer l'architecture micro-services sur un cluster Kubernetes (avec Minikube en local), en utilisant démarche Helm. Ce déploiement assurera la  gestion des secrets via Vault et il permettra l'automatisation GitOps avec ArgoCD.
+
+## 1. Création du chart Helm
+
+Plutôt que de créer 7 Helm charts distincts (un pour chaque micro-service + un pour le frontend), j'ai regroupé l'ensemble du déploiement dans un seul Helm chart nommé `miage-bank`. Cela me permet d'éviter la redondance des fichiers YAML et de centraliser la gestion de tous les services. l'approche de faire plusieurs Helm chart était également possible.
+
+Le fichier **template `deployment.yaml` unique** applique une boucle Helm (action `range`) pour générer dynamiquement les configurations de tous les services à partir de leur définition dans le fichier `values.yaml`.
+
+### Fichiers de configuration du chart
+
+- **values.yaml** : Contient la configuration de base pour tous les services : `imagePullPolicy`, ressources, variables d'environnement (telles que `wait_hosts`, ports).
+- **values-prod.yaml** : Surcharge le fichier `values.yaml` pour simuler un environnement de production. Il modifie `imagePullPolicy` en `Always`, ajuste le nombre de réplicas pour certains services et définit des limites de ressources matérielles (CPU/Memory).
+- **ConfigMap** : Regroupe les variables globales communes, comme l'URL du serveur Eureka de l'annuaire. Cette ConfigMap est injectée sur tous les services via le bloc `envFrom`.
+
+## 2. Configuration réseau et sécurité Kubernetes (NetworkPolicy, RBAC, HPA)
+
+Pour sécuriser les flux réseau, j'ai mis en place une `NetworkPolicy`. Le namespace `miage-bank` est ainsi isolé par défaut, avec deux règles principales :
+
+> **Note** : une `NetworkPolicy` est un objet Kubernetes qui définit les règles de communication réseau entre les pods. Elle fonctionne selon le principe du *deny-all* par défaut (tous les flux sont interdits, sauf ceux explicitement autorisés).
+
+- **Trafic interne** : Le trafic entre les pods de `miage-bank` est explicitement autorisé, ce qui est nécessaire à la communication inter-services.
+- **Point d'entrée unique** : Seul le trafic entrant provenant de l'Ingress Controller Traefik (situé dans le namespace `kube-system`) est accepté depuis l'extérieur. Cela constitue notre unique point d'entrée vers l'application.
+
+### RBAC (Role-Based Access Control)
+
+Concernant la gestion des rôles, j'ai créé un compte de service (`ServiceAccount`) dédié à l'application nommé `miage-bank-sa`. Cela permet de :
+- **Isoler les permissions** : Chaque pod de l'application s'authentifie uniquement avec ce compte de service.
+- **Restreindre l'accès** : Les permissions sont limitées au strict nécessaire pour le fonctionnement de l'application, selon le principe du moindre privilège.
+
+### HPA (Horizontal Pod Autoscaler)
+
+J'ai également configuré un `HPA` pour ajuster automatiquement le nombre de réplicas de certains services en fonction de la charge. Cela permet un déploiement plus robuste.
+
+
+
+## 3. Sécurisation des secrets avec Vault et External Secrets Operator
+
+L'objectif de cette étape était de sécuriser la gestion des secrets (identifiants MySQL et MongoDB) sans jamais les commiter en clair dans le dépôt Git. J'ai utilisé Hashicorp Vault couplé à External Secrets Operator (ESO) pour mettre en place un flux d'authentification sécurisé et automatisé :
+
+1. **Stockage des secrets dans Vault** : Les mots de passe des bases de données sont stockés directement dans le moteur KV de Vault. Cela élimine le besoin de les stocker sous forme de fichiers statiques ou de variables d'environnement en clair.
+
+2. **Authentification Kubernetes vers Vault** : Pour que le cluster Kubernetes puisse accéder à Vault de manière sécurisée, j'ai configuré la méthode `kubernetes` auth dans Vault. Cette méthode d'authentification utilise le token de service account Kubernetes pour valider l'identité du cluster. J'ai également créé un rôle qui limite l'accès strictement au compte de service de l'application (`miage-bank-sa`) via une politique spécifique (`miage-policy`).
+
+3. **Récupération automatique par ESO** : L'opérateur External Secrets Operator (ESO) surveille les ressources Kubernetes et interagit avec Vault pour lire les données sécurisées. ESO génère alors des objets `Secret` natifs Kubernetes dans le namespace de l'application, qui sont injectés dans l'environnement des pods via le bloc `envFrom`.
+
+## 4. Déploiement GitOps avec ArgoCD
+
+Le déploiement du chart Helm a été configuré avec ArgoCD via le manifeste `argocd/application.yaml` pointant vers notre dépôt.
+
+La politique de synchronisation a été définie sur `automated` avec deux paramètres importants :
+- **Prune** : Supprime les objets Kubernetes locaux qui ne sont plus déclarés dans les fichiers du dépôt Git.
+- **SelfHeal** : Corrige automatiquement tout écart entre l'état du cluster et le code présent sur GitHub.
+
+Le projet est bien déployé et de nouveau accessible localement via l'Ingress Traefik sur l'adresse `miage-bank.local`.
+
+> **Note** : sous Windows avec WSL, l'accès via l'Ingress peut être problématique. La commande `minikube tunnel` ne fonctionne pas forcément de façon fiable.
+
+
+
+## 5. Exercice de Dérive (Drift) et Auto-Heal
+
+Pour valider l'approche GitOps implémentée par ArgoCD, un test a été fait sur le cluster en modifiant manuellement le nombre de réplicas du pod front-end avec l'outil en ligne de commande :
+
 ```bash
-dive build -t <some-tag> .
+kubectl scale deployment miage-bank-app-miage-bank-front -n miage-bank --replicas=3
 ```
 
-Building on Macbook (supporting only the Docker container engine)
+**Observation de la réconciliation :**
+Dès la création forcée des pods, le contrôleur ArgoCD a basculé l'état de l'application en `OutOfSync`. Grâce à l'activation de l'option `SelfHeal` dans sa configuration, ArgoCD a relu l'état désiré (sur Git, défini à 1 réplica) et a initié la terminaison immédiate des pods en sur-nombre.
 
-```bash
-docker run --rm -it \
-      -v /var/run/docker.sock:/var/run/docker.sock \
-      -v  "$(pwd)":"$(pwd)" \
-      -w "$(pwd)" \
-      -v "$HOME/.dive.yaml":"$HOME/.dive.yaml" \
-      wagoodman/dive:latest build -t <some-tag> .
+```text
+miage-bank-app-miage-bank-front-cc4cbbd47-dqnmg           0/1     ContainerCreating   0               4s
+miage-bank-app-miage-bank-front-cc4cbbd47-g28c4           0/1     ContainerCreating   0               4s
+miage-bank-app-miage-bank-front-cc4cbbd47-q8s9f           1/1     Running             0               41m
+miage-bank-app-miage-bank-front-cc4cbbd47-g28c4           0/1     Terminating         0               11s
+miage-bank-app-miage-bank-front-cc4cbbd47-dqnmg           0/1     Terminating         0               11s
 ```
 
-Additionally you can run this in your CI pipeline to ensure you're keeping wasted space to a minimum (this skips the UI):
-```
-CI=true dive <your-image>
-```
+Ce test permet de certifier que le dépôt Git conserve bien son rôle de Single Source of Truth, neutralisant de fait toute modification manuelle non suivie.
 
-![Image](.data/demo-ci.png)
+## 6. Résolution des anomalies de démarrage (Troubleshooting)
 
-**This is beta quality!** *Feel free to submit an issue if you want a new feature or find a bug :)*
+Lors du passage de Docker Compose à Kubernetes, j'ai rencontré quelques crashs (`CrashLoopBackOff`) au démarrage des pods. J'ai donc apporté quelques correctifs dans le Helm Chart pour stabiliser le cluster :
 
-## Basic Features
-
-**Show Docker image contents broken down by layer**
-
-As you select a layer on the left, you are shown the contents of that layer combined with all previous layers on the right. Also, you can fully explore the file tree with the arrow keys.
-
-**Indicate what's changed in each layer**
-
-Files that have changed, been modified, added, or removed are indicated in the file tree. This can be adjusted to show changes for a specific layer, or aggregated changes up to this layer.
-
-**Estimate "image efficiency"**
-
-The lower left pane shows basic layer info and an experimental metric that will guess how much wasted space your image contains. This might be from duplicating files across layers, moving files across layers, or not fully removing files. Both a percentage "score" and total wasted file space is provided.
-
-**Quick build/analysis cycles**
-
-You can build a Docker image and do an immediate analysis with one command:
-`dive build -t some-tag .`
-
-You only need to replace your `docker build` command with the same `dive build`
-command.
-
-**CI Integration**
-
-Analyze an image and get a pass/fail result based on the image efficiency and wasted space. Simply set `CI=true` in the environment when invoking any valid dive command.
-
-**Multiple Image Sources and Container Engines Supported**
-
-With the `--source` option, you can select where to fetch the container image from:
-```bash
-dive <your-image> --source <source>
-```
-or
-```bash
-dive <source>://<your-image>
-```
-
-With valid `source` options as such:
-- `docker`: Docker engine (the default option)
-- `docker-archive`: A Docker Tar Archive from disk
-- `podman`: Podman engine (linux only)
-
-## Installation
-
-**Ubuntu/Debian**
-
-Using debs:
-```bash
-DIVE_VERSION=$(curl -sL "https://api.github.com/repos/wagoodman/dive/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-curl -OL https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.deb
-sudo apt install ./dive_${DIVE_VERSION}_linux_amd64.deb
-```
-
-Using snap:
-```bash
-sudo snap install docker
-sudo snap install dive
-sudo snap connect dive:docker-executables docker:docker-executables
-sudo snap connect dive:docker-daemon docker:docker-daemon
-```
-
-**RHEL/Centos**
-```bash
-DIVE_VERSION=$(curl -sL "https://api.github.com/repos/wagoodman/dive/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-curl -OL https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.rpm
-rpm -i dive_${DIVE_VERSION}_linux_amd64.rpm
-```
-
-**Arch Linux**
-
-Available in the [extra repository](https://archlinux.org/packages/extra/x86_64/dive/) and can be installed via [pacman](https://wiki.archlinux.org/title/Pacman):
-
-```bash
-pacman -S dive
-```
-
-**Mac**
-
-If you use [Homebrew](https://brew.sh):
-
-```bash
-brew install dive
-```
-
-If you use [MacPorts](https://www.macports.org):
-
-```bash
-sudo port install dive
-```
-
-Or download the latest Darwin build from the [releases page](https://github.com/wagoodman/dive/releases/latest).
-
-**Windows**
-
-Download the [latest release](https://github.com/wagoodman/dive/releases/latest).
-
-**Go tools**
-Requires Go version 1.10 or higher.
-
-```bash
-go get github.com/wagoodman/dive
-```
-*Note*: installing in this way you will not see a proper version when running `dive -v`.
-
-**Nix/NixOS**
-
-On NixOS:
-```bash
-nix-env -iA nixos.dive
-```
-On non-NixOS (Linux, Mac)
-```bash
-nix-env -iA nixpkgs.dive
-```
-
-**Docker**
-```bash
-docker pull wagoodman/dive
-```
-
-or
-
-```bash
-docker pull quay.io/wagoodman/dive
-```
-
-When running you'll need to include the docker socket file:
-```bash
-docker run --rm -it \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    wagoodman/dive:latest <dive arguments...>
-```
-
-Docker for Windows (showing PowerShell compatible line breaks; collapse to a single line for Command Prompt compatibility)
-```bash
-docker run --rm -it `
-    -v /var/run/docker.sock:/var/run/docker.sock `
-    wagoodman/dive:latest <dive arguments...>
-```
-
-**Note:** depending on the version of docker you are running locally you may need to specify the docker API version as an environment variable:
-```bash
-   DOCKER_API_VERSION=1.37 dive ...
-```
-or if you are running with a docker image:
-```bash
-docker run --rm -it \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -e DOCKER_API_VERSION=1.37 \
-    wagoodman/dive:latest <dive arguments...>
-```
-
-## CI Integration
-
-When running dive with the environment variable `CI=true` then the dive UI will be bypassed and will instead analyze your docker image, giving it a pass/fail indication via return code. Currently there are three metrics supported via a `.dive-ci` file that you can put at the root of your repo:
-```
-rules:
-  # If the efficiency is measured below X%, mark as failed.
-  # Expressed as a ratio between 0-1.
-  lowestEfficiency: 0.95
-
-  # If the amount of wasted space is at least X or larger than X, mark as failed.
-  # Expressed in B, KB, MB, and GB.
-  highestWastedBytes: 20MB
-
-  # If the amount of wasted space makes up for X% or more of the image, mark as failed.
-  # Note: the base image layer is NOT included in the total image size.
-  # Expressed as a ratio between 0-1; fails if the threshold is met or crossed.
-  highestUserWastedPercent: 0.20
-```
-You can override the CI config path with the `--ci-config` option.
-
-## KeyBindings
-
-Key Binding                                | Description
--------------------------------------------|---------------------------------------------------------
-<kbd>Ctrl + C</kbd> or <kbd>Q</kbd>        | Exit
-<kbd>Tab</kbd>                             | Switch between the layer and filetree views
-<kbd>Ctrl + F</kbd>                        | Filter files
-<kbd>PageUp</kbd>                          | Scroll up a page
-<kbd>PageDown</kbd>                        | Scroll down a page
-<kbd>Ctrl + A</kbd>                        | Layer view: see aggregated image modifications
-<kbd>Ctrl + L</kbd>                        | Layer view: see current layer modifications
-<kbd>Space</kbd>                           | Filetree view: collapse/uncollapse a directory
-<kbd>Ctrl + Space</kbd>                    | Filetree view: collapse/uncollapse all directories
-<kbd>Ctrl + A</kbd>                        | Filetree view: show/hide added files
-<kbd>Ctrl + R</kbd>                        | Filetree view: show/hide removed files
-<kbd>Ctrl + M</kbd>                        | Filetree view: show/hide modified files
-<kbd>Ctrl + U</kbd>                        | Filetree view: show/hide unmodified files
-<kbd>Ctrl + B</kbd>                        | Filetree view: show/hide file attributes
-<kbd>PageUp</kbd>                          | Filetree view: scroll up a page
-<kbd>PageDown</kbd>                        | Filetree view: scroll down a page
-
-## UI Configuration
-
-No configuration is necessary, however, you can create a config file and override values:
-```yaml
-# supported options are "docker" and "podman"
-container-engine: docker
-# continue with analysis even if there are errors parsing the image archive
-ignore-errors: false
-log:
-  enabled: true
-  path: ./dive.log
-  level: info
-
-# Note: you can specify multiple bindings by separating values with a comma.
-# Note: UI hinting is derived from the first binding
-keybinding:
-  # Global bindings
-  quit: ctrl+c
-  toggle-view: tab
-  filter-files: ctrl+f, ctrl+slash
-
-  # Layer view specific bindings
-  compare-all: ctrl+a
-  compare-layer: ctrl+l
-
-  # File view specific bindings
-  toggle-collapse-dir: space
-  toggle-collapse-all-dir: ctrl+space
-  toggle-added-files: ctrl+a
-  toggle-removed-files: ctrl+r
-  toggle-modified-files: ctrl+m
-  toggle-unmodified-files: ctrl+u
-  toggle-filetree-attributes: ctrl+b
-  page-up: pgup
-  page-down: pgdn
-
-diff:
-  # You can change the default files shown in the filetree (right pane). All diff types are shown by default.
-  hide:
-    - added
-    - removed
-    - modified
-    - unmodified
-
-filetree:
-  # The default directory-collapse state
-  collapse-dir: false
-
-  # The percentage of screen width the filetree should take on the screen (must be >0 and <1)
-  pane-width: 0.5
-
-  # Show the file attributes next to the filetree
-  show-attributes: true
-
-layer:
-  # Enable showing all changes from this layer and every previous layer
-  show-aggregated-changes: false
-
-```
-
-dive will search for configs in the following locations:
-- `$XDG_CONFIG_HOME/dive/*.yaml`
-- `$XDG_CONFIG_DIRS/dive/*.yaml`
-- `~/.config/dive/*.yaml`
-- `~/.dive.yaml`
-
-`.yml` can be used instead of `.yaml` if desired.
+- **Rétrocompatibilité DNS** : Les microservices cherchaient à joindre des hôtes comme `bnkmysql`. Pour éviter de retoucher le code Java, j'ai ajouté un fichier `aliases.yaml` qui utilise des services de type `ExternalName` pour faire la correspondance avec les vrais noms Kubernetes.
+- **Profil Spring Boot** : Par défaut, le profil `default` était chargé, ce qui empêchait la récupération des URLs des bases de données. J'ai injecté `SPRING_PROFILES_ACTIVE: "docker"` via la `ConfigMap`.
+- **Ports Tomcat** : Sans précision, Tomcat démarrait sur le port `8080`, ce qui faisait échouer les sondes Kubernetes (configurées sur `10021`, etc.). J'ai donc ajouté une injection de variable `SERVER_PORT: "{{ $svc.port }}"` dans mon `deployment.yaml`.
+- **Réglage des sondes** : J'ai remarqué qu'une `readinessProbe` trop longue sur l'Annuaire bloquait le trafic réseau et faisait planter les autres conteneurs par effet domino (timeout). J'ai réduit la `readinessProbe` à 30 secondes, tout en conservant 120 secondes pour la `livenessProbe` afin de laisser le temps à Spring Boot de démarrer.
