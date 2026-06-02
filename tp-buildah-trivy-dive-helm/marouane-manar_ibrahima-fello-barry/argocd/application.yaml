@@ -1,0 +1,22 @@
+# fichier pour deployer l'application avec argocd
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: miage-bank-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    #repoURL: 'https://github.com/Marskof/tp-devops-buildah-trivy-dive-helm-k8s.git' 
+    repoURL: 'https://github.com/Marskof/test.git' 
+    targetRevision: main
+    path: tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/miage-bank # chemin vers le chart
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: miage-bank
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true  

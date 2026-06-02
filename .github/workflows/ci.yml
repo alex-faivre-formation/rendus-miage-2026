@@ -32,18 +32,18 @@ jobs:
           
       - name: 1. Compilation Maven
         run: |
-          cd tp-buildah-trivy-dive-helm/marouane-manar/miage-bank-back
+          cd tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/miage-bank-back
           mvn clean package -DskipTests
           
       - name: 2. Lint du ContainerFile (Hadolint)
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: tp-buildah-trivy-dive-helm/marouane-manar/ContainerFile
+          dockerfile: tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/ContainerFile
           ignore: DL3006 # Ignorer le Warning sur l'image de base
           
       - name: 3. Construction des images avec Buildah
         run: |
-          cd tp-buildah-trivy-dive-helm/marouane-manar
+          cd tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry
           chmod +x build_all.sh
           ./build_all.sh
           
@@ -56,7 +56,7 @@ jobs:
           
       - name: 4. Scan Trivy sur toutes les images
         run: |
-          cd tp-buildah-trivy-dive-helm/marouane-manar
+          cd tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b .
           mkdir -p build-reports/trivy
           
@@ -73,13 +73,13 @@ jobs:
         continue-on-error: true
         with:
           # On peut uploader le dossier entier contenant les 7 rapports SARIF
-          sarif_file: tp-buildah-trivy-dive-helm/marouane-manar/build-reports/trivy/
+          sarif_file: tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/build-reports/trivy/
 
       - name: 5. Audit Dive sur toutes les images
         env:
           CI: "true"
         run: |
-          cd tp-buildah-trivy-dive-helm/marouane-manar
+          cd tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry
           mkdir -p build-reports/dive
           wget https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb
           sudo apt install ./dive_0.12.0_linux_amd64.deb
@@ -94,4 +94,4 @@ jobs:
         if: always()
         with:
           name: build-reports
-          path: tp-buildah-trivy-dive-helm/marouane-manar/build-reports/
+          path: tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/build-reports/
