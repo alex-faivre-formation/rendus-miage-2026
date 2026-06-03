@@ -1,0 +1,9 @@
+rules:
+  # Efficiacité minimale : 95%
+  lowestEfficiency: 0.95
+  
+  # Espace gaspillé maximum : 20 Mo
+  highestWastedBytes: 20MB
+  
+  # Pourcentage d'espace gaspillé maximum : 10%
+  highestUserWastedPercent: 0.10

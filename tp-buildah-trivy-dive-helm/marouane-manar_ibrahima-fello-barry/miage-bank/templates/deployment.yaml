@@ -1,0 +1,63 @@
+{{- range $name, $svc := .Values.microservices }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "miage-bank.fullname" $ }}-{{ $name }}
+  labels:
+    {{- include "miage-bank.labels" $ | nindent 4 }}
+    app: {{ $name }}
+spec:
+  replicas: {{ default 1 $svc.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        {{- include "miage-bank.labels" $ | nindent 8 }}
+        app: {{ $name }}
+    spec:
+      serviceAccountName: {{ include "miage-bank.fullname" $ }}-sa
+      containers:
+        - name: {{ $name }}
+          image: "{{ $svc.image }}"
+          imagePullPolicy: {{ default $.Values.global.imagePullPolicy $svc.pullPolicy }}
+          ports:
+            - containerPort: {{ $svc.port }}
+              protocol: TCP
+          env:
+            - name: SERVER_PORT
+              value: "{{ $svc.port }}"
+            {{- if $svc.env }}
+            {{- toYaml $svc.env | nindent 12 }}
+            {{- end }}
+
+          envFrom:
+            - secretRef:
+                name: miage-bank-secrets
+            - configMapRef:
+                name: {{ include "miage-bank.fullname" $ }}-config
+          # probe liveness et readiness
+          livenessProbe:
+            tcpSocket:
+              port: {{ $svc.port }}
+            initialDelaySeconds: 120
+            periodSeconds: 15
+          readinessProbe:
+            tcpSocket:
+              port: {{ $svc.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources:
+            {{- if $svc.resources }}
+            {{- toYaml $svc.resources | nindent 12 }}
+            {{- else }}
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            {{- end }}
+{{- end }}

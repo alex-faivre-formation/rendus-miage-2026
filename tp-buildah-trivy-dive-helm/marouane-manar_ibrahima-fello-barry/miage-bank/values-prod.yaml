@@ -1,0 +1,46 @@
+# ----------------------------------------------------
+# Configuration spécifique à l'environnement PRODUCTON
+# ----------------------------------------------------
+
+global:
+  # En prod, on force toujours le pull depuis un registre propre (Harbor / GitHub)
+  imagePullPolicy: Always 
+
+microservices:
+  # En production, on augmente la tolérance à la panne (HA)
+  banque-apigateway:
+    replicas: 2
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 70
+  banque-clientservice:
+    replicas: 3
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 8
+      targetCPUUtilizationPercentage: 70
+    resources:
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+  banque-compteservice:
+    replicas: 3
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 8
+      targetCPUUtilizationPercentage: 70
+    resources:
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+  miage-bank-front:
+    replicas: 2
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 75

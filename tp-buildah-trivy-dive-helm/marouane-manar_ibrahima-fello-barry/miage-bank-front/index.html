@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIAGE-Bank - Mon Tableau de Bord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="app-container">
+        <aside class="sidebar glass-panel">
+            <h1 class="logo">MIAGE<span class="highlight">Bank</span></h1>
+            <nav class="menu">
+                <a href="#" class="menu-item active">Tableau de bord</a>
+                <a href="#" class="menu-item">Comptes</a>
+                <a href="#" class="menu-item">Virements</a>
+                <a href="#" class="menu-item">Cartes</a>
+                <a href="#" class="menu-item">Paramètres</a>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">MM</div>
+                <div class="user-info">
+                    <span class="user-name">Marouane Manar</span>
+                    <span class="user-status">Client Premium</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <h2>Aperçu de vos finances</h2>
+                <div class="header-actions">
+                    <button class="btn btn-icon">🔍</button>
+                    <button class="btn btn-icon">🔔</button>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Solde Total -->
+                <div class="card balance-card glass-panel">
+                    <h3>Solde Total</h3>
+                    <div class="balance-amount">€24,562.00</div>
+                    <div class="balance-change positive">↑ 2.4% ce mois</div>
+                </div>
+
+                <!-- Comptes -->
+                <div class="card accounts-card glass-panel">
+                    <h3>Vos Comptes</h3>
+                    <ul class="account-list" id="accountList">
+                        <!-- Rempli par le JS -->
+                    </ul>
+                </div>
+
+                <!-- Actions Rapides -->
+                <div class="card actions-card glass-panel">
+                    <h3>Actions Rapides</h3>
+                    <div class="actions-grid">
+                        <button class="btn btn-primary">Nouveau Virement</button>
+                        <button class="btn btn-secondary">Demander une carte</button>
+                        <button class="btn btn-secondary">Télécharger RIB</button>
+                    </div>
+                </div>
+
+                <!-- Transactions Récentes -->
+                <div class="card transactions-card glass-panel">
+                    <h3>Transactions récentes</h3>
+                    <ul class="transaction-list" id="transactionList">
+                        <!-- Rempli par le JS -->
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

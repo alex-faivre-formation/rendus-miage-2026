@@ -1,0 +1,97 @@
+name: CI MIAGE-Bank (Buildah, Trivy, Dive)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-scan:
+    name: Build OCI & Scanners
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Buildah
+        run: |
+          # Cette étape garantit que Buildah est bien présent sur le runner GitHub 
+          sudo apt-get update
+          sudo apt-get install -y buildah
+          buildah version
+          
+      - name: 1. Compilation Maven
+        run: |
+          cd tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/miage-bank-back
+          mvn clean package -DskipTests
+          
+      - name: 2. Lint du ContainerFile (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/ContainerFile
+          ignore: DL3006 # Ignorer le Warning sur l'image de base
+          
+      - name: 3. Construction des images avec Buildah
+        run: |
+          cd tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry
+          chmod +x build_all.sh
+          ./build_all.sh
+          
+          # Export de toutes les images pour l'analyse
+          buildah push miage-bank-front:1.0.0 docker-archive:miage-bank-front.tar
+          SERVICES=("Banque-Annuaire" "Banque-ConfigServer" "Banque-ClientService" "Banque-CompteService" "Banque-CompositeService" "Banque-APIGateway")
+          for SERVICE in "${SERVICES[@]}"; do
+            buildah push ${SERVICE,,}:1.0.0 docker-archive:${SERVICE,,}.tar
+          done
+          
+      - name: 4. Scan Trivy sur toutes les images
+        run: |
+          cd tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b .
+          mkdir -p build-reports/trivy
+          
+          IMAGES=("miage-bank-front" "banque-annuaire" "banque-configserver" "banque-clientservice" "banque-compteservice" "banque-compositeservice" "banque-apigateway")
+          for IMG in "${IMAGES[@]}"; do
+            echo "Scanning $IMG..."
+            ./trivy image --input ${IMG}.tar --format json --output build-reports/trivy/${IMG}.json --severity HIGH,CRITICAL
+            ./trivy image --input ${IMG}.tar --format sarif --output build-reports/trivy/${IMG}.sarif --severity HIGH,CRITICAL
+          done
+
+      - name: Upload des résultats SARIF sur Github Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        continue-on-error: true
+        with:
+          # On peut uploader le dossier entier contenant les 7 rapports SARIF
+          sarif_file: tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/build-reports/trivy/
+
+      - name: 5. Audit Dive sur toutes les images
+        env:
+          CI: "true"
+        run: |
+          cd tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry
+          mkdir -p build-reports/dive
+          wget https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb
+          sudo apt install ./dive_0.12.0_linux_amd64.deb
+          IMAGES=("miage-bank-front" "banque-annuaire" "banque-configserver" "banque-clientservice" "banque-compteservice" "banque-compositeservice" "banque-apigateway")
+          for IMG in "${IMAGES[@]}"; do
+            echo "Audit Dive sur $IMG..."
+            dive docker-archive://${IMG}.tar --ci-config .dive-ci > build-reports/dive/${IMG}.txt
+          done
+          
+      - name: 6. Archivage de tous les rapports (build-reports)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-reports
+          path: tp-buildah-trivy-dive-helm/marouane-manar_ibrahima-fello-barry/build-reports/
