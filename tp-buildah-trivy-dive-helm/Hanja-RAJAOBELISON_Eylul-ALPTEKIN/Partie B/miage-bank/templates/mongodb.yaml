@@ -1,0 +1,71 @@
+{{- if .Values.databases.mongodb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: {{ .Values.namespaceName }}
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        {{- include "miage-bank.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "miage-bank.serviceAccountName" . }}
+      containers:
+        - name: mongodb
+          image: {{ .Values.databases.mongodb.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mongodb
+              containerPort: {{ .Values.databases.mongodb.port }}
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "root"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "miage-bank.fullname" . }}-db-secret
+                  key: MONGO_INITDB_ROOT_PASSWORD
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.databases.mongodb.database | quote }}
+          resources:
+            requests: { cpu: 200m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+          readinessProbe:
+            exec:
+              command: ["mongosh", "--eval", "db.adminCommand('ping')"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            exec:
+              command: ["mongosh", "--eval", "db.adminCommand('ping')"]
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: {{ .Values.namespaceName }}
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database-mongodb
+spec:
+  type: ClusterIP
+  selector:
+    app: mongodb
+  ports:
+    - name: mongodb
+      port: {{ .Values.databases.mongodb.port }}
+      targetPort: {{ .Values.databases.mongodb.port }}
+{{- end }}

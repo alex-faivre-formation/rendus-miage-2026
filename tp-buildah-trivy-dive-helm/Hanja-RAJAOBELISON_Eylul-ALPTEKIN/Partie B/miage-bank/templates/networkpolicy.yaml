@@ -1,0 +1,50 @@
+# ── 1. Default deny : tout trafic entrant bloqué par défaut ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Values.namespaceName }}
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+spec:
+  podSelector: {}          # s'applique à tous les pods du namespace
+  policyTypes:
+    - Ingress
+---
+# ── 2. Autorisation : trafic entrant depuis Traefik ──────────
+# Permet à Traefik (namespace traefik) d'atteindre le proxy.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-traefik
+  namespace: {{ .Values.namespaceName }}
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: proxy           # cible : le pod API Gateway
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: traefik
+---
+# ── 3. Autorisation : communication intra-namespace ──────────
+# Les micro-services peuvent se parler entre eux.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-intra-namespace
+  namespace: {{ .Values.namespaceName }}
+  labels:
+    {{- include "miage-bank.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {}  # tout pod du même namespace

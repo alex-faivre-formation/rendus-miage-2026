@@ -1,0 +1,198 @@
+# ============================================================
+# values.yaml — MIAGE-Bank Helm Chart
+# IMPORTANT : ce fichier ne contient AUCUN secret/credential.
+# Les mots de passe DB sont injectés via values-secrets.yaml
+# (gitignore) ou via --set au déploiement.
+# En production : HashiCorp Vault + External Secrets Operator.
+# ============================================================
+
+namespaceName: miage-bank
+
+# Configuration des images (locales dans Minikube)
+image:
+  registry: localhost
+  defaultTag: v1
+  pullPolicy: Never        # images chargées localement — pas de pull
+
+# ServiceAccount dédié (least privilege)
+serviceAccount:
+  name: miage-bank-sa
+
+# Secrets DB — VIDE ici, à fournir via --set ou values-secrets.yaml (gitignore)
+# Ne jamais committer de vraies valeurs dans ce fichier.
+# Exemple : helm install miage-bank . --set secrets.mysqlRootPassword=root
+secrets:
+  mysqlRootPassword: ""
+  mongoRootPassword: ""
+
+# Ingress Traefik
+ingress:
+  enabled: true
+  className: traefik
+  host: miage-bank.local   # ajouter dans /etc/hosts : $(minikube ip) miage-bank.local
+
+# Bases de données (déployées dans le même namespace)
+databases:
+  mysql:
+    enabled: true
+    image: mysql:8.0
+    port: 3306
+    database: banquebd
+  mongodb:
+    enabled: true
+    image: mongo:6.0
+    port: 27017
+    database: banquebd
+    authDatabase: admin
+
+# ============================================================
+# Micro-services MIAGE-Bank
+# Chaque entrée génère un Deployment + Service ClusterIP.
+# ============================================================
+services:
+  annuaire:
+    image: miage-bank-annuaire
+    tag: v1
+    port: 10001
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+    readinessProbe:
+      httpGet: { path: /actuator/health, port: 10001 }
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      failureThreshold: 5
+    livenessProbe:
+      httpGet: { path: /actuator/health, port: 10001 }
+      initialDelaySeconds: 90
+      periodSeconds: 20
+      failureThreshold: 3
+
+  configserver:
+    image: miage-bank-configserver
+    tag: v1
+    port: 10003
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+    readinessProbe:
+      httpGet: { path: /actuator/health, port: 10003 }
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      failureThreshold: 5
+    livenessProbe:
+      httpGet: { path: /actuator/health, port: 10003 }
+      initialDelaySeconds: 90
+      periodSeconds: 20
+      failureThreshold: 3
+
+  clients:
+    image: miage-bank-clients
+    tag: v1
+    port: 10011
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+    readinessProbe:
+      httpGet: { path: /actuator/health, port: 10011 }
+      initialDelaySeconds: 90
+      periodSeconds: 10
+      failureThreshold: 5
+    livenessProbe:
+      httpGet: { path: /actuator/health, port: 10011 }
+      initialDelaySeconds: 120
+      periodSeconds: 20
+      failureThreshold: 3
+
+  comptes:
+    image: miage-bank-comptes
+    tag: v1
+    port: 10021
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+    readinessProbe:
+      httpGet: { path: /actuator/health, port: 10021 }
+      initialDelaySeconds: 90
+      periodSeconds: 10
+      failureThreshold: 5
+    livenessProbe:
+      httpGet: { path: /actuator/health, port: 10021 }
+      initialDelaySeconds: 120
+      periodSeconds: 20
+      failureThreshold: 3
+
+  composite:
+    image: miage-bank-composite
+    tag: v1
+    port: 10031
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+    readinessProbe:
+      httpGet: { path: /actuator/health, port: 10031 }
+      initialDelaySeconds: 90
+      periodSeconds: 10
+      failureThreshold: 5
+    livenessProbe:
+      httpGet: { path: /actuator/health, port: 10031 }
+      initialDelaySeconds: 120
+      periodSeconds: 20
+      failureThreshold: 3
+
+  proxy:
+    image: miage-bank-proxy
+    tag: v1
+    port: 10000
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   { cpu: 500m, memory: 512Mi }
+    readinessProbe:
+      httpGet: { path: /actuator/health, port: 10000 }
+      initialDelaySeconds: 90
+      periodSeconds: 10
+      failureThreshold: 5
+    livenessProbe:
+      httpGet: { path: /actuator/health, port: 10000 }
+      initialDelaySeconds: 120
+      periodSeconds: 20
+      failureThreshold: 3
+
+# ============================================================
+# Autoscaling (HPA) — Horizontal Pod Autoscaler
+# Nécessite metrics-server : minikube addons enable metrics-server
+# Critère d'évaluation : Déploiement K8s avec sécurité (RBAC, NetworkPolicy, HPA)
+# ============================================================
+autoscaling:
+  enabled: true
+  services:
+    proxy:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 70
+      targetMemory: 80
+    clients:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 2
+      targetCPU: 70
+      targetMemory: 80
+    comptes:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 2
+      targetCPU: 70
+      targetMemory: 80
+    composite:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 2
+      targetCPU: 70
+      targetMemory: 80
