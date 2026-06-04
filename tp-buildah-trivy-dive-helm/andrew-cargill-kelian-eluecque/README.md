@@ -252,3 +252,17 @@ kubectl apply -f argocd/application.yaml
 # 3. Forcer manuellement la première synchronisation via la CLI ArgoCD
 argocd app sync miage-bank-gitops
 ```
+
+# 1.Déverrouillage manuel de Vault (Unseal)
+# Vérifier le statut actuel
+kubectl exec -it vault-0 -n default -- vault status
+
+# Effectuer le unseal (à répéter 3 fois avec 3 clés différentes)
+kubectl exec -it vault-0 -n default -- vault operator unseal <VOTRE_CLE_ICI>
+
+# 2. Forcer la synchronisation d'un ExternalSecret
+# Supprimer l'objet pour forcer sa recréation par ArgoCD/Kubernetes
+kubectl delete externalsecret miage-bank-db-credentials -n miage-bank
+
+# Vérifier que le statut est bien repassé à "SecretSynced"
+kubectl get externalsecret miage-bank-db-credentials -n miage-bank
