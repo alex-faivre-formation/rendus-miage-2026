@@ -212,12 +212,15 @@ La gestion de la dérive logicielle garantit que personne ne peut modifier l'inf
 1. **État Initial Stable** : L'application est déployée de manière conforme. Le fichier `values-prod.yaml` sur Git exige la présence de `3` réplicas pour le service `Banque-ClientService`. L'interface graphique d'ArgoCD affiche un statut au vert : **`Synced`** (Synchronisé) et **`Healthy`** (En bonne santé).
 2. **Introduction Manuelle de la Dérive** : Un opérateur se connecte directement au cluster et exécute une commande impérative de contournement via la CLI Kubernetes en modifiant manuellement le nombre de réplicas :
    ```bash
-   kubectl scale deployment banque-clientservice --replicas=5 -n miage-bank
+   kubectl scale deployment annuaire --replicas=5 -n miage-bank
    ```
+   ![État OutOfSync](Photos/OutOfSync.png)
+
+
 3. **Détection Immédiate** : Lors de son cycle régulier de surveillance, ArgoCD compare l'état réel du cluster (5 pods actifs) avec l'état cible stocké sur Git (3 pods). Constatant l'écart, ArgoCD détecte le statut `OutOfSync` et fait passer visuellement l'application au statut d'alerte **`OutOfSync`** (Désynchronisé).
 4. **Auto-Réconciliation (*Self-Healing*)** : 
    Le paramètre `selfHeal` étant activé à `true` dans la politique de synchronisation, ArgoCD déclenche la réconciliation et prend immédiatement des mesures correctives automatiques sans intervention humaine. Il écrase la modification impérative non autorisée et réapplique les manifestes déclaratifs issus de Git. Les deux pods excédentaires sont immédiatement terminés et détruits, ramenant l'infrastructure à son état nominal de `3` réplicas. L'application repasse instantanément au statut **`Synced`**.
-
+   ![État Synced](Photos/Sync.png)
 ---
 
 ## 7. Guide d'Exécution et Commandes de Diagnostic Local
