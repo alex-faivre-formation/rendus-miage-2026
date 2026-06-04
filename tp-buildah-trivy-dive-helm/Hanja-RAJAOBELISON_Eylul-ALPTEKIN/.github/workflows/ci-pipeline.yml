@@ -1,0 +1,144 @@
+name: CI MIAGE-Bank — Buildah · Trivy · Dive
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Permissions pour l'upload SARIF vers GitHub Security
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  build-scan-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ─────────────────────────────────────────────
+      # 1. Récupération du code
+      # ─────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ─────────────────────────────────────────────
+      # 2. JDK 17 pour la compilation Maven
+      # ─────────────────────────────────────────────
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # ─────────────────────────────────────────────
+      # 3. Clone des sous-repos MIAGE-Bank + build JARs
+      #    Les micro-services vivent dans des dépôts
+      #    git séparés (hialmar/amc_*) ; on les clone
+      #    si absents du checkout.
+      # ─────────────────────────────────────────────
+      - name: Clone sub-repos & build JARs (Maven)
+        run: |
+          cd src/AMSC
+          for repo in amc_clients amc_comptes amc_composite \
+                      amc_annuaire amc_proxy amc_configserver; do
+            if [ ! -f "$repo/pom.xml" ]; then
+              echo ">> Clonage de $repo..."
+              rm -rf "$repo"   # supprime le dossier vide (gitlink) si présent
+              git clone --depth 1 "https://github.com/hialmar/${repo}.git" "$repo"
+            fi
+          done
+          mvn -DskipTests -q clean package
+          echo ">> JARs produits :"
+          find . -path '*/target/*.jar' ! -name '*.original' | sort
+
+      # ─────────────────────────────────────────────
+      # 4. Hadolint — lint du Containerfile
+      #    Première gate : un Containerfile invalide
+      #    interrompt la chaîne immédiatement.
+      # ─────────────────────────────────────────────
+      - name: Lint Containerfile (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Partie A/01-image-build/Containerfile
+
+      # ─────────────────────────────────────────────
+      # 5. Installation de Buildah (daemonless build)
+      # ─────────────────────────────────────────────
+      - name: Install Buildah
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y buildah
+
+      # ─────────────────────────────────────────────
+      # 6. Build des images OCI avec Buildah
+      #    (approche Containerfile — tous les services)
+      # ─────────────────────────────────────────────
+      - name: Build images (Buildah)
+        run: |
+          chmod +x ci-scripts/build-images.sh
+          ./ci-scripts/build-images.sh v1
+
+      # ─────────────────────────────────────────────
+      # 7. Installation de Trivy
+      # ─────────────────────────────────────────────
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sudo sh -s -- -b /usr/local/bin
+
+      # ─────────────────────────────────────────────
+      # 8. Scan de sécurité Trivy
+      #    Gate CRITICAL documentée (Spring Boot 3.2.3
+      #    contient des CVE non corrigées — voir README
+      #    02-security-scan). continue-on-error permet
+      #    de produire et d'exporter tous les rapports.
+      # ─────────────────────────────────────────────
+      - name: Scan Trivy (HIGH + CRITICAL)
+        run: |
+          chmod +x ci-scripts/scan-trivy.sh
+          mkdir -p build-reports
+          REPORTS_DIR=build-reports ./ci-scripts/scan-trivy.sh v1
+        continue-on-error: true   # gate CRITICAL documentée — voir README A.3
+
+      # ─────────────────────────────────────────────
+      # 9. Upload SARIF → GitHub Security
+      #    Visible dans l'onglet Security > Code scanning
+      # ─────────────────────────────────────────────
+      - name: Upload SARIF (GitHub Security)
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: build-reports/
+        continue-on-error: true   # le dépôt cible peut ne pas avoir GH Advanced Security
+
+      # ─────────────────────────────────────────────
+      # 10. Installation de Dive (v0.12.0)
+      # ─────────────────────────────────────────────
+      - name: Install Dive
+        run: |
+          wget -q "https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb"
+          sudo dpkg -i dive_0.12.0_linux_amd64.deb
+          dive --version
+
+      # ─────────────────────────────────────────────
+      # 11. Audit des layers avec Dive (mode CI)
+      #     Seuils : efficacité ≥ 95 %, gaspillage
+      #     ≤ 20 Mo et ≤ 10 % (ci-scripts/.dive-ci)
+      # ─────────────────────────────────────────────
+      - name: Audit Dive (layers)
+        run: |
+          chmod +x ci-scripts/audit-dive.sh
+          REPORTS_DIR=build-reports ./ci-scripts/audit-dive.sh v1
+
+      # ─────────────────────────────────────────────
+      # 12. Export des rapports en artefact téléchargeable
+      # ─────────────────────────────────────────────
+      - name: Upload build-reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-reports-${{ github.run_number }}
+          path: build-reports/
+          retention-days: 30
