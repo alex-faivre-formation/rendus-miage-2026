@@ -36,13 +36,13 @@ jobs:
           cache: 'maven'
 
       - name: Compilation avec Maven
-        run: mvn -f "${{ matrix.service }}/pom.xml" clean package -DskipTests
+        run: mvn -f "tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/${{ matrix.service }}/pom.xml" clean package -DskipTests
 
       - name: Linting du Containerfile avec Hadolint
         # Obligatoire pour le bonus
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: ${{ matrix.service }}/Containerfile
+          dockerfile: tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/${{ matrix.service }}/Containerfile
 
       # --- AJOUT CRUCIAL ICI ---
       - name: Préparation du répertoire des rapports
@@ -55,7 +55,7 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
           
           # Construction sans démon Docker
-          buildah bud -f ${{ matrix.service }}/Containerfile -t $IMAGE_NAME:latest ${{ matrix.service }}/
+          buildah bud -f tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/${{ matrix.service }}/Containerfile -t $IMAGE_NAME:latest tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/${{ matrix.service }}/
           
           # Export de l'image en archive tar locale pour analyse
           buildah push --remove-signatures "$IMAGE_NAME:latest" docker-archive:"build-reports/$IMAGE_NAME.tar"
