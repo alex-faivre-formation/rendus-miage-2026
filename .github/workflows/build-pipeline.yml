@@ -69,7 +69,7 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL'
-          ignorefile: 'tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/.trivyignore'
+          trivyignores: 'tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/.trivyignore'
 
       - name: Génération des rapports Trivy (JSON)
         # S'exécute uniquement si l'étape précédente (la gate) a réussi
