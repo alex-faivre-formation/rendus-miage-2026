@@ -1,0 +1,14 @@
+{{- /*
+  configmap.yaml - configuration non sensible commune.
+  Les données sensibles (identifiants BDD) passent par Vault + ESO.
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: miage-bank-config
+  namespace: {{ .Values.global.namespace }}
+data:
+  # Variables d'exemple (ce ConfigMap illustre le mécanisme ; il n'est pas monté
+  # dans les pods, la config applicative venant du config server)
+  APP_ENV: "dev"         # profil d'environnement
+  LOG_LEVEL: "INFO"      # niveau de log par défaut

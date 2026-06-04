@@ -1,0 +1,43 @@
+# =============================================================================
+#  argocd/application.yaml — Application ArgoCD pour MIAGE-Bank
+# -----------------------------------------------------------------------------
+#  Déploie le chart Helm miage-bank/ depuis le dépôt Git, branche main, en
+#  synchronisation automatique
+#
+#  Commande pour déployer ArgoCD : kubectl apply -f argocd/application.yaml
+# =============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: miage-bank
+  namespace: argocd
+  # suppression des ressources en cascade
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  # source de l'application (git)
+  source:
+    repoURL: https://github.com/llluuu02/miage-bank-devops.git
+    targetRevision: main
+    path: miage-bank
+    helm:
+      valueFiles:
+        - values.yaml
+
+  # destination (minikube)
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: miage-bank
+
+  # Paramètres de synchronisation
+  syncPolicy:
+    automated:
+      # suppression des ressources retirées du Git
+      prune: true
+      # re-déploiement si dérive manuelle détectée
+      selfHeal: true
+    # création namespace
+    syncOptions:
+      - CreateNamespace=true

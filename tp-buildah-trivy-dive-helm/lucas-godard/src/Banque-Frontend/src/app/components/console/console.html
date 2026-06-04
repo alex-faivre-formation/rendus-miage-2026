@@ -1,0 +1,38 @@
+<aside class="console">
+  <div class="resp">
+    <div class="head">
+      @if (response(); as res) {
+        <span class="chip" [class.get]="res.method === 'GET'" [class.post]="res.method === 'POST'">{{ res.method }}</span>
+        <span class="code" [class.s2]="!res.isErr" [class.serr]="res.isErr">{{ res.status }}</span>
+        <span class="ms">{{ res.ms }} ms</span>
+        <span class="url">{{ res.url }}</span>
+      } @else {
+        <span class="chip get">—</span>
+        <span class="code">en attente</span>
+        <span class="url">Lance une requête pour voir la réponse ici.</span>
+      }
+    </div>
+    <pre class="body">
+      @if (formattedJson()) {
+        <span [innerHTML]="formattedJson() | jsonHighlighter"></span>
+      } @else {
+        <span class="placeholder">// La réponse s'affichera ici.</span>
+      }
+    </pre>
+  </div>
+
+  <div class="log">
+    <h3>Journal des appels</h3>
+    <div id="logrows">
+      @for (log of logs(); track $index) {
+        <div class="row">
+          <span class="m" [class.get]="log.method === 'GET'" [class.post]="log.method === 'POST'">{{ log.method }}</span>
+          <span class="p">{{ log.path }}</span>
+          <span class="c" [class.ok]="log.ok" [class.err]="!log.ok">{{ log.status }}</span>
+        </div>
+      } @empty {
+        <div class="empty">aucun appel pour l'instant</div>
+      }
+    </div>
+  </div>
+</aside>

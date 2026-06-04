@@ -1,0 +1,25 @@
+  Using default CI config
+[1mImage Source: [0mdocker-archive://images/containerfile-version/frontend.tar
+[1mFetching image...[0m (this can take a while for large images)
+[1mAnalyzing image...[0m
+  efficiency: 99.3821 %
+  wastedBytes: 626375 bytes (626 kB)
+  userWastedPercent: 1.1574 %
+[1mInefficient Files:[0m
+Count  Wasted Space  File Path
+    2        436 kB  /etc/ssl/certs/ca-certificates.crt
+    3        165 kB  /lib/apk/db/installed
+    2         11 kB  /var/log/apk.log
+    3        7.7 kB  /lib/apk/db/scripts.tar.gz
+    2        2.6 kB  /usr/share/nginx/html/index.html
+    2        1.5 kB  /etc/passwd
+    2        1.0 kB  /etc/group
+    3         701 B  /etc/apk/world
+    2         547 B  /etc/shadow
+    3         471 B  /lib/apk/db/triggers
+[1mResults:[0m
+  PASS: highestUserWastedPercent
+  PASS: highestWastedBytes
+  PASS: lowestEfficiency
+[32mResult:PASS [Total:3] [Passed:3] [Failed:0] [Warn:0] [Skipped:0][0m
+

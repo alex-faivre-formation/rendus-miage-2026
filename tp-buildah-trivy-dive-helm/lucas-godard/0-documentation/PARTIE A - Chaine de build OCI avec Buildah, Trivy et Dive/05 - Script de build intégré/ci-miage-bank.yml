@@ -1,0 +1,104 @@
+name: CI MIAGE-Bank - OCI Build & Audit
+
+# CI déclenché sur la branche main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# permissions pour pousser les images GHCR
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-audit:
+    name: Build & Audit - ${{ matrix.module }}
+    runs-on: ubuntu-22.04
+
+    strategy:
+      # un échec n'annule pas le build des autres
+      fail-fast: false
+      # matrice qui permet de loop sur tous les micro-services
+      matrix:
+        module:
+          - Banque-APIGateway
+          - Banque-Annuaire
+          - Banque-ClientService
+          - Banque-CompteService
+          - Banque-CompositeService
+          - Banque-ConfigServer
+          - Banque-Frontend
+
+    # étapes de la CI pour chaque élément de la matrice
+    steps:
+      # récupération du dépot dans le runner pour avoir les micro-services et scripts
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      # création des dossiers pour exporter les rapports trivy et dive
+      - name: Préparation de l'environnement
+        run: |
+          mkdir -p build-reports/${{ matrix.module }}
+          chmod +x scripts/*.sh
+
+      # transformation des noms d'image pour helm et exportation des images dans GITHUB_ENV
+      - name: Calcul des noms d'image
+        run: |
+          NAME="$(echo "${{ matrix.module }}" | sed 's/Banque-//' | tr '[:upper:]' '[:lower:]')"
+          OWNER="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          echo "NAME=${NAME}"                                              >> "$GITHUB_ENV"
+          echo "LOCAL_IMAGE=localhost/miage-bank/${NAME}:7.0"              >> "$GITHUB_ENV"
+          echo "GHCR_IMAGE=ghcr.io/${OWNER}/miage-bank-devops-partie-a/${NAME}:7.0" >> "$GITHUB_ENV"
+
+      # vérification des bonnes pratiques du Containerfile
+      - name: Lint du Containerfile avec Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ matrix.module == 'Banque-Frontend' && 'src/Banque-Frontend/Containerfile' || 'src/Containerfile' }}
+
+      # build des images et exportation en local pour les scans trivy et dive
+      - name: Build de l'image avec Buildah
+        run: ./scripts/build-buildah.sh ${{ matrix.module }}
+
+      # installation trivy (script officiel) et dive (.deb de la release)
+      - name: Installation des outils d'audit (Trivy & Dive)
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+          wget -qO dive.deb https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb
+          sudo dpkg -i dive.deb
+
+      # scan complet avec exportation automatique dans build-reports/trivy/
+      - name: Génération des rapports Trivy
+        run: ./scripts/scan-trivy.sh images/containerfile-version/${NAME}.tar
+
+      # gate trivy non-bloquant
+      - name: Gate de Sécurité Trivy
+        run: trivy image --input images/containerfile-version/${NAME}.tar --severity CRITICAL --ignore-unfixed --exit-code 0 --no-progress
+
+      # audit dive avec exportation automatique dans build-reports/dive/
+      - name: Audit des layers avec Dive
+        run: ./scripts/audit-dive.sh images/containerfile-version/${NAME}.tar
+
+      # connexion au ghcr pour la publication des images
+      - name: Connexion à GHCR
+        if: github.event_name == 'push'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | buildah login -u ${{ github.actor }} --password-stdin ghcr.io
+
+      # push de l'image sur ghcr pour la partie B du projet
+      - name: Tag + Push de l'image vers GHCR
+        if: github.event_name == 'push'
+        run: |
+          buildah tag "${LOCAL_IMAGE}" "${GHCR_IMAGE}"
+          buildah push "${GHCR_IMAGE}"
+          echo "Image publiée : ${GHCR_IMAGE}"
+
+      # export en artifact github des rapports trivy et dive
+      - name: Export des rapports (Artifacts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ matrix.module }}
+          path: build-reports/
+          retention-days: 7

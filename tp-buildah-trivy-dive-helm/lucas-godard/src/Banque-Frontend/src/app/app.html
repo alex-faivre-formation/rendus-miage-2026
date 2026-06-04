@@ -1,0 +1,18 @@
+<div class="wrap">
+  <app-header></app-header>
+
+  <div class="grid">
+    <div class="ops">
+      <app-operation-card index="01" title="Service Clients" type="MySQL" [operations]="clientOperations"></app-operation-card>
+      <app-operation-card index="02" title="Service Comptes" type="MongoDB" [operations]="compteOperations"></app-operation-card>
+      <app-operation-card index="03" title="Service Composite" type="agrégation" [operations]="compositeOperations"></app-operation-card>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; padding-left:2px">
+        <button (click)="seedData()">⚡ Jeu de données démo</button>
+        <button class="ghost" (click)="clearConsole()">Effacer la console</button>
+      </div>
+    </div>
+
+    <app-console></app-console>
+  </div>
+</div>

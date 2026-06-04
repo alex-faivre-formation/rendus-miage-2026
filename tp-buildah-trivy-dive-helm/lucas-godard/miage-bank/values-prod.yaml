@@ -1,0 +1,41 @@
+# =============================================================================
+#  values-prod.yaml — Values pour MIAGE-Bank
+# -----------------------------------------------------------------------------
+#  Commande :
+#     helm install miage-bank ./miage-bank \
+#       -n miage-bank --create-namespace \
+#       -f miage-bank/values.yaml -f miage-bank/values-prod.yaml
+#
+#  Ce fichier a un rôle de surcharge du values.yaml pour la production
+# =============================================================================
+
+global:
+  # Domaine exposé via l'Ingress Traefik
+  domain: bank.miage-prod.fr
+
+# En production, on monte les répliques des services exposés pour la disponibilité
+# Nous montons les limites de mémoire et de cpu pour des raisons de performances
+microservices:
+  apigateway:
+    replicas: 3
+    resources:
+      requests: { memory: "512Mi", cpu: "250m" }
+      limits:   { memory: "1Gi",   cpu: "1000m" }
+
+  clientservice:
+    replicas: 2
+    resources:
+      requests: { memory: "512Mi", cpu: "250m" }
+      limits:   { memory: "1Gi",   cpu: "1000m" }
+
+  compteservice:
+    replicas: 2
+    resources:
+      requests: { memory: "512Mi", cpu: "250m" }
+      limits:   { memory: "1Gi",   cpu: "1000m" }
+
+  compositeservice:
+    replicas: 2
+    resources:
+      requests: { memory: "512Mi", cpu: "250m" }
+      limits:   { memory: "1Gi",   cpu: "1000m" }

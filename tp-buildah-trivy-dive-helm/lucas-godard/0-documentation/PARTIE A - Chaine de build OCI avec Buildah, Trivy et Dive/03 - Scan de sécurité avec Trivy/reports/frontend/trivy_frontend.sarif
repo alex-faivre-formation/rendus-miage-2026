@@ -1,0 +1,85 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Trivy Vulnerability Scanner",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
+          "rules": [
+            {
+              "id": "CVE-2026-6732",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libxml2: libxml2: Denial of Service via crafted XSD-validated document"
+              },
+              "fullDescription": {
+                "text": "A flaw was found in libxml2. This vulnerability occurs when the library processes a specially crafted XML Schema Definition (XSD) validated document that includes an internal entity reference. An attacker could exploit this by providing a malicious document, leading to a type confusion error that causes the application to crash. This results in a denial of service (DoS), making the affected system or application unavailable."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-6732",
+              "help": {
+                "text": "Vulnerability CVE-2026-6732\nSeverity: HIGH\nPackage: libxml2\nFixed Version: 2.13.9-r1\nLink: [CVE-2026-6732](https://avd.aquasec.com/nvd/cve-2026-6732)\nA flaw was found in libxml2. This vulnerability occurs when the library processes a specially crafted XML Schema Definition (XSD) validated document that includes an internal entity reference. An attacker could exploit this by providing a malicious document, leading to a type confusion error that causes the application to crash. This results in a denial of service (DoS), making the affected system or application unavailable.",
+                "markdown": "**Vulnerability CVE-2026-6732**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libxml2|2.13.9-r1|[CVE-2026-6732](https://avd.aquasec.com/nvd/cve-2026-6732)|\n\nA flaw was found in libxml2. This vulnerability occurs when the library processes a specially crafted XML Schema Definition (XSD) validated document that includes an internal entity reference. An attacker could exploit this by providing a malicious document, leading to a type confusion error that causes the application to crash. This results in a denial of service (DoS), making the affected system or application unavailable."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            }
+          ],
+          "version": "0.71.0"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2026-6732",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Package: libxml2\nInstalled Version: 2.13.9-r0\nVulnerability CVE-2026-6732\nSeverity: HIGH\nFixed Version: 2.13.9-r1\nLink: [CVE-2026-6732](https://avd.aquasec.com/nvd/cve-2026-6732)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/frontend.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/frontend.tar: libxml2@2.13.9-r0"
+              }
+            }
+          ]
+        }
+      ],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "imageID": "sha256:ad9a34dfed4648dd0becf4171dc5e5e9220eb94d9956e5fa7a82c6c2d8fb40e6",
+        "imageName": "build-reports/frontend.tar",
+        "repoDigests": null,
+        "repoTags": [
+          "localhost/miage-bank/frontend:7.0"
+        ]
+      }
+    }
+  ]
+}
