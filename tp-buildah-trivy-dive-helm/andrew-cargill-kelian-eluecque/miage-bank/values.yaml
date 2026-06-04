@@ -1,0 +1,121 @@
+# Configuration globale du Chart
+global:
+  serviceAccountName: "miage-bank-sa"
+
+# Dictionnaire regroupant la configuration de tous nos micro-services
+microservices:
+  annuaire:
+    image: "localhost/banque-annuaire"
+    tag: "latest"
+    port: 10001
+    replicas: 1
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+    probes:
+      livenessPath: "/actuator/health/liveness"
+      readinessPath: "/actuator/health/readiness"
+
+  configserver:
+    image: "localhost/banque-configserver"
+    tag: "latest"
+    port: 10003 # Port personnalisé selon votre configuration
+    replicas: 1
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+    probes:
+      livenessPath: "/actuator/health/liveness"
+      readinessPath: "/actuator/health/readiness"
+
+  apigateway:
+    image: "localhost/banque-apigateway"
+    tag: "latest"
+    port: 10000
+    replicas: 1
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+    probes:
+      livenessPath: "/actuator/health/liveness"
+      readinessPath: "/actuator/health/readiness"
+
+  clientservice:
+    image: "localhost/banque-clientservice"
+    tag: "latest"
+    port: 8080
+    replicas: 1
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+    probes:
+      livenessPath: "/actuator/health/liveness"
+      readinessPath: "/actuator/health/readiness"
+
+  compteservice:
+    image: "localhost/banque-compteservice"
+    tag: "latest"
+    port: 10021
+    replicas: 1
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+    probes:
+      livenessPath: "/actuator/health/liveness"
+      readinessPath: "/actuator/health/readiness"
+
+  compositeservice:
+    image: "localhost/banque-compositeservice"
+    tag: "latest"
+    port: 10031
+    replicas: 1
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+    probes:
+      livenessPath: "/actuator/health/liveness"
+      readinessPath: "/actuator/health/readiness"
+
+# Configuration de l'exposition via Traefik
+ingress:
+  enabled: true
+  className: "nginx"
+  host: "miage-bank.local"
+  tls:
+    enabled: true
+    secretName: "miage-bank-tls-cert"
+
+# Activation des politiques réseau
+networkPolicy:
+  enabled: true
+
+# Configuration de la gestion des secrets via Vault & ESO
+vault:
+  enabled: true
+  server: "http://vault.default.svc.cluster.local:8200" # À adapter selon l'IP de votre Vault
+  authPath: "kubernetes"                                # Méthode d'authentification K8s
+  secretPath: "miage-bank/database"                     # Le chemin de vos secrets dans Vault

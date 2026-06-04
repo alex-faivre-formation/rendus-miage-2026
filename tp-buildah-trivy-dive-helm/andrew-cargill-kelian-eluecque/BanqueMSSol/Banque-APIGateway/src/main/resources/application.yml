@@ -1,0 +1,11 @@
+# Proprietes de l'application
+spring:
+  application:
+    name: apigateway                                   # nom de l'application
+  profiles:
+    active: dev
+  config:
+    # On rend l'adresse dynamique :
+    # 1. Lit la variable injectée par le script Bash (SPRING_CLOUD_CONFIG_URI)
+    # 2. Si elle est absente (ex: Docker Compose), utilise le nom par défaut.
+    import: optional:configserver:${SPRING_CLOUD_CONFIG_URI:http://banque-configserver:10003}

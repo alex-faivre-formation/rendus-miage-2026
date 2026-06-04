@@ -1,0 +1,25 @@
+# --- Image Runtime (Uniquement) ---
+FROM docker.io/library/eclipse-temurin:17-jre
+WORKDIR /app
+
+# Remédiation des failles OS sur l'image finale (Crucial pour Trivy)
+USER root
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Création de l'utilisateur non-root pour la sécurité
+RUN groupadd -r miage && useradd -r -g miage miage
+
+# On copie DIRECTEMENT le .jar généré localement par ton script Bash
+COPY target/banque-compteservice-0.7.jar app.jar
+RUN chown miage:miage app.jar
+
+# Basculement vers l'utilisateur limité
+USER miage
+
+# Le port utilisé par le compte service (vu dans tes logs Eureka)
+EXPOSE 10021
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

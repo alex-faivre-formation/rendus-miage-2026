@@ -1,0 +1,59 @@
+{{- if .Values.networkPolicy.enabled }}
+
+# 1. Règle "Default Deny All" pour le namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector: {} # Un sélecteur vide s'applique à TOUS les pods du namespace
+  policyTypes:
+    - Ingress
+  # L'absence de section "ingress:" signifie que TOUT est refusé en entrée
+
+---
+
+# 2. Règle "Allow Intra-Namespace" (Communication entre micro-services)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internal-traffic
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {} # Autorise le trafic provenant de n'importe quel pod de CE namespace
+
+---
+
+# 3. Règle "Allow Traefik" (Ouverture vers l'API Gateway)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-traefik-to-apigateway
+  namespace: {{ .Release.Namespace }}
+spec:
+  # Cette règle ne s'applique QU'AU pod de l'API Gateway
+  podSelector:
+    matchLabels:
+      app: apigateway
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        # On autorise le trafic provenant des namespaces ayant le label Traefik/Ingress
+        # (À adapter selon la configuration exacte de votre Minikube)
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values: ["kube-system", "traefik", "ingress-nginx"]
+      ports:
+        - protocol: TCP
+          port: {{ .Values.microservices.apigateway.port }}
+
+{{- end }}
