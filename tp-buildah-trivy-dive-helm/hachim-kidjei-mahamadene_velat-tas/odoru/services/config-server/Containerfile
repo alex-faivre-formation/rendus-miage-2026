@@ -1,0 +1,20 @@
+FROM docker.io/eclipse-temurin:17-jre-alpine
+
+LABEL org.opencontainers.image.title="odoru-config-server"
+LABEL org.opencontainers.image.description="Odoru Spring Cloud Config Server"
+LABEL org.opencontainers.image.version="1.0.0"
+
+WORKDIR /app
+
+RUN addgroup -S odoru && adduser -S odoru -G odoru
+
+COPY services/config-server/target/*.jar app.jar
+COPY infrastructure/config-repo /config-repo
+
+RUN chown -R odoru:odoru /app /config-repo
+
+USER odoru
+
+EXPOSE 8888
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

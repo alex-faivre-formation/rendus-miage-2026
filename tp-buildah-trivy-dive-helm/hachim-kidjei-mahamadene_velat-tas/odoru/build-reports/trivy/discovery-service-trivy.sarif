@@ -1,0 +1,1267 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Trivy Vulnerability Scanner",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
+          "rules": [
+            {
+              "id": "CVE-2024-47072",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "com.thoughtworks.xstream: XStream is vulnerable to a Denial of Service attack due to stack overflow from a manipulated binary input stream"
+              },
+              "fullDescription": {
+                "text": "XStream is a simple library to serialize objects to XML and back again. This vulnerability may allow a remote attacker to terminate the application with a stack overflow error resulting in a denial of service only by manipulating the processed input stream when XStream is configured to use the BinaryStreamDriver. XStream 1.4.21 has been patched to detect the manipulation in the binary input stream causing the the stack overflow and raises an InputManipulationException instead. Users are advised to upgrade. Users unable to upgrade may catch the StackOverflowError in the client code calling XStream if XStream is configured to use the BinaryStreamDriver."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2024-47072",
+              "help": {
+                "text": "Vulnerability CVE-2024-47072\nSeverity: HIGH\nPackage: com.thoughtworks.xstream:xstream\nFixed Version: 1.4.21\nLink: [CVE-2024-47072](https://avd.aquasec.com/nvd/cve-2024-47072)\nXStream is a simple library to serialize objects to XML and back again. This vulnerability may allow a remote attacker to terminate the application with a stack overflow error resulting in a denial of service only by manipulating the processed input stream when XStream is configured to use the BinaryStreamDriver. XStream 1.4.21 has been patched to detect the manipulation in the binary input stream causing the the stack overflow and raises an InputManipulationException instead. Users are advised to upgrade. Users unable to upgrade may catch the StackOverflowError in the client code calling XStream if XStream is configured to use the BinaryStreamDriver.",
+                "markdown": "**Vulnerability CVE-2024-47072**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|com.thoughtworks.xstream:xstream|1.4.21|[CVE-2024-47072](https://avd.aquasec.com/nvd/cve-2024-47072)|\n\nXStream is a simple library to serialize objects to XML and back again. This vulnerability may allow a remote attacker to terminate the application with a stack overflow error resulting in a denial of service only by manipulating the processed input stream when XStream is configured to use the BinaryStreamDriver. XStream 1.4.21 has been patched to detect the manipulation in the binary input stream causing the the stack overflow and raises an InputManipulationException instead. Users are advised to upgrade. Users unable to upgrade may catch the StackOverflowError in the client code calling XStream if XStream is configured to use the BinaryStreamDriver."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "cvssv40_baseScore": 7.7,
+                "cvssv40_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/E:P",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-27820",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "org.apache.httpcomponents.client5/httpclient5: Apache HttpComponents: PSL (Public Suffix List) validation bypass"
+              },
+              "fullDescription": {
+                "text": "A bug in PSL validation logic in Apache HttpClient 5.4.x disables domain checks, affecting cookie management and host name verification. Discovered by the Apache HttpClient team. Fixed in the 5.4.3 release"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-27820",
+              "help": {
+                "text": "Vulnerability CVE-2025-27820\nSeverity: HIGH\nPackage: org.apache.httpcomponents.client5:httpclient5\nFixed Version: 5.4.3\nLink: [CVE-2025-27820](https://avd.aquasec.com/nvd/cve-2025-27820)\nA bug in PSL validation logic in Apache HttpClient 5.4.x disables domain checks, affecting cookie management and host name verification. Discovered by the Apache HttpClient team. Fixed in the 5.4.3 release",
+                "markdown": "**Vulnerability CVE-2025-27820**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.httpcomponents.client5:httpclient5|5.4.3|[CVE-2025-27820](https://avd.aquasec.com/nvd/cve-2025-27820)|\n\nA bug in PSL validation logic in Apache HttpClient 5.4.x disables domain checks, affecting cookie management and host name verification. Discovered by the Apache HttpClient team. Fixed in the 5.4.3 release"
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-41293",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Improper Input Validation vulnerability in Apache Tomcat.  This issue  ..."
+              },
+              "fullDescription": {
+                "text": "Improper Input Validation vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 10.0.0-M1 through 10.0.27.\nOlder, end of support versions may also be affected.\n\nUsers are recommended to upgrade to version [FIXED_VERSION], which fixes the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-41293",
+              "help": {
+                "text": "Vulnerability CVE-2026-41293\nSeverity: CRITICAL\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-41293](https://avd.aquasec.com/nvd/cve-2026-41293)\nImproper Input Validation vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 10.0.0-M1 through 10.0.27.\nOlder, end of support versions may also be affected.\n\nUsers are recommended to upgrade to version [FIXED_VERSION], which fixes the issue.",
+                "markdown": "**Vulnerability CVE-2026-41293**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|org.apache.tomcat.embed:tomcat-embed-core|9.0.118, 10.1.55, 11.0.22|[CVE-2026-41293](https://avd.aquasec.com/nvd/cve-2026-41293)|\n\nImproper Input Validation vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 10.0.0-M1 through 10.0.27.\nOlder, end of support versions may also be affected.\n\nUsers are recommended to upgrade to version [FIXED_VERSION], which fixes the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 9.8,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-43512",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "tomcat-coyote: Apache Tomcat: Authentication bypass via digest authentication"
+              },
+              "fullDescription": {
+                "text": "DEPRECATED: Authentication Bypass Issues vulnerability in digest authentication in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from before 7.0.0.\nOlder unsupported versions any also be affect\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-43512",
+              "help": {
+                "text": "Vulnerability CVE-2026-43512\nSeverity: CRITICAL\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-43512](https://avd.aquasec.com/nvd/cve-2026-43512)\nDEPRECATED: Authentication Bypass Issues vulnerability in digest authentication in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from before 7.0.0.\nOlder unsupported versions any also be affect\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue.",
+                "markdown": "**Vulnerability CVE-2026-43512**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|org.apache.tomcat.embed:tomcat-embed-core|9.0.118, 10.1.55, 11.0.22|[CVE-2026-43512](https://avd.aquasec.com/nvd/cve-2026-43512)|\n\nDEPRECATED: Authentication Bypass Issues vulnerability in digest authentication in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from before 7.0.0.\nOlder unsupported versions any also be affect\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 9.8,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-43515",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Improper Authorization vulnerability when multiple method constraints  ..."
+              },
+              "fullDescription": {
+                "text": "Improper Authorization vulnerability when multiple method constraints define an HTTP method for the same extension in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-43515",
+              "help": {
+                "text": "Vulnerability CVE-2026-43515\nSeverity: CRITICAL\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-43515](https://avd.aquasec.com/nvd/cve-2026-43515)\nImproper Authorization vulnerability when multiple method constraints define an HTTP method for the same extension in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue.",
+                "markdown": "**Vulnerability CVE-2026-43515**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|org.apache.tomcat.embed:tomcat-embed-core|9.0.118, 10.1.55, 11.0.22|[CVE-2026-43515](https://avd.aquasec.com/nvd/cve-2026-43515)|\n\nImproper Authorization vulnerability when multiple method constraints define an HTTP method for the same extension in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 9.1,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+                "precision": "very-high",
+                "security-severity": "9.1",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-48988",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "tomcat: Apache Tomcat DoS in multipart upload"
+              },
+              "fullDescription": {
+                "text": "Allocation of Resources Without Limits or Throttling vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.7, from 10.1.0-M1 through 10.1.41, from 9.0.0.M1 through 9.0.105.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 though 8.5.100. Other, older, EOL versions \nmay also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.8, 10.1.42 or 9.0.106, which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-48988",
+              "help": {
+                "text": "Vulnerability CVE-2025-48988\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 11.0.8, 10.1.42, 9.0.106\nLink: [CVE-2025-48988](https://avd.aquasec.com/nvd/cve-2025-48988)\nAllocation of Resources Without Limits or Throttling vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.7, from 10.1.0-M1 through 10.1.41, from 9.0.0.M1 through 9.0.105.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 though 8.5.100. Other, older, EOL versions \nmay also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.8, 10.1.42 or 9.0.106, which fix the issue.",
+                "markdown": "**Vulnerability CVE-2025-48988**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|11.0.8, 10.1.42, 9.0.106|[CVE-2025-48988](https://avd.aquasec.com/nvd/cve-2025-48988)|\n\nAllocation of Resources Without Limits or Throttling vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.7, from 10.1.0-M1 through 10.1.41, from 9.0.0.M1 through 9.0.105.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 though 8.5.100. Other, older, EOL versions \nmay also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.8, 10.1.42 or 9.0.106, which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "cvssv40_baseScore": 8.7,
+                "cvssv40_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-48989",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "tomcat: http/2 \"MadeYouReset\" DoS attack through HTTP/2 control frames"
+              },
+              "fullDescription": {
+                "text": "Improper Resource Shutdown or Release vulnerability in Apache Tomcat made Tomcat vulnerable to the made you reset attack.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.9, from 10.1.0-M1 through 10.1.43 and from 9.0.0.M1 through 9.0.107. Older, EOL versions may also be affected.\n\nUsers are recommended to upgrade to one of versions 11.0.10, 10.1.44 or 9.0.108 which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-48989",
+              "help": {
+                "text": "Vulnerability CVE-2025-48989\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 11.0.10, 10.1.44, 9.0.108\nLink: [CVE-2025-48989](https://avd.aquasec.com/nvd/cve-2025-48989)\nImproper Resource Shutdown or Release vulnerability in Apache Tomcat made Tomcat vulnerable to the made you reset attack.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.9, from 10.1.0-M1 through 10.1.43 and from 9.0.0.M1 through 9.0.107. Older, EOL versions may also be affected.\n\nUsers are recommended to upgrade to one of versions 11.0.10, 10.1.44 or 9.0.108 which fix the issue.",
+                "markdown": "**Vulnerability CVE-2025-48989**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|11.0.10, 10.1.44, 9.0.108|[CVE-2025-48989](https://avd.aquasec.com/nvd/cve-2025-48989)|\n\nImproper Resource Shutdown or Release vulnerability in Apache Tomcat made Tomcat vulnerable to the made you reset attack.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.9, from 10.1.0-M1 through 10.1.43 and from 9.0.0.M1 through 9.0.107. Older, EOL versions may also be affected.\n\nUsers are recommended to upgrade to one of versions 11.0.10, 10.1.44 or 9.0.108 which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-52520",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "tomcat: Apache Tomcat denial of service"
+              },
+              "fullDescription": {
+                "text": "For some unlikely configurations of multipart upload, an Integer Overflow vulnerability in Apache Tomcat could lead to a DoS via bypassing of size limits.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.8, from 10.1.0-M1 through 10.1.42, from 9.0.0.M1 through 9.0.106.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 through 8.5.100. Other, older, EOL versions \nmay also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.9, 10.1.43 or 9.0.107, which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-52520",
+              "help": {
+                "text": "Vulnerability CVE-2025-52520\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 11.0.9, 10.1.43, 9.0.107\nLink: [CVE-2025-52520](https://avd.aquasec.com/nvd/cve-2025-52520)\nFor some unlikely configurations of multipart upload, an Integer Overflow vulnerability in Apache Tomcat could lead to a DoS via bypassing of size limits.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.8, from 10.1.0-M1 through 10.1.42, from 9.0.0.M1 through 9.0.106.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 through 8.5.100. Other, older, EOL versions \nmay also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.9, 10.1.43 or 9.0.107, which fix the issue.",
+                "markdown": "**Vulnerability CVE-2025-52520**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|11.0.9, 10.1.43, 9.0.107|[CVE-2025-52520](https://avd.aquasec.com/nvd/cve-2025-52520)|\n\nFor some unlikely configurations of multipart upload, an Integer Overflow vulnerability in Apache Tomcat could lead to a DoS via bypassing of size limits.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.8, from 10.1.0-M1 through 10.1.42, from 9.0.0.M1 through 9.0.106.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 through 8.5.100. Other, older, EOL versions \nmay also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.9, 10.1.43 or 9.0.107, which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-53506",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "tomcat: Apache Tomcat denial of service"
+              },
+              "fullDescription": {
+                "text": "Uncontrolled Resource Consumption vulnerability in Apache Tomcat if an HTTP/2 client did not acknowledge the initial settings frame that reduces the maximum permitted concurrent streams.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.8, from 10.1.0-M1 through 10.1.42, from 9.0.0.M1 through 9.0.106.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 through 8.5.100. Other EOL versions may also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.9, 10.1.43 or 9.0.107, which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-53506",
+              "help": {
+                "text": "Vulnerability CVE-2025-53506\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.107, 10.1.43, 11.0.9\nLink: [CVE-2025-53506](https://avd.aquasec.com/nvd/cve-2025-53506)\nUncontrolled Resource Consumption vulnerability in Apache Tomcat if an HTTP/2 client did not acknowledge the initial settings frame that reduces the maximum permitted concurrent streams.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.8, from 10.1.0-M1 through 10.1.42, from 9.0.0.M1 through 9.0.106.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 through 8.5.100. Other EOL versions may also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.9, 10.1.43 or 9.0.107, which fix the issue.",
+                "markdown": "**Vulnerability CVE-2025-53506**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|9.0.107, 10.1.43, 11.0.9|[CVE-2025-53506](https://avd.aquasec.com/nvd/cve-2025-53506)|\n\nUncontrolled Resource Consumption vulnerability in Apache Tomcat if an HTTP/2 client did not acknowledge the initial settings frame that reduces the maximum permitted concurrent streams.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.8, from 10.1.0-M1 through 10.1.42, from 9.0.0.M1 through 9.0.106.\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.0 through 8.5.100. Other EOL versions may also be affected.\n\n\nUsers are recommended to upgrade to version 11.0.9, 10.1.43 or 9.0.107, which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-55752",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "tomcat: org.apache.tomcat/tomcat-catalina: Apache Tomcat: Directory traversal via rewrite with possible RCE"
+              },
+              "fullDescription": {
+                "text": "Relative Path Traversal vulnerability in Apache Tomcat.\n\nThe fix for bug 60013 introduced a regression where the       rewritten URL was normalized before it was decoded. This introduced the       possibility that, for rewrite rules that rewrite query parameters to the       URL, an attacker could manipulate the request URI to bypass security       constraints including the protection for /WEB-INF/ and /META-INF/. If PUT requests were also enabled then malicious files could be uploaded leading to remote code execution. PUT requests are normally limited to trusted users and it is considered unlikely that PUT requests would be enabled in conjunction with a rewrite that manipulated the URI.\n\n\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.10, from 10.1.0-M1 through 10.1.44, from 9.0.0.M11 through 9.0.108.\n\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.6 though 8.5.100. Other, older, EOL versions may also be affected.\nUsers are recommended to upgrade to version 11.0.11 or later, 10.1.45 or later or 9.0.109 or later, which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-55752",
+              "help": {
+                "text": "Vulnerability CVE-2025-55752\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 11.0.11, 10.1.45, 9.0.109\nLink: [CVE-2025-55752](https://avd.aquasec.com/nvd/cve-2025-55752)\nRelative Path Traversal vulnerability in Apache Tomcat.\n\nThe fix for bug 60013 introduced a regression where the       rewritten URL was normalized before it was decoded. This introduced the       possibility that, for rewrite rules that rewrite query parameters to the       URL, an attacker could manipulate the request URI to bypass security       constraints including the protection for /WEB-INF/ and /META-INF/. If PUT requests were also enabled then malicious files could be uploaded leading to remote code execution. PUT requests are normally limited to trusted users and it is considered unlikely that PUT requests would be enabled in conjunction with a rewrite that manipulated the URI.\n\n\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.10, from 10.1.0-M1 through 10.1.44, from 9.0.0.M11 through 9.0.108.\n\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.6 though 8.5.100. Other, older, EOL versions may also be affected.\nUsers are recommended to upgrade to version 11.0.11 or later, 10.1.45 or later or 9.0.109 or later, which fix the issue.",
+                "markdown": "**Vulnerability CVE-2025-55752**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|11.0.11, 10.1.45, 9.0.109|[CVE-2025-55752](https://avd.aquasec.com/nvd/cve-2025-55752)|\n\nRelative Path Traversal vulnerability in Apache Tomcat.\n\nThe fix for bug 60013 introduced a regression where the       rewritten URL was normalized before it was decoded. This introduced the       possibility that, for rewrite rules that rewrite query parameters to the       URL, an attacker could manipulate the request URI to bypass security       constraints including the protection for /WEB-INF/ and /META-INF/. If PUT requests were also enabled then malicious files could be uploaded leading to remote code execution. PUT requests are normally limited to trusted users and it is considered unlikely that PUT requests would be enabled in conjunction with a rewrite that manipulated the URI.\n\n\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.10, from 10.1.0-M1 through 10.1.44, from 9.0.0.M11 through 9.0.108.\n\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: 8.5.6 though 8.5.100. Other, older, EOL versions may also be affected.\nUsers are recommended to upgrade to version 11.0.11 or later, 10.1.45 or later or 9.0.109 or later, which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                "cvssv40_baseScore": 7.7,
+                "cvssv40_vector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-24734",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "tomcat: Apache Tomcat: Certificate revocation bypass due to improper OCSP response validation"
+              },
+              "fullDescription": {
+                "text": "Improper Input Validation vulnerability in Apache Tomcat Native, Apache Tomcat.\n\nWhen using an OCSP responder, Tomcat Native (and Tomcat's FFM port of the Tomcat Native code) did not complete verification or freshness checks on the OCSP response which could allow certificate revocation to be bypassed.\n\nThis issue affects Apache Tomcat Native:  from 1.3.0 through 1.3.4, from 2.0.0 through 2.0.11; Apache Tomcat: from 11.0.0-M1 through 11.0.17, from 10.1.0-M7 through 10.1.51, from 9.0.83 through 9.0.114.\n\n\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: from 1.1.23 through 1.1.34, from 1.2.0 through 1.2.39. Older EOL versions are not affected.\n\nApache Tomcat Native users are recommended to upgrade to versions 1.3.5 or later or 2.0.12 or later, which fix the issue.\n\nApache Tomcat users are recommended to upgrade to versions 11.0.18 or later, 10.1.52 or later or 9.0.115 or later which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-24734",
+              "help": {
+                "text": "Vulnerability CVE-2026-24734\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 11.0.18, 10.1.52, 9.0.115\nLink: [CVE-2026-24734](https://avd.aquasec.com/nvd/cve-2026-24734)\nImproper Input Validation vulnerability in Apache Tomcat Native, Apache Tomcat.\n\nWhen using an OCSP responder, Tomcat Native (and Tomcat's FFM port of the Tomcat Native code) did not complete verification or freshness checks on the OCSP response which could allow certificate revocation to be bypassed.\n\nThis issue affects Apache Tomcat Native:  from 1.3.0 through 1.3.4, from 2.0.0 through 2.0.11; Apache Tomcat: from 11.0.0-M1 through 11.0.17, from 10.1.0-M7 through 10.1.51, from 9.0.83 through 9.0.114.\n\n\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: from 1.1.23 through 1.1.34, from 1.2.0 through 1.2.39. Older EOL versions are not affected.\n\nApache Tomcat Native users are recommended to upgrade to versions 1.3.5 or later or 2.0.12 or later, which fix the issue.\n\nApache Tomcat users are recommended to upgrade to versions 11.0.18 or later, 10.1.52 or later or 9.0.115 or later which fix the issue.",
+                "markdown": "**Vulnerability CVE-2026-24734**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|11.0.18, 10.1.52, 9.0.115|[CVE-2026-24734](https://avd.aquasec.com/nvd/cve-2026-24734)|\n\nImproper Input Validation vulnerability in Apache Tomcat Native, Apache Tomcat.\n\nWhen using an OCSP responder, Tomcat Native (and Tomcat's FFM port of the Tomcat Native code) did not complete verification or freshness checks on the OCSP response which could allow certificate revocation to be bypassed.\n\nThis issue affects Apache Tomcat Native:  from 1.3.0 through 1.3.4, from 2.0.0 through 2.0.11; Apache Tomcat: from 11.0.0-M1 through 11.0.17, from 10.1.0-M7 through 10.1.51, from 9.0.83 through 9.0.114.\n\n\nThe following versions were EOL at the time the CVE was created but are \nknown to be affected: from 1.1.23 through 1.1.34, from 1.2.0 through 1.2.39. Older EOL versions are not affected.\n\nApache Tomcat Native users are recommended to upgrade to versions 1.3.5 or later or 2.0.12 or later, which fix the issue.\n\nApache Tomcat users are recommended to upgrade to versions 11.0.18 or later, 10.1.52 or later or 9.0.115 or later which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-24880",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Apache Tomcat: Apache Tomcat: HTTP Request/Response Smuggling via invalid chunk extension"
+              },
+              "fullDescription": {
+                "text": "Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling') vulnerability in Apache Tomcat via invalid chunk extension.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.18, from 10.1.0-M1 through 10.1.52, from 9.0.0.M1 through 9.0.115, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\nOther, unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version 11.0.20, 10.1.52 or 9.0.116, which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-24880",
+              "help": {
+                "text": "Vulnerability CVE-2026-24880\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.116, 10.1.52, 11.0.20\nLink: [CVE-2026-24880](https://avd.aquasec.com/nvd/cve-2026-24880)\nInconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling') vulnerability in Apache Tomcat via invalid chunk extension.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.18, from 10.1.0-M1 through 10.1.52, from 9.0.0.M1 through 9.0.115, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\nOther, unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version 11.0.20, 10.1.52 or 9.0.116, which fix the issue.",
+                "markdown": "**Vulnerability CVE-2026-24880**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|9.0.116, 10.1.52, 11.0.20|[CVE-2026-24880](https://avd.aquasec.com/nvd/cve-2026-24880)|\n\nInconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling') vulnerability in Apache Tomcat via invalid chunk extension.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.18, from 10.1.0-M1 through 10.1.52, from 9.0.0.M1 through 9.0.115, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\nOther, unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version 11.0.20, 10.1.52 or 9.0.116, which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-34483",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Apache Tomcat: Apache Tomcat: Information disclosure due to improper encoding in JsonAccessLogValve"
+              },
+              "fullDescription": {
+                "text": "Improper Encoding or Escaping of Output vulnerability in the JsonAccessLogValve component of Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.20, from 10.1.0-M1 through 10.1.53, from 9.0.40 through 9.0.116.\n\nUsers are recommended to upgrade to version 11.0.21, 10.1.54 or 9.0.117 , which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-34483",
+              "help": {
+                "text": "Vulnerability CVE-2026-34483\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.116, 10.1.54, 11.0.21\nLink: [CVE-2026-34483](https://avd.aquasec.com/nvd/cve-2026-34483)\nImproper Encoding or Escaping of Output vulnerability in the JsonAccessLogValve component of Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.20, from 10.1.0-M1 through 10.1.53, from 9.0.40 through 9.0.116.\n\nUsers are recommended to upgrade to version 11.0.21, 10.1.54 or 9.0.117 , which fix the issue.",
+                "markdown": "**Vulnerability CVE-2026-34483**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|9.0.116, 10.1.54, 11.0.21|[CVE-2026-34483](https://avd.aquasec.com/nvd/cve-2026-34483)|\n\nImproper Encoding or Escaping of Output vulnerability in the JsonAccessLogValve component of Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.20, from 10.1.0-M1 through 10.1.53, from 9.0.40 through 9.0.116.\n\nUsers are recommended to upgrade to version 11.0.21, 10.1.54 or 9.0.117 , which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-34487",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Apache Tomcat: Apache Tomcat: Information disclosure via sensitive data in log files"
+              },
+              "fullDescription": {
+                "text": "Insertion of Sensitive Information into Log File vulnerability in the cloud membership for clustering component of Apache Tomcat exposed the Kubernetes bearer token.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.20, from 10.1.0-M1 through 10.1.53, from 9.0.13 through 9.0.116.\n\nUsers are recommended to upgrade to version 11.0.21, 10.1.54 or 9.0.117, which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-34487",
+              "help": {
+                "text": "Vulnerability CVE-2026-34487\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.117, 10.1.54, 11.0.21\nLink: [CVE-2026-34487](https://avd.aquasec.com/nvd/cve-2026-34487)\nInsertion of Sensitive Information into Log File vulnerability in the cloud membership for clustering component of Apache Tomcat exposed the Kubernetes bearer token.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.20, from 10.1.0-M1 through 10.1.53, from 9.0.13 through 9.0.116.\n\nUsers are recommended to upgrade to version 11.0.21, 10.1.54 or 9.0.117, which fix the issue.",
+                "markdown": "**Vulnerability CVE-2026-34487**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|9.0.117, 10.1.54, 11.0.21|[CVE-2026-34487](https://avd.aquasec.com/nvd/cve-2026-34487)|\n\nInsertion of Sensitive Information into Log File vulnerability in the cloud membership for clustering component of Apache Tomcat exposed the Kubernetes bearer token.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.20, from 10.1.0-M1 through 10.1.53, from 9.0.13 through 9.0.116.\n\nUsers are recommended to upgrade to version 11.0.21, 10.1.54 or 9.0.117, which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-41284",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Allocation of Resources Without Limits or Throttling vulnerability in  ..."
+              },
+              "fullDescription": {
+                "text": "Allocation of Resources Without Limits or Throttling vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117.\nOlder, unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version [FIXED_VERSION], which fixes the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-41284",
+              "help": {
+                "text": "Vulnerability CVE-2026-41284\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-41284](https://avd.aquasec.com/nvd/cve-2026-41284)\nAllocation of Resources Without Limits or Throttling vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117.\nOlder, unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version [FIXED_VERSION], which fixes the issue.",
+                "markdown": "**Vulnerability CVE-2026-41284**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|9.0.118, 10.1.55, 11.0.22|[CVE-2026-41284](https://avd.aquasec.com/nvd/cve-2026-41284)|\n\nAllocation of Resources Without Limits or Throttling vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117.\nOlder, unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version [FIXED_VERSION], which fixes the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-42498",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Exposure of HTTP Authentication Header to unexpected hosts during WebS ..."
+              },
+              "fullDescription": {
+                "text": "Exposure of HTTP Authentication Header to unexpected hosts during WebSocket authentication vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.2 through 9.0.117, from 8.5.24 through 8.5.100, from 7.0.83 through 7.0.109.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118, which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-42498",
+              "help": {
+                "text": "Vulnerability CVE-2026-42498\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-42498](https://avd.aquasec.com/nvd/cve-2026-42498)\nExposure of HTTP Authentication Header to unexpected hosts during WebSocket authentication vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.2 through 9.0.117, from 8.5.24 through 8.5.100, from 7.0.83 through 7.0.109.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118, which fix the issue.",
+                "markdown": "**Vulnerability CVE-2026-42498**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|9.0.118, 10.1.55, 11.0.22|[CVE-2026-42498](https://avd.aquasec.com/nvd/cve-2026-42498)|\n\nExposure of HTTP Authentication Header to unexpected hosts during WebSocket authentication vulnerability in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.2 through 9.0.117, from 8.5.24 through 8.5.100, from 7.0.83 through 7.0.109.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118, which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.3,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+                "precision": "very-high",
+                "security-severity": "7.3",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-43513",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Improper Handling of Case Sensitivity vulnerability in LockOutRealm in ..."
+              },
+              "fullDescription": {
+                "text": "Improper Handling of Case Sensitivity vulnerability in LockOutRealm in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\nOlder unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-43513",
+              "help": {
+                "text": "Vulnerability CVE-2026-43513\nSeverity: HIGH\nPackage: org.apache.tomcat.embed:tomcat-embed-core\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-43513](https://avd.aquasec.com/nvd/cve-2026-43513)\nImproper Handling of Case Sensitivity vulnerability in LockOutRealm in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\nOlder unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue.",
+                "markdown": "**Vulnerability CVE-2026-43513**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.apache.tomcat.embed:tomcat-embed-core|9.0.118, 10.1.55, 11.0.22|[CVE-2026-43513](https://avd.aquasec.com/nvd/cve-2026-43513)|\n\nImproper Handling of Case Sensitivity vulnerability in LockOutRealm in Apache Tomcat.\n\nThis issue affects Apache Tomcat: from 11.0.0-M1 through 11.0.21, from 10.1.0-M1 through 10.1.54, from 9.0.0.M1 through 9.0.117, from 8.5.0 through 8.5.100, from 7.0.0 through 7.0.109.\nOlder unsupported versions may also be affected.\n\nUsers are recommended to upgrade to version 11.0.22, 10.1.55 or 9.0.118 which fix the issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-5598",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "bouncycastle: BC-JAVA: private key leakage via non-constant time comparisons"
+              },
+              "fullDescription": {
+                "text": "Covert timing channel vulnerability in Legion of the Bouncy Castle Inc. BC-JAVA core on all (core modules).\n\n This vulnerability is associated with program files FrodoEngine.Java.\n\n\n\nThis issue affects BC-JAVA: from 1.71 before 1.80.2, from 1.81 before 1.80.1, from 1.82 before 1.84."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-5598",
+              "help": {
+                "text": "Vulnerability CVE-2026-5598\nSeverity: HIGH\nPackage: org.bouncycastle:bcprov-jdk18on\nFixed Version: 1.84\nLink: [CVE-2026-5598](https://avd.aquasec.com/nvd/cve-2026-5598)\nCovert timing channel vulnerability in Legion of the Bouncy Castle Inc. BC-JAVA core on all (core modules).\n\n This vulnerability is associated with program files FrodoEngine.Java.\n\n\n\nThis issue affects BC-JAVA: from 1.71 before 1.80.2, from 1.81 before 1.80.1, from 1.82 before 1.84.",
+                "markdown": "**Vulnerability CVE-2026-5598**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.bouncycastle:bcprov-jdk18on|1.84|[CVE-2026-5598](https://avd.aquasec.com/nvd/cve-2026-5598)|\n\nCovert timing channel vulnerability in Legion of the Bouncy Castle Inc. BC-JAVA core on all (core modules).\n\n This vulnerability is associated with program files FrodoEngine.Java.\n\n\n\nThis issue affects BC-JAVA: from 1.71 before 1.80.2, from 1.81 before 1.80.1, from 1.82 before 1.84."
+              },
+              "properties": {
+                "cvssv40_baseScore": 8.9,
+                "cvssv40_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N/E:U/S:P/AU:Y/U:Red",
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-22235",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "org.springframework.boot/spring-boot: Spring Boot EndpointRequest.to() creates wrong matcher if actuator endpoint is not exposed"
+              },
+              "fullDescription": {
+                "text": "EndpointRequest.to() creates a matcher for null/** if the actuator endpoint, for which the EndpointRequest has been created, is disabled or not exposed.\n\nYour application may be affected by this if all the following conditions are met:\n\n  *  You use Spring Security\n  *  EndpointRequest.to() has been used in a Spring Security chain configuration\n  *  The endpoint which EndpointRequest references is disabled or not exposed via web\n  *  Your application handles requests to /null and this path needs protection\n\n\nYou are not affected if any of the following is true:\n\n  *  You don't use Spring Security\n  *  You don't use EndpointRequest.to()\n  *  The endpoint which EndpointRequest.to() refers to is enabled and is exposed\n  *  Your application does not handle requests to /null or this path does not need protection"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-22235",
+              "help": {
+                "text": "Vulnerability CVE-2025-22235\nSeverity: HIGH\nPackage: org.springframework.boot:spring-boot\nFixed Version: 3.3.11, 3.4.5\nLink: [CVE-2025-22235](https://avd.aquasec.com/nvd/cve-2025-22235)\nEndpointRequest.to() creates a matcher for null/** if the actuator endpoint, for which the EndpointRequest has been created, is disabled or not exposed.\n\nYour application may be affected by this if all the following conditions are met:\n\n  *  You use Spring Security\n  *  EndpointRequest.to() has been used in a Spring Security chain configuration\n  *  The endpoint which EndpointRequest references is disabled or not exposed via web\n  *  Your application handles requests to /null and this path needs protection\n\n\nYou are not affected if any of the following is true:\n\n  *  You don't use Spring Security\n  *  You don't use EndpointRequest.to()\n  *  The endpoint which EndpointRequest.to() refers to is enabled and is exposed\n  *  Your application does not handle requests to /null or this path does not need protection",
+                "markdown": "**Vulnerability CVE-2025-22235**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.springframework.boot:spring-boot|3.3.11, 3.4.5|[CVE-2025-22235](https://avd.aquasec.com/nvd/cve-2025-22235)|\n\nEndpointRequest.to() creates a matcher for null/** if the actuator endpoint, for which the EndpointRequest has been created, is disabled or not exposed.\n\nYour application may be affected by this if all the following conditions are met:\n\n  *  You use Spring Security\n  *  EndpointRequest.to() has been used in a Spring Security chain configuration\n  *  The endpoint which EndpointRequest references is disabled or not exposed via web\n  *  Your application handles requests to /null and this path needs protection\n\n\nYou are not affected if any of the following is true:\n\n  *  You don't use Spring Security\n  *  You don't use EndpointRequest.to()\n  *  The endpoint which EndpointRequest.to() refers to is enabled and is exposed\n  *  Your application does not handle requests to /null or this path does not need protection"
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.3,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+                "precision": "very-high",
+                "security-severity": "7.3",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-40973",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Spring Boot: Spring Boot: Arbitrary Code Execution and Session Hijacking via predictable temporary directory"
+              },
+              "fullDescription": {
+                "text": "A local attacker on the same host as the application may be able to take control of the directory used by `ApplicationTemp`. When `server.servlet.session.persistent` is set to `true` and the attack persists across application restarts, this may allow the attacker to read session information and hijack authenticated users or deploy a gadget chain and execute code as the application's user.\n\nAffected: Spring Boot 4.0.0–4.0.5 (fix 4.0.6), 3.5.0–3.5.13 (fix 3.5.14), 3.4.0–3.4.15 (fix 3.4.16), 3.3.0–3.3.18 (fix 3.3.19), 2.7.0–2.7.32 (fix 2.7.33); predictable temp directory / `ApplicationTemp` ownership verification. Versions that are no longer supported are also affected per vendor advisory."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-40973",
+              "help": {
+                "text": "Vulnerability CVE-2026-40973\nSeverity: HIGH\nPackage: org.springframework.boot:spring-boot\nFixed Version: 4.0.6, 3.5.14\nLink: [CVE-2026-40973](https://avd.aquasec.com/nvd/cve-2026-40973)\nA local attacker on the same host as the application may be able to take control of the directory used by `ApplicationTemp`. When `server.servlet.session.persistent` is set to `true` and the attack persists across application restarts, this may allow the attacker to read session information and hijack authenticated users or deploy a gadget chain and execute code as the application's user.\n\nAffected: Spring Boot 4.0.0–4.0.5 (fix 4.0.6), 3.5.0–3.5.13 (fix 3.5.14), 3.4.0–3.4.15 (fix 3.4.16), 3.3.0–3.3.18 (fix 3.3.19), 2.7.0–2.7.32 (fix 2.7.33); predictable temp directory / `ApplicationTemp` ownership verification. Versions that are no longer supported are also affected per vendor advisory.",
+                "markdown": "**Vulnerability CVE-2026-40973**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.springframework.boot:spring-boot|4.0.6, 3.5.14|[CVE-2026-40973](https://avd.aquasec.com/nvd/cve-2026-40973)|\n\nA local attacker on the same host as the application may be able to take control of the directory used by `ApplicationTemp`. When `server.servlet.session.persistent` is set to `true` and the attack persists across application restarts, this may allow the attacker to read session information and hijack authenticated users or deploy a gadget chain and execute code as the application's user.\n\nAffected: Spring Boot 4.0.0–4.0.5 (fix 4.0.6), 3.5.0–3.5.13 (fix 3.5.14), 3.4.0–3.4.15 (fix 3.4.16), 3.3.0–3.3.18 (fix 3.3.19), 2.7.0–2.7.32 (fix 2.7.33); predictable temp directory / `ApplicationTemp` ownership verification. Versions that are no longer supported are also affected per vendor advisory."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7,
+                "cvssv3_vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "7.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-22228",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "spring-security-core: Spring Security BCryptPasswordEncoder does not enforce maximum password length"
+              },
+              "fullDescription": {
+                "text": "BCryptPasswordEncoder.matches(CharSequence,String) will incorrectly return true for passwords larger than 72 characters as long as the first 72 characters are the same."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-22228",
+              "help": {
+                "text": "Vulnerability CVE-2025-22228\nSeverity: HIGH\nPackage: org.springframework.security:spring-security-crypto\nFixed Version: 6.3.8, 6.4.4, 6.2.10, 6.1.14, 6.0.16, 5.8.18, 5.7.16\nLink: [CVE-2025-22228](https://avd.aquasec.com/nvd/cve-2025-22228)\nBCryptPasswordEncoder.matches(CharSequence,String) will incorrectly return true for passwords larger than 72 characters as long as the first 72 characters are the same.",
+                "markdown": "**Vulnerability CVE-2025-22228**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.springframework.security:spring-security-crypto|6.3.8, 6.4.4, 6.2.10, 6.1.14, 6.0.16, 5.8.18, 5.7.16|[CVE-2025-22228](https://avd.aquasec.com/nvd/cve-2025-22228)|\n\nBCryptPasswordEncoder.matches(CharSequence,String) will incorrectly return true for passwords larger than 72 characters as long as the first 72 characters are the same."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.4,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+                "precision": "very-high",
+                "security-severity": "7.4",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-41249",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "org.springframework/spring-core: Spring Framework Annotation Detection Vulnerability"
+              },
+              "fullDescription": {
+                "text": "The Spring Framework annotation detection mechanism may not correctly resolve annotations on methods within type hierarchies with a parameterized super type with unbounded generics. This can be an issue if such annotations are used for authorization decisions.\n\nYour application may be affected by this if you are using Spring Security's @EnableMethodSecurity feature.\n\nYou are not affected by this if you are not using @EnableMethodSecurity or if you do not use security annotations on methods in generic superclasses or generic interfaces.\n\nThis CVE is published in conjunction with  CVE-2025-41248 https://spring.io/security/cve-2025-41248 ."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-41249",
+              "help": {
+                "text": "Vulnerability CVE-2025-41249\nSeverity: HIGH\nPackage: org.springframework:spring-core\nFixed Version: 6.2.11\nLink: [CVE-2025-41249](https://avd.aquasec.com/nvd/cve-2025-41249)\nThe Spring Framework annotation detection mechanism may not correctly resolve annotations on methods within type hierarchies with a parameterized super type with unbounded generics. This can be an issue if such annotations are used for authorization decisions.\n\nYour application may be affected by this if you are using Spring Security's @EnableMethodSecurity feature.\n\nYou are not affected by this if you are not using @EnableMethodSecurity or if you do not use security annotations on methods in generic superclasses or generic interfaces.\n\nThis CVE is published in conjunction with  CVE-2025-41248 https://spring.io/security/cve-2025-41248 .",
+                "markdown": "**Vulnerability CVE-2025-41249**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|org.springframework:spring-core|6.2.11|[CVE-2025-41249](https://avd.aquasec.com/nvd/cve-2025-41249)|\n\nThe Spring Framework annotation detection mechanism may not correctly resolve annotations on methods within type hierarchies with a parameterized super type with unbounded generics. This can be an issue if such annotations are used for authorization decisions.\n\nYour application may be affected by this if you are using Spring Security's @EnableMethodSecurity feature.\n\nYou are not affected by this if you are not using @EnableMethodSecurity or if you do not use security annotations on methods in generic superclasses or generic interfaces.\n\nThis CVE is published in conjunction with  CVE-2025-41248 https://spring.io/security/cve-2025-41248 ."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            }
+          ],
+          "version": "0.71.0"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2024-47072",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Package: com.thoughtworks.xstream:xstream\nInstalled Version: 1.4.20\nVulnerability CVE-2024-47072\nSeverity: HIGH\nFixed Version: 1.4.21\nLink: [CVE-2024-47072](https://avd.aquasec.com/nvd/cve-2024-47072)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/xstream-1.4.20.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/xstream-1.4.20.jar: com.thoughtworks.xstream:xstream@1.4.20"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-27820",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.httpcomponents.client5:httpclient5\nInstalled Version: 5.4.2\nVulnerability CVE-2025-27820\nSeverity: HIGH\nFixed Version: 5.4.3\nLink: [CVE-2025-27820](https://avd.aquasec.com/nvd/cve-2025-27820)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/httpclient5-5.4.2.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/httpclient5-5.4.2.jar: org.apache.httpcomponents.client5:httpclient5@5.4.2"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-41293",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-41293\nSeverity: CRITICAL\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-41293](https://avd.aquasec.com/nvd/cve-2026-41293)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-43512",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-43512\nSeverity: CRITICAL\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-43512](https://avd.aquasec.com/nvd/cve-2026-43512)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-43515",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-43515\nSeverity: CRITICAL\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-43515](https://avd.aquasec.com/nvd/cve-2026-43515)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-48988",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2025-48988\nSeverity: HIGH\nFixed Version: 11.0.8, 10.1.42, 9.0.106\nLink: [CVE-2025-48988](https://avd.aquasec.com/nvd/cve-2025-48988)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-48989",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2025-48989\nSeverity: HIGH\nFixed Version: 11.0.10, 10.1.44, 9.0.108\nLink: [CVE-2025-48989](https://avd.aquasec.com/nvd/cve-2025-48989)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-52520",
+          "ruleIndex": 7,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2025-52520\nSeverity: HIGH\nFixed Version: 11.0.9, 10.1.43, 9.0.107\nLink: [CVE-2025-52520](https://avd.aquasec.com/nvd/cve-2025-52520)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-53506",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2025-53506\nSeverity: HIGH\nFixed Version: 9.0.107, 10.1.43, 11.0.9\nLink: [CVE-2025-53506](https://avd.aquasec.com/nvd/cve-2025-53506)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-55752",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2025-55752\nSeverity: HIGH\nFixed Version: 11.0.11, 10.1.45, 9.0.109\nLink: [CVE-2025-55752](https://avd.aquasec.com/nvd/cve-2025-55752)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-24734",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-24734\nSeverity: HIGH\nFixed Version: 11.0.18, 10.1.52, 9.0.115\nLink: [CVE-2026-24734](https://avd.aquasec.com/nvd/cve-2026-24734)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-24880",
+          "ruleIndex": 11,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-24880\nSeverity: HIGH\nFixed Version: 9.0.116, 10.1.52, 11.0.20\nLink: [CVE-2026-24880](https://avd.aquasec.com/nvd/cve-2026-24880)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-34483",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-34483\nSeverity: HIGH\nFixed Version: 9.0.116, 10.1.54, 11.0.21\nLink: [CVE-2026-34483](https://avd.aquasec.com/nvd/cve-2026-34483)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-34487",
+          "ruleIndex": 13,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-34487\nSeverity: HIGH\nFixed Version: 9.0.117, 10.1.54, 11.0.21\nLink: [CVE-2026-34487](https://avd.aquasec.com/nvd/cve-2026-34487)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-41284",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-41284\nSeverity: HIGH\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-41284](https://avd.aquasec.com/nvd/cve-2026-41284)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-42498",
+          "ruleIndex": 15,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-42498\nSeverity: HIGH\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-42498](https://avd.aquasec.com/nvd/cve-2026-42498)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-43513",
+          "ruleIndex": 16,
+          "level": "error",
+          "message": {
+            "text": "Package: org.apache.tomcat.embed:tomcat-embed-core\nInstalled Version: 10.1.36\nVulnerability CVE-2026-43513\nSeverity: HIGH\nFixed Version: 9.0.118, 10.1.55, 11.0.22\nLink: [CVE-2026-43513](https://avd.aquasec.com/nvd/cve-2026-43513)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/tomcat-embed-core-10.1.36.jar: org.apache.tomcat.embed:tomcat-embed-core@10.1.36"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-5598",
+          "ruleIndex": 17,
+          "level": "error",
+          "message": {
+            "text": "Package: org.bouncycastle:bcprov-jdk18on\nInstalled Version: 1.78.1\nVulnerability CVE-2026-5598\nSeverity: HIGH\nFixed Version: 1.84\nLink: [CVE-2026-5598](https://avd.aquasec.com/nvd/cve-2026-5598)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/bcprov-jdk18on-1.78.1.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/bcprov-jdk18on-1.78.1.jar: org.bouncycastle:bcprov-jdk18on@1.78.1"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-22235",
+          "ruleIndex": 18,
+          "level": "error",
+          "message": {
+            "text": "Package: org.springframework.boot:spring-boot\nInstalled Version: 3.4.3\nVulnerability CVE-2025-22235\nSeverity: HIGH\nFixed Version: 3.3.11, 3.4.5\nLink: [CVE-2025-22235](https://avd.aquasec.com/nvd/cve-2025-22235)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/spring-boot-3.4.3.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/spring-boot-3.4.3.jar: org.springframework.boot:spring-boot@3.4.3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-40973",
+          "ruleIndex": 19,
+          "level": "error",
+          "message": {
+            "text": "Package: org.springframework.boot:spring-boot\nInstalled Version: 3.4.3\nVulnerability CVE-2026-40973\nSeverity: HIGH\nFixed Version: 4.0.6, 3.5.14\nLink: [CVE-2026-40973](https://avd.aquasec.com/nvd/cve-2026-40973)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/spring-boot-3.4.3.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/spring-boot-3.4.3.jar: org.springframework.boot:spring-boot@3.4.3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-22228",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Package: org.springframework.security:spring-security-crypto\nInstalled Version: 6.4.3\nVulnerability CVE-2025-22228\nSeverity: HIGH\nFixed Version: 6.3.8, 6.4.4, 6.2.10, 6.1.14, 6.0.16, 5.8.18, 5.7.16\nLink: [CVE-2025-22228](https://avd.aquasec.com/nvd/cve-2025-22228)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/spring-security-crypto-6.4.3.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/spring-security-crypto-6.4.3.jar: org.springframework.security:spring-security-crypto@6.4.3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-41249",
+          "ruleIndex": 21,
+          "level": "error",
+          "message": {
+            "text": "Package: org.springframework:spring-core\nInstalled Version: 6.2.3\nVulnerability CVE-2025-41249\nSeverity: HIGH\nFixed Version: 6.2.11\nLink: [CVE-2025-41249](https://avd.aquasec.com/nvd/cve-2025-41249)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/app.jar/BOOT-INF/lib/spring-core-6.2.3.jar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "app/app.jar/BOOT-INF/lib/spring-core-6.2.3.jar: org.springframework:spring-core@6.2.3"
+              }
+            }
+          ]
+        }
+      ],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "imageID": "sha256:71460a204e2415ff1250950c30e29eac7f72984a600011acba825587bd8fc604",
+        "imageName": "build-reports/oci/discovery-service-1.0.0.tar",
+        "repoDigests": null,
+        "repoTags": [
+          "localhost/odoru/discovery-service:1.0.0"
+        ]
+      }
+    }
+  ]
+}

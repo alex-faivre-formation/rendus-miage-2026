@@ -1,0 +1,29 @@
+# IDE / OS
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Java / Maven
+**/target/
+
+# Frontend
+odoru-front/node_modules/
+odoru-front/dist/
+
+# Environnements locaux
+.env
+.env.local
+*.env.local
+odoru-front/.env
+odoru-front/.env.local
+odoru-front/.env.development.local
+odoru-front/.env.production.local
+
+# Archives lourdes générées pour Trivy
+build-reports/oci/
+
+# Logs / temporaires
+*.log
+*.tmp
+*.bak

@@ -1,0 +1,19 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///C:/Users/Nouveau utilisateur/Documents/odoru/infrastructure/config-repo
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

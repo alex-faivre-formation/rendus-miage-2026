@@ -1,0 +1,92 @@
+{{- $root := . }}
+
+{{- range $key, $db := .Values.postgres.databases }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $db.serviceName }}
+  namespace: {{ $root.Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: odoru
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: {{ $db.serviceName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $db.serviceName }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: odoru
+        app.kubernetes.io/component: database
+        app.kubernetes.io/instance: {{ $db.serviceName }}
+    spec:
+      serviceAccountName: {{ $root.Values.security.serviceAccount.name }}
+      containers:
+        - name: postgres
+          image: {{ $root.Values.postgres.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ $db.port }}
+
+          readinessProbe:
+            tcpSocket:
+              port: {{ $db.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+
+          livenessProbe:
+            tcpSocket:
+              port: {{ $db.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 6
+
+          resources:
+            requests:
+              cpu: {{ $root.Values.resources.postgres.requests.cpu | quote }}
+              memory: {{ $root.Values.resources.postgres.requests.memory | quote }}
+            limits:
+              cpu: {{ $root.Values.resources.postgres.limits.cpu | quote }}
+              memory: {{ $root.Values.resources.postgres.limits.memory | quote }}
+
+          env:
+            - name: POSTGRES_DB
+              value: {{ $db.name | quote }}
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: odoru-postgres-secret
+                  key: POSTGRES_USER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: odoru-postgres-secret
+                  key: POSTGRES_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $db.serviceName }}
+  namespace: {{ $root.Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: odoru
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: {{ $db.serviceName }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ $db.serviceName }}
+  ports:
+    - name: postgres
+      port: {{ $db.port }}
+      targetPort: {{ $db.port }}
+{{- end }}

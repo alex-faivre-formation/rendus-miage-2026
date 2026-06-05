@@ -1,0 +1,16 @@
+FROM docker.io/eclipse-temurin:17-jre-alpine
+LABEL org.opencontainers.image.title="odoru-competition-service"
+LABEL org.opencontainers.image.description="Odoru competition microservice"
+LABEL org.opencontainers.image.version="1.0.0"
+
+WORKDIR /app
+
+RUN addgroup -S odoru && adduser -S odoru -G odoru
+
+COPY services/competition-service/target/*.jar app.jar
+
+USER odoru
+
+EXPOSE 8083
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

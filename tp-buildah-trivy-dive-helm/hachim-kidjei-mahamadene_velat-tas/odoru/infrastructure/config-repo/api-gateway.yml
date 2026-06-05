@@ -1,0 +1,72 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka/
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/realms/odoru
+
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+              - "http://localhost:30081"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            exposedHeaders:
+              - "Authorization"
+            allowCredentials: true
+
+      discovery:
+        locator:
+          enabled: false
+
+      routes:
+        - id: member-service
+          uri: http://member-service:8081
+          predicates:
+            - Path=/api/members/**
+
+        - id: course-service
+          uri: http://course-service:8082
+          predicates:
+            - Path=/api/courses/**
+
+        - id: competition-service
+          uri: http://competition-service:8083
+          predicates:
+            - Path=/api/competitions/**
+
+        - id: badge-service
+          uri: http://badge-service:8084
+          predicates:
+            - Path=/api/badges/**
+
+        - id: statistics-service
+          uri: http://statistics-service:8085
+          predicates:
+            - Path=/api/statistics/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

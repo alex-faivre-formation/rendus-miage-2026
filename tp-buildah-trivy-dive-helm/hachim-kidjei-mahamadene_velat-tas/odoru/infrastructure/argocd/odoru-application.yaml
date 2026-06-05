@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: odoru
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/hachimkidjei/odoru.git
+    targetRevision: main
+    path: infrastructure/helm/odoru
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-prod.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: odoru
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

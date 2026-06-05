@@ -1,0 +1,30 @@
+.git
+.gitignore
+.idea
+out
+*.iml
+*.log
+
+# Frontend React/Vite
+odoru-front/node_modules
+odoru-front/dist
+odoru-front/.vite
+odoru-front/.env.local
+odoru-front/.env.development.local
+odoru-front/.env.production.local
+
+**/target/classes
+**/target/generated-sources
+**/target/generated-test-sources
+**/target/maven-status
+**/target/maven-archiver
+**/target/surefire-reports
+**/target/failsafe-reports
+**/target/test-classes
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db

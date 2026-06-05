@@ -1,0 +1,140 @@
+global:
+  namespace: odoru
+  imagePullPolicy: IfNotPresent
+
+image:
+  registry: localhost/odoru
+  tag: "1.0.0"
+
+postgres:
+  image: postgres:16
+  user: odoru
+  password: odoru
+  databases:
+    member:
+      name: odoru_member_db
+      serviceName: member-postgres
+      port: 5432
+    course:
+      name: odoru_course_db
+      serviceName: course-postgres
+      port: 5432
+    competition:
+      name: odoru_competition_db
+      serviceName: competition-postgres
+      port: 5432
+    badge:
+      name: odoru_badge_db
+      serviceName: badge-postgres
+      port: 5432
+
+keycloak:
+  image: quay.io/keycloak/keycloak:26.6.2
+  serviceName: keycloak
+  port: 8080
+  adminUser: admin
+  adminPassword: admin
+  command:
+    - start-dev
+
+services:
+  configServer:
+    name: config-server
+    image: config-server
+    port: 8888
+
+  discoveryService:
+    name: discovery-service
+    image: discovery-service
+    port: 8761
+
+  memberService:
+    name: member-service
+    image: member-service
+    port: 8081
+    database: member
+
+  courseService:
+    name: course-service
+    image: course-service
+    port: 8082
+    database: course
+
+  competitionService:
+    name: competition-service
+    image: competition-service
+    port: 8083
+    database: competition
+
+  badgeService:
+    name: badge-service
+    image: badge-service
+    port: 8084
+    database: badge
+
+  statisticsService:
+    name: statistics-service
+    image: statistics-service
+    port: 8085
+
+  apiGateway:
+    name: api-gateway
+    image: api-gateway
+    port: 8080
+    nodePort: 30080
+
+front:
+  name: front
+  image: front
+  port: 80
+  nodePort: 30081
+
+exposure:
+  mode: nodePort
+  host: odoru.local
+  ingressClassName: traefik
+
+security:
+  serviceAccount:
+    create: true
+    name: odoru-app
+  rbac:
+    create: true
+  networkPolicy:
+    enabled: false
+
+resources:
+  spring:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "768Mi"
+  frontend:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  postgres:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  keycloak:
+    requests:
+      cpu: "100m"
+      memory: "768Mi"
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
+
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70

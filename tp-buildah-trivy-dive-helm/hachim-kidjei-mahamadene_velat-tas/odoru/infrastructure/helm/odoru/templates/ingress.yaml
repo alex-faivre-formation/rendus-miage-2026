@@ -1,0 +1,30 @@
+{{- if eq .Values.exposure.mode "ingress" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: odoru-ingress
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: odoru
+    app.kubernetes.io/component: ingress
+spec:
+  ingressClassName: {{ .Values.exposure.ingressClassName }}
+  rules:
+    - host: {{ .Values.exposure.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: front
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8080
+{{- end }}
