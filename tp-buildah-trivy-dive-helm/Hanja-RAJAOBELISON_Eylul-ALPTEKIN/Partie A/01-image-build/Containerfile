@@ -1,0 +1,27 @@
+# Containerfile générique — tous les micro-services MIAGE-Bank
+# Build : buildah bud -f Containerfile --build-arg JAR_FILE=<chemin/vers/app.jar> -t <image> .
+#
+
+FROM eclipse-temurin:17-jre-alpine
+
+# Métadonnées OCI (bonnes pratiques + traçabilité)
+LABEL org.opencontainers.image.title="miage-bank" \
+      org.opencontainers.image.description="Micro-service MIAGE-Bank" \
+      org.opencontainers.image.source="https://github.com/hialmar/AMSC"
+
+# Utilisateur non-root : réduit la surface d'attaque (Trivy) et exigé par les
+# bonnes pratiques Kubernetes (Partie B) + recommandé par Hadolint
+RUN addgroup -S app && adduser -S -G app app
+
+WORKDIR /app
+
+# Port applicatif — par défaut 8080, surchargeable par service au build
+ARG APP_PORT=8080
+EXPOSE ${APP_PORT}
+
+# JAR du micro-service, injecté au moment du build
+ARG JAR_FILE
+COPY --chown=app:app ${JAR_FILE} /app/app.jar
+
+USER app
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

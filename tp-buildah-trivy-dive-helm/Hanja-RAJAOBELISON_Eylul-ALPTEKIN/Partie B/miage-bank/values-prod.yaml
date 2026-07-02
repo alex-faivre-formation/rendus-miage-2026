@@ -1,0 +1,44 @@
+# ============================================================
+# values-prod.yaml — surcharges production
+# Usage : helm upgrade miage-bank . -f values.yaml -f values-prod.yaml
+# ============================================================
+
+image:
+  registry: ghcr.io/hanja19   # registry GitHub Container Registry en prod
+  pullPolicy: IfNotPresent
+
+# Haute disponibilité : 2 réplicas par service
+services:
+  annuaire:
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+  configserver:
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+  clients:
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+  comptes:
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+  composite:
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+  proxy:
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits:   { cpu: 1000m, memory: 1Gi }
+
+ingress:
+  host: miage-bank.example.com

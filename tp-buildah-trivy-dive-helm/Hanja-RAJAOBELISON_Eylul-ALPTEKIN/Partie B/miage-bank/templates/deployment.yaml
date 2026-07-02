@@ -1,0 +1,54 @@
+{{- range $name, $svc := .Values.services }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Values.namespaceName }}
+  labels:
+    {{- include "miage-bank.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+spec:
+  replicas: {{ $svc.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+        {{- include "miage-bank.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $name }}
+    spec:
+      serviceAccountName: {{ include "miage-bank.serviceAccountName" $ }}
+      containers:
+        - name: {{ $name }}
+          image: "{{ $.Values.image.registry }}/{{ $svc.image }}:{{ $svc.tag | default $.Values.image.defaultTag }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $svc.port }}
+              protocol: TCP
+          # Variables non sensibles (ConfigMap)
+          envFrom:
+            - configMapRef:
+                name: {{ include "miage-bank.fullname" $ }}-config
+          # Variables sensibles (Secret — passwords DB)
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "miage-bank.fullname" $ }}-db-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "miage-bank.fullname" $ }}-db-secret
+                  key: SPRING_DATA_MONGODB_PASSWORD
+          resources:
+            {{- toYaml $svc.resources | nindent 12 }}
+          readinessProbe:
+            {{- toYaml $svc.readinessProbe | nindent 12 }}
+          livenessProbe:
+            {{- toYaml $svc.livenessProbe | nindent 12 }}
+{{- end }}

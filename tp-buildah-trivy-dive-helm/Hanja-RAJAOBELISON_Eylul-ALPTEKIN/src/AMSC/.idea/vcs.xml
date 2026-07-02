@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/amc_annuaire" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/amc_clients" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/amc_composite" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/amc_comptes" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/amc_config" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/amc_config_docker" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/amc_configserver" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/amc_proxy" vcs="Git" />
+  </component>
+</project>

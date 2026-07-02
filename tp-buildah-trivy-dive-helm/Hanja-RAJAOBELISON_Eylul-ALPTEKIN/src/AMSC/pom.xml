@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fr.miage.toulouse.m2.spring.banque.micro</groupId>
+    <artifactId>ExempleMicroServicesV2024</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>ExempleMicroServicesV2024</name>
+    <modules>
+        <module>amc_annuaire</module>
+        <module>amc_configserver</module>
+        <module>amc_clients</module>
+        <module>amc_comptes</module>
+        <module>amc_composite</module>
+        <module>amc_proxy</module>
+    </modules>
+</project>

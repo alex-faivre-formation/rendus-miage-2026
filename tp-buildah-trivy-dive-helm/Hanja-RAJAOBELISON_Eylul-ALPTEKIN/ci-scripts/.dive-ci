@@ -1,0 +1,9 @@
+# Configuration Dive en mode CI — seuils exigés par le sujet
+# À placer dans : ci-scripts/.dive-ci
+rules:
+  # Efficacité minimale de l'image : 95%
+  lowestEfficiency: 0.95
+  # Espace gaspillé maximum : 20 Mo
+  highestWastedBytes: 20MB
+  # Pourcentage d'espace gaspillé maximum : 10%
+  highestUserWastedPercent: 0.10

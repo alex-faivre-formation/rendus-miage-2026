@@ -1,0 +1,35 @@
+{{- if and .Values.autoscaling .Values.autoscaling.enabled }}
+{{- range $name, $svc := .Values.services }}
+{{- if and (hasKey $.Values.autoscaling.services $name) (index $.Values.autoscaling.services $name).enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $name }}-hpa
+  namespace: {{ $.Values.namespaceName }}
+  labels:
+    {{- include "miage-bank.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $name }}
+  minReplicas: {{ (index $.Values.autoscaling.services $name).minReplicas | default 1 }}
+  maxReplicas: {{ (index $.Values.autoscaling.services $name).maxReplicas | default 3 }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ (index $.Values.autoscaling.services $name).targetCPU | default 70 }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ (index $.Values.autoscaling.services $name).targetMemory | default 80 }}
+{{- end }}
+{{- end }}
+{{- end }}
