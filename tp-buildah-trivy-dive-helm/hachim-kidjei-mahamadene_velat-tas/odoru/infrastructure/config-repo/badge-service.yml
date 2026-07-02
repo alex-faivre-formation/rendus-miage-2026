@@ -1,0 +1,36 @@
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: jdbc:postgresql://badge-postgres:5432/odoru_badge_db
+    username: odoru
+    password: odoru
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka/
+
+member-service:
+  base-url: http://localhost:8081
+
+course-service:
+  base-url: http://localhost:8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+  health:
+    db:
+      enabled: false

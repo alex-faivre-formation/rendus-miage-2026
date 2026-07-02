@@ -1,0 +1,1569 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Trivy Vulnerability Scanner",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
+          "rules": [
+            {
+              "id": "CVE-2026-31789",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: OpenSSL: Heap buffer overflow on 32-bit systems from large X.509 certificate processing"
+              },
+              "fullDescription": {
+                "text": "Issue summary: Converting an excessively large OCTET STRING value to\na hexadecimal string leads to a heap buffer overflow on 32 bit platforms.\n\nImpact summary: A heap buffer overflow may lead to a crash or possibly\nan attacker controlled code execution or other undefined behavior.\n\nIf an attacker can supply a crafted X.509 certificate with an excessively\nlarge OCTET STRING value in extensions such as the Subject Key Identifier\n(SKID) or Authority Key Identifier (AKID) which are being converted to hex,\nthe size of the buffer needed for the result is calculated as multiplication\nof the input length by 3. On 32 bit platforms, this multiplication may overflow\nresulting in the allocation of a smaller buffer and a heap buffer overflow.\n\nApplications and services that print or log contents of untrusted X.509\ncertificates are vulnerable to this issue. As the certificates would have\nto have sizes of over 1 Gigabyte, printing or logging such certificates\nis a fairly unlikely operation and only 32 bit platforms are affected,\nthis issue was assigned Low severity.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-31789",
+              "help": {
+                "text": "Vulnerability CVE-2026-31789\nSeverity: CRITICAL\nPackage: libssl3\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-31789](https://avd.aquasec.com/nvd/cve-2026-31789)\nIssue summary: Converting an excessively large OCTET STRING value to\na hexadecimal string leads to a heap buffer overflow on 32 bit platforms.\n\nImpact summary: A heap buffer overflow may lead to a crash or possibly\nan attacker controlled code execution or other undefined behavior.\n\nIf an attacker can supply a crafted X.509 certificate with an excessively\nlarge OCTET STRING value in extensions such as the Subject Key Identifier\n(SKID) or Authority Key Identifier (AKID) which are being converted to hex,\nthe size of the buffer needed for the result is calculated as multiplication\nof the input length by 3. On 32 bit platforms, this multiplication may overflow\nresulting in the allocation of a smaller buffer and a heap buffer overflow.\n\nApplications and services that print or log contents of untrusted X.509\ncertificates are vulnerable to this issue. As the certificates would have\nto have sizes of over 1 Gigabyte, printing or logging such certificates\nis a fairly unlikely operation and only 32 bit platforms are affected,\nthis issue was assigned Low severity.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary.",
+                "markdown": "**Vulnerability CVE-2026-31789**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|libssl3|3.3.7-r0|[CVE-2026-31789](https://avd.aquasec.com/nvd/cve-2026-31789)|\n\nIssue summary: Converting an excessively large OCTET STRING value to\na hexadecimal string leads to a heap buffer overflow on 32 bit platforms.\n\nImpact summary: A heap buffer overflow may lead to a crash or possibly\nan attacker controlled code execution or other undefined behavior.\n\nIf an attacker can supply a crafted X.509 certificate with an excessively\nlarge OCTET STRING value in extensions such as the Subject Key Identifier\n(SKID) or Authority Key Identifier (AKID) which are being converted to hex,\nthe size of the buffer needed for the result is calculated as multiplication\nof the input length by 3. On 32 bit platforms, this multiplication may overflow\nresulting in the allocation of a smaller buffer and a heap buffer overflow.\n\nApplications and services that print or log contents of untrusted X.509\ncertificates are vulnerable to this issue. As the certificates would have\nto have sizes of over 1 Gigabyte, printing or logging such certificates\nis a fairly unlikely operation and only 32 bit platforms are affected,\nthis issue was assigned Low severity.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary."
+              },
+              "properties": {
+                "cvssv3_baseScore": 9.8,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-15467",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: OpenSSL: Remote code execution or Denial of Service via oversized Initialization Vector in CMS parsing"
+              },
+              "fullDescription": {
+                "text": "Issue summary: Parsing CMS AuthEnvelopedData or EnvelopedData message with\nmaliciously crafted AEAD parameters can trigger a stack buffer overflow.\n\nImpact summary: A stack buffer overflow may lead to a crash, causing Denial\nof Service, or potentially remote code execution.\n\nWhen parsing CMS (Auth)EnvelopedData structures that use AEAD ciphers such as\nAES-GCM, the IV (Initialization Vector) encoded in the ASN.1 parameters is\ncopied into a fixed-size stack buffer without verifying that its length fits\nthe destination. An attacker can supply a crafted CMS message with an\noversized IV, causing a stack-based out-of-bounds write before any\nauthentication or tag verification occurs.\n\nApplications and services that parse untrusted CMS or PKCS#7 content using\nAEAD ciphers (e.g., S/MIME (Auth)EnvelopedData with AES-GCM) are vulnerable.\nBecause the overflow occurs prior to authentication, no valid key material\nis required to trigger it. While exploitability to remote code execution\ndepends on platform and toolchain mitigations, the stack-based write\nprimitive represents a severe risk.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the CMS implementation is outside the OpenSSL FIPS module\nboundary.\n\nOpenSSL 3.6, 3.5, 3.4, 3.3 and 3.0 are vulnerable to this issue.\n\nOpenSSL 1.1.1 and 1.0.2 are not affected by this issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-15467",
+              "help": {
+                "text": "Vulnerability CVE-2025-15467\nSeverity: HIGH\nPackage: libssl3\nFixed Version: 3.3.6-r0\nLink: [CVE-2025-15467](https://avd.aquasec.com/nvd/cve-2025-15467)\nIssue summary: Parsing CMS AuthEnvelopedData or EnvelopedData message with\nmaliciously crafted AEAD parameters can trigger a stack buffer overflow.\n\nImpact summary: A stack buffer overflow may lead to a crash, causing Denial\nof Service, or potentially remote code execution.\n\nWhen parsing CMS (Auth)EnvelopedData structures that use AEAD ciphers such as\nAES-GCM, the IV (Initialization Vector) encoded in the ASN.1 parameters is\ncopied into a fixed-size stack buffer without verifying that its length fits\nthe destination. An attacker can supply a crafted CMS message with an\noversized IV, causing a stack-based out-of-bounds write before any\nauthentication or tag verification occurs.\n\nApplications and services that parse untrusted CMS or PKCS#7 content using\nAEAD ciphers (e.g., S/MIME (Auth)EnvelopedData with AES-GCM) are vulnerable.\nBecause the overflow occurs prior to authentication, no valid key material\nis required to trigger it. While exploitability to remote code execution\ndepends on platform and toolchain mitigations, the stack-based write\nprimitive represents a severe risk.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the CMS implementation is outside the OpenSSL FIPS module\nboundary.\n\nOpenSSL 3.6, 3.5, 3.4, 3.3 and 3.0 are vulnerable to this issue.\n\nOpenSSL 1.1.1 and 1.0.2 are not affected by this issue.",
+                "markdown": "**Vulnerability CVE-2025-15467**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libssl3|3.3.6-r0|[CVE-2025-15467](https://avd.aquasec.com/nvd/cve-2025-15467)|\n\nIssue summary: Parsing CMS AuthEnvelopedData or EnvelopedData message with\nmaliciously crafted AEAD parameters can trigger a stack buffer overflow.\n\nImpact summary: A stack buffer overflow may lead to a crash, causing Denial\nof Service, or potentially remote code execution.\n\nWhen parsing CMS (Auth)EnvelopedData structures that use AEAD ciphers such as\nAES-GCM, the IV (Initialization Vector) encoded in the ASN.1 parameters is\ncopied into a fixed-size stack buffer without verifying that its length fits\nthe destination. An attacker can supply a crafted CMS message with an\noversized IV, causing a stack-based out-of-bounds write before any\nauthentication or tag verification occurs.\n\nApplications and services that parse untrusted CMS or PKCS#7 content using\nAEAD ciphers (e.g., S/MIME (Auth)EnvelopedData with AES-GCM) are vulnerable.\nBecause the overflow occurs prior to authentication, no valid key material\nis required to trigger it. While exploitability to remote code execution\ndepends on platform and toolchain mitigations, the stack-based write\nprimitive represents a severe risk.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the CMS implementation is outside the OpenSSL FIPS module\nboundary.\n\nOpenSSL 3.6, 3.5, 3.4, 3.3 and 3.0 are vulnerable to this issue.\n\nOpenSSL 1.1.1 and 1.0.2 are not affected by this issue."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-69421",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: OpenSSL: Denial of Service via malformed PKCS#12 file processing"
+              },
+              "fullDescription": {
+                "text": "Issue summary: Processing a malformed PKCS#12 file can trigger a NULL pointer\ndereference in the PKCS12_item_decrypt_d2i_ex() function.\n\nImpact summary: A NULL pointer dereference can trigger a crash which leads to\nDenial of Service for an application processing PKCS#12 files.\n\nThe PKCS12_item_decrypt_d2i_ex() function does not check whether the oct\nparameter is NULL before dereferencing it. When called from\nPKCS12_unpack_p7encdata() with a malformed PKCS#12 file, this parameter can\nbe NULL, causing a crash. The vulnerability is limited to Denial of Service\nand cannot be escalated to achieve code execution or memory disclosure.\n\nExploiting this issue requires an attacker to provide a malformed PKCS#12 file\nto an application that processes it. For that reason the issue was assessed as\nLow severity according to our Security Policy.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this issue,\nas the PKCS#12 implementation is outside the OpenSSL FIPS module boundary.\n\nOpenSSL 3.6, 3.5, 3.4, 3.3, 3.0, 1.1.1 and 1.0.2 are vulnerable to this issue."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-69421",
+              "help": {
+                "text": "Vulnerability CVE-2025-69421\nSeverity: HIGH\nPackage: libssl3\nFixed Version: 3.3.6-r0\nLink: [CVE-2025-69421](https://avd.aquasec.com/nvd/cve-2025-69421)\nIssue summary: Processing a malformed PKCS#12 file can trigger a NULL pointer\ndereference in the PKCS12_item_decrypt_d2i_ex() function.\n\nImpact summary: A NULL pointer dereference can trigger a crash which leads to\nDenial of Service for an application processing PKCS#12 files.\n\nThe PKCS12_item_decrypt_d2i_ex() function does not check whether the oct\nparameter is NULL before dereferencing it. When called from\nPKCS12_unpack_p7encdata() with a malformed PKCS#12 file, this parameter can\nbe NULL, causing a crash. The vulnerability is limited to Denial of Service\nand cannot be escalated to achieve code execution or memory disclosure.\n\nExploiting this issue requires an attacker to provide a malformed PKCS#12 file\nto an application that processes it. For that reason the issue was assessed as\nLow severity according to our Security Policy.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this issue,\nas the PKCS#12 implementation is outside the OpenSSL FIPS module boundary.\n\nOpenSSL 3.6, 3.5, 3.4, 3.3, 3.0, 1.1.1 and 1.0.2 are vulnerable to this issue.",
+                "markdown": "**Vulnerability CVE-2025-69421**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libssl3|3.3.6-r0|[CVE-2025-69421](https://avd.aquasec.com/nvd/cve-2025-69421)|\n\nIssue summary: Processing a malformed PKCS#12 file can trigger a NULL pointer\ndereference in the PKCS12_item_decrypt_d2i_ex() function.\n\nImpact summary: A NULL pointer dereference can trigger a crash which leads to\nDenial of Service for an application processing PKCS#12 files.\n\nThe PKCS12_item_decrypt_d2i_ex() function does not check whether the oct\nparameter is NULL before dereferencing it. When called from\nPKCS12_unpack_p7encdata() with a malformed PKCS#12 file, this parameter can\nbe NULL, causing a crash. The vulnerability is limited to Denial of Service\nand cannot be escalated to achieve code execution or memory disclosure.\n\nExploiting this issue requires an attacker to provide a malformed PKCS#12 file\nto an application that processes it. For that reason the issue was assessed as\nLow severity according to our Security Policy.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this issue,\nas the PKCS#12 implementation is outside the OpenSSL FIPS module boundary.\n\nOpenSSL 3.6, 3.5, 3.4, 3.3, 3.0, 1.1.1 and 1.0.2 are vulnerable to this issue."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-28387",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: OpenSSL: Arbitrary code execution due to use-after-free in DANE TLSA authentication"
+              },
+              "fullDescription": {
+                "text": "Issue summary: An uncommon configuration of clients performing DANE TLSA-based\nserver authentication, when paired with uncommon server DANE TLSA records, may\nresult in a use-after-free and/or double-free on the client side.\n\nImpact summary: A use after free can have a range of potential consequences\nsuch as the corruption of valid data, crashes or execution of arbitrary code.\n\nHowever, the issue only affects clients that make use of TLSA records with both\nthe PKIX-TA(0/PKIX-EE(1) certificate usages and the DANE-TA(2) certificate\nusage.\n\nBy far the most common deployment of DANE is in SMTP MTAs for which RFC7672\nrecommends that clients treat as 'unusable' any TLSA records that have the PKIX\ncertificate usages.  These SMTP (or other similar) clients are not vulnerable\nto this issue.  Conversely, any clients that support only the PKIX usages, and\nignore the DANE-TA(2) usage are also not vulnerable.\n\nThe client would also need to be communicating with a server that publishes a\nTLSA RRset with both types of TLSA records.\n\nNo FIPS modules are affected by this issue, the problem code is outside the\nFIPS module boundary."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-28387",
+              "help": {
+                "text": "Vulnerability CVE-2026-28387\nSeverity: HIGH\nPackage: libssl3\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28387](https://avd.aquasec.com/nvd/cve-2026-28387)\nIssue summary: An uncommon configuration of clients performing DANE TLSA-based\nserver authentication, when paired with uncommon server DANE TLSA records, may\nresult in a use-after-free and/or double-free on the client side.\n\nImpact summary: A use after free can have a range of potential consequences\nsuch as the corruption of valid data, crashes or execution of arbitrary code.\n\nHowever, the issue only affects clients that make use of TLSA records with both\nthe PKIX-TA(0/PKIX-EE(1) certificate usages and the DANE-TA(2) certificate\nusage.\n\nBy far the most common deployment of DANE is in SMTP MTAs for which RFC7672\nrecommends that clients treat as 'unusable' any TLSA records that have the PKIX\ncertificate usages.  These SMTP (or other similar) clients are not vulnerable\nto this issue.  Conversely, any clients that support only the PKIX usages, and\nignore the DANE-TA(2) usage are also not vulnerable.\n\nThe client would also need to be communicating with a server that publishes a\nTLSA RRset with both types of TLSA records.\n\nNo FIPS modules are affected by this issue, the problem code is outside the\nFIPS module boundary.",
+                "markdown": "**Vulnerability CVE-2026-28387**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libssl3|3.3.7-r0|[CVE-2026-28387](https://avd.aquasec.com/nvd/cve-2026-28387)|\n\nIssue summary: An uncommon configuration of clients performing DANE TLSA-based\nserver authentication, when paired with uncommon server DANE TLSA records, may\nresult in a use-after-free and/or double-free on the client side.\n\nImpact summary: A use after free can have a range of potential consequences\nsuch as the corruption of valid data, crashes or execution of arbitrary code.\n\nHowever, the issue only affects clients that make use of TLSA records with both\nthe PKIX-TA(0/PKIX-EE(1) certificate usages and the DANE-TA(2) certificate\nusage.\n\nBy far the most common deployment of DANE is in SMTP MTAs for which RFC7672\nrecommends that clients treat as 'unusable' any TLSA records that have the PKIX\ncertificate usages.  These SMTP (or other similar) clients are not vulnerable\nto this issue.  Conversely, any clients that support only the PKIX usages, and\nignore the DANE-TA(2) usage are also not vulnerable.\n\nThe client would also need to be communicating with a server that publishes a\nTLSA RRset with both types of TLSA records.\n\nNo FIPS modules are affected by this issue, the problem code is outside the\nFIPS module boundary."
+              },
+              "properties": {
+                "cvssv3_baseScore": 8.1,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "8.1",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-28388",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: OpenSSL: Denial of Service due to NULL pointer dereference in delta CRL processing"
+              },
+              "fullDescription": {
+                "text": "Issue summary: When a delta CRL that contains a Delta CRL Indicator extension\nis processed a NULL pointer dereference might happen if the required CRL\nNumber extension is missing.\n\nImpact summary: A NULL pointer dereference can trigger a crash which\nleads to a Denial of Service for an application.\n\nWhen CRL processing and delta CRL processing is enabled during X.509\ncertificate verification, the delta CRL processing does not check\nwhether the CRL Number extension is NULL before dereferencing it.\nWhen a malformed delta CRL file is being processed, this parameter\ncan be NULL, causing a NULL pointer dereference.\n\nExploiting this issue requires the X509_V_FLAG_USE_DELTAS flag to be enabled in\nthe verification context, the certificate being verified to contain a\nfreshestCRL extension or the base CRL to have the EXFLAG_FRESHEST flag set, and\nan attacker to provide a malformed CRL to an application that processes it.\n\nThe vulnerability is limited to Denial of Service and cannot be escalated to\nachieve code execution or memory disclosure. For that reason the issue was\nassessed as Low severity according to our Security Policy.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this issue,\nas the affected code is outside the OpenSSL FIPS module boundary."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-28388",
+              "help": {
+                "text": "Vulnerability CVE-2026-28388\nSeverity: HIGH\nPackage: libssl3\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28388](https://avd.aquasec.com/nvd/cve-2026-28388)\nIssue summary: When a delta CRL that contains a Delta CRL Indicator extension\nis processed a NULL pointer dereference might happen if the required CRL\nNumber extension is missing.\n\nImpact summary: A NULL pointer dereference can trigger a crash which\nleads to a Denial of Service for an application.\n\nWhen CRL processing and delta CRL processing is enabled during X.509\ncertificate verification, the delta CRL processing does not check\nwhether the CRL Number extension is NULL before dereferencing it.\nWhen a malformed delta CRL file is being processed, this parameter\ncan be NULL, causing a NULL pointer dereference.\n\nExploiting this issue requires the X509_V_FLAG_USE_DELTAS flag to be enabled in\nthe verification context, the certificate being verified to contain a\nfreshestCRL extension or the base CRL to have the EXFLAG_FRESHEST flag set, and\nan attacker to provide a malformed CRL to an application that processes it.\n\nThe vulnerability is limited to Denial of Service and cannot be escalated to\nachieve code execution or memory disclosure. For that reason the issue was\nassessed as Low severity according to our Security Policy.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this issue,\nas the affected code is outside the OpenSSL FIPS module boundary.",
+                "markdown": "**Vulnerability CVE-2026-28388**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libssl3|3.3.7-r0|[CVE-2026-28388](https://avd.aquasec.com/nvd/cve-2026-28388)|\n\nIssue summary: When a delta CRL that contains a Delta CRL Indicator extension\nis processed a NULL pointer dereference might happen if the required CRL\nNumber extension is missing.\n\nImpact summary: A NULL pointer dereference can trigger a crash which\nleads to a Denial of Service for an application.\n\nWhen CRL processing and delta CRL processing is enabled during X.509\ncertificate verification, the delta CRL processing does not check\nwhether the CRL Number extension is NULL before dereferencing it.\nWhen a malformed delta CRL file is being processed, this parameter\ncan be NULL, causing a NULL pointer dereference.\n\nExploiting this issue requires the X509_V_FLAG_USE_DELTAS flag to be enabled in\nthe verification context, the certificate being verified to contain a\nfreshestCRL extension or the base CRL to have the EXFLAG_FRESHEST flag set, and\nan attacker to provide a malformed CRL to an application that processes it.\n\nThe vulnerability is limited to Denial of Service and cannot be escalated to\nachieve code execution or memory disclosure. For that reason the issue was\nassessed as Low severity according to our Security Policy.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this issue,\nas the affected code is outside the OpenSSL FIPS module boundary."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-28389",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: OpenSSL: Denial of Service vulnerability in CMS processing"
+              },
+              "fullDescription": {
+                "text": "Issue summary: During processing of a crafted CMS EnvelopedData message\nwith KeyAgreeRecipientInfo a NULL pointer dereference can happen.\n\nImpact summary: Applications that process attacker-controlled CMS data may\ncrash before authentication or cryptographic operations occur resulting in\nDenial of Service.\n\nWhen a CMS EnvelopedData message that uses KeyAgreeRecipientInfo is\nprocessed, the optional parameters field of KeyEncryptionAlgorithmIdentifier\nis examined without checking for its presence. This results in a NULL\npointer dereference if the field is missing.\n\nApplications and services that call CMS_decrypt() on untrusted input\n(e.g., S/MIME processing or CMS-based protocols) are vulnerable.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-28389",
+              "help": {
+                "text": "Vulnerability CVE-2026-28389\nSeverity: HIGH\nPackage: libssl3\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28389](https://avd.aquasec.com/nvd/cve-2026-28389)\nIssue summary: During processing of a crafted CMS EnvelopedData message\nwith KeyAgreeRecipientInfo a NULL pointer dereference can happen.\n\nImpact summary: Applications that process attacker-controlled CMS data may\ncrash before authentication or cryptographic operations occur resulting in\nDenial of Service.\n\nWhen a CMS EnvelopedData message that uses KeyAgreeRecipientInfo is\nprocessed, the optional parameters field of KeyEncryptionAlgorithmIdentifier\nis examined without checking for its presence. This results in a NULL\npointer dereference if the field is missing.\n\nApplications and services that call CMS_decrypt() on untrusted input\n(e.g., S/MIME processing or CMS-based protocols) are vulnerable.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary.",
+                "markdown": "**Vulnerability CVE-2026-28389**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libssl3|3.3.7-r0|[CVE-2026-28389](https://avd.aquasec.com/nvd/cve-2026-28389)|\n\nIssue summary: During processing of a crafted CMS EnvelopedData message\nwith KeyAgreeRecipientInfo a NULL pointer dereference can happen.\n\nImpact summary: Applications that process attacker-controlled CMS data may\ncrash before authentication or cryptographic operations occur resulting in\nDenial of Service.\n\nWhen a CMS EnvelopedData message that uses KeyAgreeRecipientInfo is\nprocessed, the optional parameters field of KeyEncryptionAlgorithmIdentifier\nis examined without checking for its presence. This results in a NULL\npointer dereference if the field is missing.\n\nApplications and services that call CMS_decrypt() on untrusted input\n(e.g., S/MIME processing or CMS-based protocols) are vulnerable.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-28390",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: OpenSSL: Denial of Service due to NULL pointer dereference in CMS EnvelopedData processing"
+              },
+              "fullDescription": {
+                "text": "Issue summary: During processing of a crafted CMS EnvelopedData message\nwith KeyTransportRecipientInfo a NULL pointer dereference can happen.\n\nImpact summary: Applications that process attacker-controlled CMS data may\ncrash before authentication or cryptographic operations occur resulting in\nDenial of Service.\n\nWhen a CMS EnvelopedData message that uses KeyTransportRecipientInfo with\nRSA-OAEP encryption is processed, the optional parameters field of\nRSA-OAEP SourceFunc algorithm identifier is examined without checking\nfor its presence. This results in a NULL pointer dereference if the field\nis missing.\n\nApplications and services that call CMS_decrypt() on untrusted input\n(e.g., S/MIME processing or CMS-based protocols) are vulnerable.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-28390",
+              "help": {
+                "text": "Vulnerability CVE-2026-28390\nSeverity: HIGH\nPackage: libssl3\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28390](https://avd.aquasec.com/nvd/cve-2026-28390)\nIssue summary: During processing of a crafted CMS EnvelopedData message\nwith KeyTransportRecipientInfo a NULL pointer dereference can happen.\n\nImpact summary: Applications that process attacker-controlled CMS data may\ncrash before authentication or cryptographic operations occur resulting in\nDenial of Service.\n\nWhen a CMS EnvelopedData message that uses KeyTransportRecipientInfo with\nRSA-OAEP encryption is processed, the optional parameters field of\nRSA-OAEP SourceFunc algorithm identifier is examined without checking\nfor its presence. This results in a NULL pointer dereference if the field\nis missing.\n\nApplications and services that call CMS_decrypt() on untrusted input\n(e.g., S/MIME processing or CMS-based protocols) are vulnerable.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary.",
+                "markdown": "**Vulnerability CVE-2026-28390**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libssl3|3.3.7-r0|[CVE-2026-28390](https://avd.aquasec.com/nvd/cve-2026-28390)|\n\nIssue summary: During processing of a crafted CMS EnvelopedData message\nwith KeyTransportRecipientInfo a NULL pointer dereference can happen.\n\nImpact summary: Applications that process attacker-controlled CMS data may\ncrash before authentication or cryptographic operations occur resulting in\nDenial of Service.\n\nWhen a CMS EnvelopedData message that uses KeyTransportRecipientInfo with\nRSA-OAEP encryption is processed, the optional parameters field of\nRSA-OAEP SourceFunc algorithm identifier is examined without checking\nfor its presence. This results in a NULL pointer dereference if the field\nis missing.\n\nApplications and services that call CMS_decrypt() on untrusted input\n(e.g., S/MIME processing or CMS-based protocols) are vulnerable.\n\nThe FIPS modules in 3.6, 3.5, 3.4, 3.3 and 3.0 are not affected by this\nissue, as the affected code is outside the OpenSSL FIPS module boundary."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-59375",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "firefox: thunderbird: expat: libexpat in Expat allows attackers to trigger large dynamic memory allocations via a small document that is submitted for parsing"
+              },
+              "fullDescription": {
+                "text": "libexpat in Expat before 2.7.2 allows attackers to trigger large dynamic memory allocations via a small document that is submitted for parsing."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-59375",
+              "help": {
+                "text": "Vulnerability CVE-2025-59375\nSeverity: HIGH\nPackage: libexpat\nFixed Version: 2.7.2-r0\nLink: [CVE-2025-59375](https://avd.aquasec.com/nvd/cve-2025-59375)\nlibexpat in Expat before 2.7.2 allows attackers to trigger large dynamic memory allocations via a small document that is submitted for parsing.",
+                "markdown": "**Vulnerability CVE-2025-59375**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libexpat|2.7.2-r0|[CVE-2025-59375](https://avd.aquasec.com/nvd/cve-2025-59375)|\n\nlibexpat in Expat before 2.7.2 allows attackers to trigger large dynamic memory allocations via a small document that is submitted for parsing."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-25210",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libexpat: libexpat: Information disclosure and data integrity issues due to integer overflow in buffer reallocation"
+              },
+              "fullDescription": {
+                "text": "In libexpat before 2.7.4, the doContent function does not properly determine the buffer size bufSize because there is no integer overflow check for tag buffer reallocation."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-25210",
+              "help": {
+                "text": "Vulnerability CVE-2026-25210\nSeverity: HIGH\nPackage: libexpat\nFixed Version: 2.7.4-r0\nLink: [CVE-2026-25210](https://avd.aquasec.com/nvd/cve-2026-25210)\nIn libexpat before 2.7.4, the doContent function does not properly determine the buffer size bufSize because there is no integer overflow check for tag buffer reallocation.",
+                "markdown": "**Vulnerability CVE-2026-25210**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libexpat|2.7.4-r0|[CVE-2026-25210](https://avd.aquasec.com/nvd/cve-2026-25210)|\n\nIn libexpat before 2.7.4, the doContent function does not properly determine the buffer size bufSize because there is no integer overflow check for tag buffer reallocation."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.8,
+                "cvssv3_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "7.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-64720",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libpng: LIBPNG buffer overflow"
+              },
+              "fullDescription": {
+                "text": "LIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From version 1.6.0 to before 1.6.51, an out-of-bounds read vulnerability exists in png_image_read_composite when processing palette images with PNG_FLAG_OPTIMIZE_ALPHA enabled. The palette compositing code in png_init_read_transformations incorrectly applies background compositing during premultiplication, violating the invariant component ≤ alpha × 257 required by the simplified PNG API. This issue has been patched in version 1.6.51."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-64720",
+              "help": {
+                "text": "Vulnerability CVE-2025-64720\nSeverity: HIGH\nPackage: libpng\nFixed Version: 1.6.53-r0\nLink: [CVE-2025-64720](https://avd.aquasec.com/nvd/cve-2025-64720)\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From version 1.6.0 to before 1.6.51, an out-of-bounds read vulnerability exists in png_image_read_composite when processing palette images with PNG_FLAG_OPTIMIZE_ALPHA enabled. The palette compositing code in png_init_read_transformations incorrectly applies background compositing during premultiplication, violating the invariant component ≤ alpha × 257 required by the simplified PNG API. This issue has been patched in version 1.6.51.",
+                "markdown": "**Vulnerability CVE-2025-64720**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libpng|1.6.53-r0|[CVE-2025-64720](https://avd.aquasec.com/nvd/cve-2025-64720)|\n\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From version 1.6.0 to before 1.6.51, an out-of-bounds read vulnerability exists in png_image_read_composite when processing palette images with PNG_FLAG_OPTIMIZE_ALPHA enabled. The palette compositing code in png_init_read_transformations incorrectly applies background compositing during premultiplication, violating the invariant component ≤ alpha × 257 required by the simplified PNG API. This issue has been patched in version 1.6.51."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-65018",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libpng: LIBPNG heap buffer overflow"
+              },
+              "fullDescription": {
+                "text": "LIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From version 1.6.0 to before 1.6.51, there is a heap buffer overflow vulnerability in the libpng simplified API function png_image_finish_read when processing 16-bit interlaced PNGs with 8-bit output format. Attacker-crafted interlaced PNG files cause heap writes beyond allocated buffer bounds. This issue has been patched in version 1.6.51."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-65018",
+              "help": {
+                "text": "Vulnerability CVE-2025-65018\nSeverity: HIGH\nPackage: libpng\nFixed Version: 1.6.53-r0\nLink: [CVE-2025-65018](https://avd.aquasec.com/nvd/cve-2025-65018)\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From version 1.6.0 to before 1.6.51, there is a heap buffer overflow vulnerability in the libpng simplified API function png_image_finish_read when processing 16-bit interlaced PNGs with 8-bit output format. Attacker-crafted interlaced PNG files cause heap writes beyond allocated buffer bounds. This issue has been patched in version 1.6.51.",
+                "markdown": "**Vulnerability CVE-2025-65018**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libpng|1.6.53-r0|[CVE-2025-65018](https://avd.aquasec.com/nvd/cve-2025-65018)|\n\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From version 1.6.0 to before 1.6.51, there is a heap buffer overflow vulnerability in the libpng simplified API function png_image_finish_read when processing 16-bit interlaced PNGs with 8-bit output format. Attacker-crafted interlaced PNG files cause heap writes beyond allocated buffer bounds. This issue has been patched in version 1.6.51."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-66293",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libpng: LIBPNG out-of-bounds read in png_image_read_composite"
+              },
+              "fullDescription": {
+                "text": "LIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. Prior to 1.6.52, an out-of-bounds read vulnerability in libpng's simplified API allows reading up to 1012 bytes beyond the png_sRGB_base[512] array when processing valid palette PNG images with partial transparency and gamma correction. The PNG files that trigger this vulnerability are valid per the PNG specification; the bug is in libpng's internal state management. Upgrade to libpng 1.6.52 or later."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-66293",
+              "help": {
+                "text": "Vulnerability CVE-2025-66293\nSeverity: HIGH\nPackage: libpng\nFixed Version: 1.6.53-r0\nLink: [CVE-2025-66293](https://avd.aquasec.com/nvd/cve-2025-66293)\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. Prior to 1.6.52, an out-of-bounds read vulnerability in libpng's simplified API allows reading up to 1012 bytes beyond the png_sRGB_base[512] array when processing valid palette PNG images with partial transparency and gamma correction. The PNG files that trigger this vulnerability are valid per the PNG specification; the bug is in libpng's internal state management. Upgrade to libpng 1.6.52 or later.",
+                "markdown": "**Vulnerability CVE-2025-66293**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libpng|1.6.53-r0|[CVE-2025-66293](https://avd.aquasec.com/nvd/cve-2025-66293)|\n\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. Prior to 1.6.52, an out-of-bounds read vulnerability in libpng's simplified API allows reading up to 1012 bytes beyond the png_sRGB_base[512] array when processing valid palette PNG images with partial transparency and gamma correction. The PNG files that trigger this vulnerability are valid per the PNG specification; the bug is in libpng's internal state management. Upgrade to libpng 1.6.52 or later."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-22695",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libpng: libpng: Denial of service and information disclosure via heap buffer over-read in png_image_finish_read"
+              },
+              "fullDescription": {
+                "text": "LIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From 1.6.51 to 1.6.53, there is a heap buffer over-read in the libpng simplified API function png_image_finish_read when processing interlaced 16-bit PNGs with 8-bit output format and non-minimal row stride. This is a regression introduced by the fix for CVE-2025-65018. This vulnerability is fixed in 1.6.54."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-22695",
+              "help": {
+                "text": "Vulnerability CVE-2026-22695\nSeverity: HIGH\nPackage: libpng\nFixed Version: 1.6.54-r0\nLink: [CVE-2026-22695](https://avd.aquasec.com/nvd/cve-2026-22695)\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From 1.6.51 to 1.6.53, there is a heap buffer over-read in the libpng simplified API function png_image_finish_read when processing interlaced 16-bit PNGs with 8-bit output format and non-minimal row stride. This is a regression introduced by the fix for CVE-2025-65018. This vulnerability is fixed in 1.6.54.",
+                "markdown": "**Vulnerability CVE-2026-22695**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libpng|1.6.54-r0|[CVE-2026-22695](https://avd.aquasec.com/nvd/cve-2026-22695)|\n\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From 1.6.51 to 1.6.53, there is a heap buffer over-read in the libpng simplified API function png_image_finish_read when processing interlaced 16-bit PNGs with 8-bit output format and non-minimal row stride. This is a regression introduced by the fix for CVE-2025-65018. This vulnerability is fixed in 1.6.54."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.1,
+                "cvssv3_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.1",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-22801",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libpng: libpng: Information disclosure and denial of service via integer truncation in simplified write API"
+              },
+              "fullDescription": {
+                "text": "LIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From 1.6.26 to 1.6.53, there is an integer truncation in the libpng simplified write API functions png_write_image_16bit and png_write_image_8bit causes heap buffer over-read when the caller provides a negative row stride (for bottom-up image layouts) or a stride exceeding 65535 bytes. The bug was introduced in libpng 1.6.26 (October 2016) by casts added to silence compiler warnings on 16-bit systems. This vulnerability is fixed in 1.6.54."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-22801",
+              "help": {
+                "text": "Vulnerability CVE-2026-22801\nSeverity: HIGH\nPackage: libpng\nFixed Version: 1.6.54-r0\nLink: [CVE-2026-22801](https://avd.aquasec.com/nvd/cve-2026-22801)\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From 1.6.26 to 1.6.53, there is an integer truncation in the libpng simplified write API functions png_write_image_16bit and png_write_image_8bit causes heap buffer over-read when the caller provides a negative row stride (for bottom-up image layouts) or a stride exceeding 65535 bytes. The bug was introduced in libpng 1.6.26 (October 2016) by casts added to silence compiler warnings on 16-bit systems. This vulnerability is fixed in 1.6.54.",
+                "markdown": "**Vulnerability CVE-2026-22801**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libpng|1.6.54-r0|[CVE-2026-22801](https://avd.aquasec.com/nvd/cve-2026-22801)|\n\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. From 1.6.26 to 1.6.53, there is an integer truncation in the libpng simplified write API functions png_write_image_16bit and png_write_image_8bit causes heap buffer over-read when the caller provides a negative row stride (for bottom-up image layouts) or a stride exceeding 65535 bytes. The bug was introduced in libpng 1.6.26 (October 2016) by casts added to silence compiler warnings on 16-bit systems. This vulnerability is fixed in 1.6.54."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.8,
+                "cvssv3_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "7.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-25646",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libpng: LIBPNG has a heap buffer overflow in png_set_quantize"
+              },
+              "fullDescription": {
+                "text": "LIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. Prior to 1.6.55, an out-of-bounds read vulnerability exists in the png_set_quantize() API function. When the function is called with no histogram and the number of colors in the palette is more than twice the maximum supported by the user's display, certain palettes will cause the function to enter into an infinite loop that reads past the end of an internal heap-allocated buffer. The images that trigger this vulnerability are valid per the PNG specification. This vulnerability is fixed in 1.6.55."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-25646",
+              "help": {
+                "text": "Vulnerability CVE-2026-25646\nSeverity: HIGH\nPackage: libpng\nFixed Version: 1.6.55-r0\nLink: [CVE-2026-25646](https://avd.aquasec.com/nvd/cve-2026-25646)\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. Prior to 1.6.55, an out-of-bounds read vulnerability exists in the png_set_quantize() API function. When the function is called with no histogram and the number of colors in the palette is more than twice the maximum supported by the user's display, certain palettes will cause the function to enter into an infinite loop that reads past the end of an internal heap-allocated buffer. The images that trigger this vulnerability are valid per the PNG specification. This vulnerability is fixed in 1.6.55.",
+                "markdown": "**Vulnerability CVE-2026-25646**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libpng|1.6.55-r0|[CVE-2026-25646](https://avd.aquasec.com/nvd/cve-2026-25646)|\n\nLIBPNG is a reference library for use in applications that read, create, and manipulate PNG (Portable Network Graphics) raster image files. Prior to 1.6.55, an out-of-bounds read vulnerability exists in the png_set_quantize() API function. When the function is called with no histogram and the number of colors in the palette is more than twice the maximum supported by the user's display, certain palettes will cause the function to enter into an infinite loop that reads past the end of an internal heap-allocated buffer. The images that trigger this vulnerability are valid per the PNG specification. This vulnerability is fixed in 1.6.55."
+              },
+              "properties": {
+                "cvssv3_baseScore": 8.1,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "8.1",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-32414",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libxml2: Out-of-Bounds Read in libxml2"
+              },
+              "fullDescription": {
+                "text": "In libxml2 before 2.13.8 and 2.14.x before 2.14.2, out-of-bounds memory access can occur in the Python API (Python bindings) because of an incorrect return value. This occurs in xmlPythonFileRead and xmlPythonFileReadRaw because of a difference between bytes and characters."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-32414",
+              "help": {
+                "text": "Vulnerability CVE-2025-32414\nSeverity: HIGH\nPackage: libxml2\nFixed Version: 2.13.4-r6\nLink: [CVE-2025-32414](https://avd.aquasec.com/nvd/cve-2025-32414)\nIn libxml2 before 2.13.8 and 2.14.x before 2.14.2, out-of-bounds memory access can occur in the Python API (Python bindings) because of an incorrect return value. This occurs in xmlPythonFileRead and xmlPythonFileReadRaw because of a difference between bytes and characters.",
+                "markdown": "**Vulnerability CVE-2025-32414**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libxml2|2.13.4-r6|[CVE-2025-32414](https://avd.aquasec.com/nvd/cve-2025-32414)|\n\nIn libxml2 before 2.13.8 and 2.14.x before 2.14.2, out-of-bounds memory access can occur in the Python API (Python bindings) because of an incorrect return value. This occurs in xmlPythonFileRead and xmlPythonFileReadRaw because of a difference between bytes and characters."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-32415",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libxml2: Out-of-bounds Read in xmlSchemaIDCFillNodeTables"
+              },
+              "fullDescription": {
+                "text": "In libxml2 before 2.13.8 and 2.14.x before 2.14.2, xmlSchemaIDCFillNodeTables in xmlschemas.c has a heap-based buffer under-read. To exploit this, a crafted XML document must be validated against an XML schema with certain identity constraints, or a crafted XML schema must be used."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-32415",
+              "help": {
+                "text": "Vulnerability CVE-2025-32415\nSeverity: HIGH\nPackage: libxml2\nFixed Version: 2.13.4-r6\nLink: [CVE-2025-32415](https://avd.aquasec.com/nvd/cve-2025-32415)\nIn libxml2 before 2.13.8 and 2.14.x before 2.14.2, xmlSchemaIDCFillNodeTables in xmlschemas.c has a heap-based buffer under-read. To exploit this, a crafted XML document must be validated against an XML schema with certain identity constraints, or a crafted XML schema must be used.",
+                "markdown": "**Vulnerability CVE-2025-32415**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libxml2|2.13.4-r6|[CVE-2025-32415](https://avd.aquasec.com/nvd/cve-2025-32415)|\n\nIn libxml2 before 2.13.8 and 2.14.x before 2.14.2, xmlSchemaIDCFillNodeTables in xmlschemas.c has a heap-based buffer under-read. To exploit this, a crafted XML document must be validated against an XML schema with certain identity constraints, or a crafted XML schema must be used."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-49794",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libxml: Heap use after free (UAF) leads to Denial of service (DoS)"
+              },
+              "fullDescription": {
+                "text": "A use-after-free vulnerability was found in libxml2. This issue occurs when parsing XPath elements under certain circumstances when the XML schematron has the \u003csch:name path=\"...\"/\u003e schema elements. This flaw allows a malicious actor to craft a malicious XML document used as input for libxml, resulting in the program's crash using libxml or other possible undefined behaviors."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-49794",
+              "help": {
+                "text": "Vulnerability CVE-2025-49794\nSeverity: HIGH\nPackage: libxml2\nFixed Version: 2.13.9-r0\nLink: [CVE-2025-49794](https://avd.aquasec.com/nvd/cve-2025-49794)\nA use-after-free vulnerability was found in libxml2. This issue occurs when parsing XPath elements under certain circumstances when the XML schematron has the \u003csch:name path=\"...\"/\u003e schema elements. This flaw allows a malicious actor to craft a malicious XML document used as input for libxml, resulting in the program's crash using libxml or other possible undefined behaviors.",
+                "markdown": "**Vulnerability CVE-2025-49794**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libxml2|2.13.9-r0|[CVE-2025-49794](https://avd.aquasec.com/nvd/cve-2025-49794)|\n\nA use-after-free vulnerability was found in libxml2. This issue occurs when parsing XPath elements under certain circumstances when the XML schematron has the \u003csch:name path=\"...\"/\u003e schema elements. This flaw allows a malicious actor to craft a malicious XML document used as input for libxml, resulting in the program's crash using libxml or other possible undefined behaviors."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-49795",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libxml: Null pointer dereference leads to Denial of service (DoS)"
+              },
+              "fullDescription": {
+                "text": "A NULL pointer dereference vulnerability was found in libxml2 when processing XPath XML expressions. This flaw allows an attacker to craft a malicious XML input to libxml2, leading to a denial of service."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-49795",
+              "help": {
+                "text": "Vulnerability CVE-2025-49795\nSeverity: HIGH\nPackage: libxml2\nFixed Version: 2.13.9-r0\nLink: [CVE-2025-49795](https://avd.aquasec.com/nvd/cve-2025-49795)\nA NULL pointer dereference vulnerability was found in libxml2 when processing XPath XML expressions. This flaw allows an attacker to craft a malicious XML input to libxml2, leading to a denial of service.",
+                "markdown": "**Vulnerability CVE-2025-49795**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libxml2|2.13.9-r0|[CVE-2025-49795](https://avd.aquasec.com/nvd/cve-2025-49795)|\n\nA NULL pointer dereference vulnerability was found in libxml2 when processing XPath XML expressions. This flaw allows an attacker to craft a malicious XML input to libxml2, leading to a denial of service."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2025-49796",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libxml: Type confusion leads to Denial of service (DoS)"
+              },
+              "fullDescription": {
+                "text": "A vulnerability was found in libxml2. Processing certain sch:name elements from the input XML file can trigger a memory corruption issue. This flaw allows an attacker to craft a malicious XML input file that can lead libxml to crash, resulting in a denial of service or other possible undefined behavior due to sensitive data being corrupted in memory."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2025-49796",
+              "help": {
+                "text": "Vulnerability CVE-2025-49796\nSeverity: HIGH\nPackage: libxml2\nFixed Version: 2.13.9-r0\nLink: [CVE-2025-49796](https://avd.aquasec.com/nvd/cve-2025-49796)\nA vulnerability was found in libxml2. Processing certain sch:name elements from the input XML file can trigger a memory corruption issue. This flaw allows an attacker to craft a malicious XML input file that can lead libxml to crash, resulting in a denial of service or other possible undefined behavior due to sensitive data being corrupted in memory.",
+                "markdown": "**Vulnerability CVE-2025-49796**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libxml2|2.13.9-r0|[CVE-2025-49796](https://avd.aquasec.com/nvd/cve-2025-49796)|\n\nA vulnerability was found in libxml2. Processing certain sch:name elements from the input XML file can trigger a memory corruption issue. This flaw allows an attacker to craft a malicious XML input file that can lead libxml to crash, resulting in a denial of service or other possible undefined behavior due to sensitive data being corrupted in memory."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-6732",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "libxml2: libxml2: Denial of Service via crafted XSD-validated document"
+              },
+              "fullDescription": {
+                "text": "A flaw was found in libxml2. This vulnerability occurs when the library processes a specially crafted XML Schema Definition (XSD) validated document that includes an internal entity reference. An attacker could exploit this by providing a malicious document, leading to a type confusion error that causes the application to crash. This results in a denial of service (DoS), making the affected system or application unavailable."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-6732",
+              "help": {
+                "text": "Vulnerability CVE-2026-6732\nSeverity: HIGH\nPackage: libxml2\nFixed Version: 2.13.9-r1\nLink: [CVE-2026-6732](https://avd.aquasec.com/nvd/cve-2026-6732)\nA flaw was found in libxml2. This vulnerability occurs when the library processes a specially crafted XML Schema Definition (XSD) validated document that includes an internal entity reference. An attacker could exploit this by providing a malicious document, leading to a type confusion error that causes the application to crash. This results in a denial of service (DoS), making the affected system or application unavailable.",
+                "markdown": "**Vulnerability CVE-2026-6732**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|libxml2|2.13.9-r1|[CVE-2026-6732](https://avd.aquasec.com/nvd/cve-2026-6732)|\n\nA flaw was found in libxml2. This vulnerability occurs when the library processes a specially crafted XML Schema Definition (XSD) validated document that includes an internal entity reference. An attacker could exploit this by providing a malicious document, leading to a type confusion error that causes the application to crash. This results in a denial of service (DoS), making the affected system or application unavailable."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.5,
+                "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-40200",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "musl: musl libc: Arbitrary code execution and denial of service via stack-based memory corruption in qsort"
+              },
+              "fullDescription": {
+                "text": "An issue was discovered in musl libc 0.7.10 through 1.2.6. Stack-based memory corruption can occur during qsort of very large arrays, due to incorrectly implemented double-word primitives. The number of elements must exceed about seven million, i.e., the 32nd Leonardo number on 32-bit platforms (or the 64th Leonardo number on 64-bit platforms, which is not practical)."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-40200",
+              "help": {
+                "text": "Vulnerability CVE-2026-40200\nSeverity: HIGH\nPackage: musl-utils\nFixed Version: 1.2.5-r11\nLink: [CVE-2026-40200](https://avd.aquasec.com/nvd/cve-2026-40200)\nAn issue was discovered in musl libc 0.7.10 through 1.2.6. Stack-based memory corruption can occur during qsort of very large arrays, due to incorrectly implemented double-word primitives. The number of elements must exceed about seven million, i.e., the 32nd Leonardo number on 32-bit platforms (or the 64th Leonardo number on 64-bit platforms, which is not practical).",
+                "markdown": "**Vulnerability CVE-2026-40200**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|musl-utils|1.2.5-r11|[CVE-2026-40200](https://avd.aquasec.com/nvd/cve-2026-40200)|\n\nAn issue was discovered in musl libc 0.7.10 through 1.2.6. Stack-based memory corruption can occur during qsort of very large arrays, due to incorrectly implemented double-word primitives. The number of elements must exceed about seven million, i.e., the 32nd Leonardo number on 32-bit platforms (or the 64th Leonardo number on 64-bit platforms, which is not practical)."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-27135",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "nghttp2: nghttp2: Denial of Service via malformed HTTP/2 frames after session termination"
+              },
+              "fullDescription": {
+                "text": "nghttp2 is an implementation of the Hypertext Transfer Protocol version 2 in C. Prior to version 1.68.1, the nghttp2 library stops reading the incoming data when user facing public API `nghttp2_session_terminate_session` or `nghttp2_session_terminate_session2` is called by the application. They might be called internally by the library when it detects the situation that is subject to connection error. Due to the missing internal state validation, the library keeps reading the rest of the data after one of those APIs is called. Then receiving a malformed frame that causes FRAME_SIZE_ERROR causes assertion failure. nghttp2 v1.68.1 adds missing state validation to avoid assertion failure. No known workarounds are available."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-27135",
+              "help": {
+                "text": "Vulnerability CVE-2026-27135\nSeverity: HIGH\nPackage: nghttp2-libs\nFixed Version: 1.68.1\nLink: [CVE-2026-27135](https://avd.aquasec.com/nvd/cve-2026-27135)\nnghttp2 is an implementation of the Hypertext Transfer Protocol version 2 in C. Prior to version 1.68.1, the nghttp2 library stops reading the incoming data when user facing public API `nghttp2_session_terminate_session` or `nghttp2_session_terminate_session2` is called by the application. They might be called internally by the library when it detects the situation that is subject to connection error. Due to the missing internal state validation, the library keeps reading the rest of the data after one of those APIs is called. Then receiving a malformed frame that causes FRAME_SIZE_ERROR causes assertion failure. nghttp2 v1.68.1 adds missing state validation to avoid assertion failure. No known workarounds are available.",
+                "markdown": "**Vulnerability CVE-2026-27135**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|nghttp2-libs|1.68.1|[CVE-2026-27135](https://avd.aquasec.com/nvd/cve-2026-27135)|\n\nnghttp2 is an implementation of the Hypertext Transfer Protocol version 2 in C. Prior to version 1.68.1, the nghttp2 library stops reading the incoming data when user facing public API `nghttp2_session_terminate_session` or `nghttp2_session_terminate_session2` is called by the application. They might be called internally by the library when it detects the situation that is subject to connection error. Due to the missing internal state validation, the library keeps reading the rest of the data after one of those APIs is called. Then receiving a malformed frame that causes FRAME_SIZE_ERROR causes assertion failure. nghttp2 v1.68.1 adds missing state validation to avoid assertion failure. No known workarounds are available."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2026-22184",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "zlib: zlib: Arbitrary code execution via buffer overflow in untgz utility"
+              },
+              "fullDescription": {
+                "text": "zlib versions up to and including 1.3.1.2 include a global buffer overflow in the untgz utility located under contrib/untgz. The vulnerability is limited to the standalone demonstration utility and does not affect the core zlib compression library. The flaw occurs when a user executes the untgz command with an excessively long archive name supplied via the command line, leading to an out-of-bounds write in a fixed-size global buffer."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-22184",
+              "help": {
+                "text": "Vulnerability CVE-2026-22184\nSeverity: HIGH\nPackage: zlib\nFixed Version: 1.3.2-r0\nLink: [CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184)\nzlib versions up to and including 1.3.1.2 include a global buffer overflow in the untgz utility located under contrib/untgz. The vulnerability is limited to the standalone demonstration utility and does not affect the core zlib compression library. The flaw occurs when a user executes the untgz command with an excessively long archive name supplied via the command line, leading to an out-of-bounds write in a fixed-size global buffer.",
+                "markdown": "**Vulnerability CVE-2026-22184**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|zlib|1.3.2-r0|[CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184)|\n\nzlib versions up to and including 1.3.1.2 include a global buffer overflow in the untgz utility located under contrib/untgz. The vulnerability is limited to the standalone demonstration utility and does not affect the core zlib compression library. The flaw occurs when a user executes the untgz command with an excessively long archive name supplied via the command line, leading to an out-of-bounds write in a fixed-size global buffer."
+              },
+              "properties": {
+                "cvssv3_baseScore": 7.8,
+                "cvssv3_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                "precision": "very-high",
+                "security-severity": "7.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            }
+          ],
+          "version": "0.71.0"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2026-31789",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Package: libcrypto3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-31789\nSeverity: CRITICAL\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-31789](https://avd.aquasec.com/nvd/cve-2026-31789)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libcrypto3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-15467",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "Package: libcrypto3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2025-15467\nSeverity: HIGH\nFixed Version: 3.3.6-r0\nLink: [CVE-2025-15467](https://avd.aquasec.com/nvd/cve-2025-15467)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libcrypto3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-69421",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Package: libcrypto3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2025-69421\nSeverity: HIGH\nFixed Version: 3.3.6-r0\nLink: [CVE-2025-69421](https://avd.aquasec.com/nvd/cve-2025-69421)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libcrypto3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-28387",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Package: libcrypto3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-28387\nSeverity: HIGH\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28387](https://avd.aquasec.com/nvd/cve-2026-28387)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libcrypto3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-28388",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Package: libcrypto3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-28388\nSeverity: HIGH\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28388](https://avd.aquasec.com/nvd/cve-2026-28388)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libcrypto3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-28389",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Package: libcrypto3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-28389\nSeverity: HIGH\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28389](https://avd.aquasec.com/nvd/cve-2026-28389)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libcrypto3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-28390",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "Package: libcrypto3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-28390\nSeverity: HIGH\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28390](https://avd.aquasec.com/nvd/cve-2026-28390)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libcrypto3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-59375",
+          "ruleIndex": 7,
+          "level": "error",
+          "message": {
+            "text": "Package: libexpat\nInstalled Version: 2.7.0-r0\nVulnerability CVE-2025-59375\nSeverity: HIGH\nFixed Version: 2.7.2-r0\nLink: [CVE-2025-59375](https://avd.aquasec.com/nvd/cve-2025-59375)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libexpat@2.7.0-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-25210",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Package: libexpat\nInstalled Version: 2.7.0-r0\nVulnerability CVE-2026-25210\nSeverity: HIGH\nFixed Version: 2.7.4-r0\nLink: [CVE-2026-25210](https://avd.aquasec.com/nvd/cve-2026-25210)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libexpat@2.7.0-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-64720",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Package: libpng\nInstalled Version: 1.6.47-r0\nVulnerability CVE-2025-64720\nSeverity: HIGH\nFixed Version: 1.6.53-r0\nLink: [CVE-2025-64720](https://avd.aquasec.com/nvd/cve-2025-64720)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libpng@1.6.47-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-65018",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Package: libpng\nInstalled Version: 1.6.47-r0\nVulnerability CVE-2025-65018\nSeverity: HIGH\nFixed Version: 1.6.53-r0\nLink: [CVE-2025-65018](https://avd.aquasec.com/nvd/cve-2025-65018)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libpng@1.6.47-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-66293",
+          "ruleIndex": 11,
+          "level": "error",
+          "message": {
+            "text": "Package: libpng\nInstalled Version: 1.6.47-r0\nVulnerability CVE-2025-66293\nSeverity: HIGH\nFixed Version: 1.6.53-r0\nLink: [CVE-2025-66293](https://avd.aquasec.com/nvd/cve-2025-66293)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libpng@1.6.47-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-22695",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "Package: libpng\nInstalled Version: 1.6.47-r0\nVulnerability CVE-2026-22695\nSeverity: HIGH\nFixed Version: 1.6.54-r0\nLink: [CVE-2026-22695](https://avd.aquasec.com/nvd/cve-2026-22695)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libpng@1.6.47-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-22801",
+          "ruleIndex": 13,
+          "level": "error",
+          "message": {
+            "text": "Package: libpng\nInstalled Version: 1.6.47-r0\nVulnerability CVE-2026-22801\nSeverity: HIGH\nFixed Version: 1.6.54-r0\nLink: [CVE-2026-22801](https://avd.aquasec.com/nvd/cve-2026-22801)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libpng@1.6.47-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-25646",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "Package: libpng\nInstalled Version: 1.6.47-r0\nVulnerability CVE-2026-25646\nSeverity: HIGH\nFixed Version: 1.6.55-r0\nLink: [CVE-2026-25646](https://avd.aquasec.com/nvd/cve-2026-25646)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libpng@1.6.47-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-31789",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Package: libssl3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-31789\nSeverity: CRITICAL\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-31789](https://avd.aquasec.com/nvd/cve-2026-31789)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libssl3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-15467",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "Package: libssl3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2025-15467\nSeverity: HIGH\nFixed Version: 3.3.6-r0\nLink: [CVE-2025-15467](https://avd.aquasec.com/nvd/cve-2025-15467)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libssl3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-69421",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Package: libssl3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2025-69421\nSeverity: HIGH\nFixed Version: 3.3.6-r0\nLink: [CVE-2025-69421](https://avd.aquasec.com/nvd/cve-2025-69421)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libssl3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-28387",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Package: libssl3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-28387\nSeverity: HIGH\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28387](https://avd.aquasec.com/nvd/cve-2026-28387)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libssl3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-28388",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Package: libssl3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-28388\nSeverity: HIGH\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28388](https://avd.aquasec.com/nvd/cve-2026-28388)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libssl3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-28389",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Package: libssl3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-28389\nSeverity: HIGH\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28389](https://avd.aquasec.com/nvd/cve-2026-28389)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libssl3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-28390",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "Package: libssl3\nInstalled Version: 3.3.3-r0\nVulnerability CVE-2026-28390\nSeverity: HIGH\nFixed Version: 3.3.7-r0\nLink: [CVE-2026-28390](https://avd.aquasec.com/nvd/cve-2026-28390)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libssl3@3.3.3-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-32414",
+          "ruleIndex": 15,
+          "level": "error",
+          "message": {
+            "text": "Package: libxml2\nInstalled Version: 2.13.4-r5\nVulnerability CVE-2025-32414\nSeverity: HIGH\nFixed Version: 2.13.4-r6\nLink: [CVE-2025-32414](https://avd.aquasec.com/nvd/cve-2025-32414)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libxml2@2.13.4-r5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-32415",
+          "ruleIndex": 16,
+          "level": "error",
+          "message": {
+            "text": "Package: libxml2\nInstalled Version: 2.13.4-r5\nVulnerability CVE-2025-32415\nSeverity: HIGH\nFixed Version: 2.13.4-r6\nLink: [CVE-2025-32415](https://avd.aquasec.com/nvd/cve-2025-32415)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libxml2@2.13.4-r5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-49794",
+          "ruleIndex": 17,
+          "level": "error",
+          "message": {
+            "text": "Package: libxml2\nInstalled Version: 2.13.4-r5\nVulnerability CVE-2025-49794\nSeverity: HIGH\nFixed Version: 2.13.9-r0\nLink: [CVE-2025-49794](https://avd.aquasec.com/nvd/cve-2025-49794)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libxml2@2.13.4-r5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-49795",
+          "ruleIndex": 18,
+          "level": "error",
+          "message": {
+            "text": "Package: libxml2\nInstalled Version: 2.13.4-r5\nVulnerability CVE-2025-49795\nSeverity: HIGH\nFixed Version: 2.13.9-r0\nLink: [CVE-2025-49795](https://avd.aquasec.com/nvd/cve-2025-49795)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libxml2@2.13.4-r5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2025-49796",
+          "ruleIndex": 19,
+          "level": "error",
+          "message": {
+            "text": "Package: libxml2\nInstalled Version: 2.13.4-r5\nVulnerability CVE-2025-49796\nSeverity: HIGH\nFixed Version: 2.13.9-r0\nLink: [CVE-2025-49796](https://avd.aquasec.com/nvd/cve-2025-49796)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libxml2@2.13.4-r5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-6732",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Package: libxml2\nInstalled Version: 2.13.4-r5\nVulnerability CVE-2026-6732\nSeverity: HIGH\nFixed Version: 2.13.9-r1\nLink: [CVE-2026-6732](https://avd.aquasec.com/nvd/cve-2026-6732)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: libxml2@2.13.4-r5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-40200",
+          "ruleIndex": 21,
+          "level": "error",
+          "message": {
+            "text": "Package: musl\nInstalled Version: 1.2.5-r9\nVulnerability CVE-2026-40200\nSeverity: HIGH\nFixed Version: 1.2.5-r11\nLink: [CVE-2026-40200](https://avd.aquasec.com/nvd/cve-2026-40200)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: musl@1.2.5-r9"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-40200",
+          "ruleIndex": 21,
+          "level": "error",
+          "message": {
+            "text": "Package: musl-utils\nInstalled Version: 1.2.5-r9\nVulnerability CVE-2026-40200\nSeverity: HIGH\nFixed Version: 1.2.5-r11\nLink: [CVE-2026-40200](https://avd.aquasec.com/nvd/cve-2026-40200)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: musl-utils@1.2.5-r9"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-27135",
+          "ruleIndex": 22,
+          "level": "error",
+          "message": {
+            "text": "Package: nghttp2-libs\nInstalled Version: 1.64.0-r0\nVulnerability CVE-2026-27135\nSeverity: HIGH\nFixed Version: 1.68.1\nLink: [CVE-2026-27135](https://avd.aquasec.com/nvd/cve-2026-27135)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: nghttp2-libs@1.64.0-r0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2026-22184",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "Package: zlib\nInstalled Version: 1.3.1-r2\nVulnerability CVE-2026-22184\nSeverity: HIGH\nFixed Version: 1.3.2-r0\nLink: [CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "build-reports/oci/front-1.0.0.tar",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "build-reports/oci/front-1.0.0.tar: zlib@1.3.1-r2"
+              }
+            }
+          ]
+        }
+      ],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "imageID": "sha256:3b5e42197f9d3de89f539cf02963878fc97256709dd9256a430f3addfca90377",
+        "imageName": "build-reports/oci/front-1.0.0.tar",
+        "repoDigests": null,
+        "repoTags": [
+          "localhost/odoru/front:1.0.0"
+        ]
+      }
+    }
+  ]
+}

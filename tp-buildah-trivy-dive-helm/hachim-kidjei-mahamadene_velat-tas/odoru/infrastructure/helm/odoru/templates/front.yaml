@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.front.name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: odoru
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/instance: {{ .Values.front.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Values.front.name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: odoru
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/instance: {{ .Values.front.name }}
+    spec:
+      serviceAccountName: {{ .Values.security.serviceAccount.name }}
+      containers:
+        - name: {{ .Values.front.name }}
+          image: "{{ .Values.image.registry }}/{{ .Values.front.image }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.front.port }}
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.front.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.front.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 6
+
+          resources:
+            requests:
+              cpu: {{ .Values.resources.frontend.requests.cpu | quote }}
+              memory: {{ .Values.resources.frontend.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.resources.frontend.limits.cpu | quote }}
+              memory: {{ .Values.resources.frontend.limits.memory | quote }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.front.name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: odoru
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/instance: {{ .Values.front.name }}
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/instance: {{ .Values.front.name }}
+  ports:
+    - name: http
+      port: {{ .Values.front.port }}
+      targetPort: {{ .Values.front.port }}
+      nodePort: {{ .Values.front.nodePort }}

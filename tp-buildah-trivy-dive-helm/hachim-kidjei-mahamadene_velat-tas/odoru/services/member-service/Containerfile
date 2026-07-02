@@ -1,0 +1,17 @@
+FROM docker.io/eclipse-temurin:17-jre-alpine
+
+LABEL org.opencontainers.image.title="odoru-member-service"
+LABEL org.opencontainers.image.description="Odoru member microservice"
+LABEL org.opencontainers.image.version="1.0.0"
+
+WORKDIR /app
+
+RUN addgroup -S odoru && adduser -S odoru -G odoru
+
+COPY services/member-service/target/*.jar app.jar
+
+USER odoru
+
+EXPOSE 8081
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

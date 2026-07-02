@@ -1,0 +1,28 @@
+server:
+  port: 8086
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka/
+
+member-service:
+  base-url: http://localhost:8081
+
+course-service:
+  base-url: http://localhost:8082
+
+competition-service:
+  base-url: http://localhost:8083
+
+badge-service:
+  base-url: http://localhost:8084
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

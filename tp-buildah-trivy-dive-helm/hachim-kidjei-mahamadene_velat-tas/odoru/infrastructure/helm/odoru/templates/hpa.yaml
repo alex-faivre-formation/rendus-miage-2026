@@ -1,0 +1,36 @@
+{{- if .Values.hpa.enabled }}
+{{- $root := . }}
+{{- range $service := list
+  .Values.services.memberService
+  .Values.services.courseService
+  .Values.services.competitionService
+  .Values.services.badgeService
+  .Values.services.statisticsService
+  .Values.services.apiGateway
+}}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $service.name }}
+  namespace: {{ $root.Values.global.namespace }}
+  labels:
+    app.kubernetes.io/name: odoru
+    app.kubernetes.io/component: hpa
+    app.kubernetes.io/instance: {{ $service.name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $service.name }}
+  minReplicas: {{ $root.Values.hpa.minReplicas }}
+  maxReplicas: {{ $root.Values.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ $root.Values.hpa.targetCPUUtilizationPercentage }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,57 @@
+global:
+  namespace: odoru
+  imagePullPolicy: IfNotPresent
+
+image:
+  registry: localhost/odoru
+  tag: "1.0.0"
+
+exposure:
+  mode: ingress
+  host: odoru.local
+  ingressClassName: traefik
+
+security:
+  serviceAccount:
+    create: true
+    name: odoru-app
+  rbac:
+    create: true
+  networkPolicy:
+    enabled: true
+
+resources:
+  spring:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "768Mi"
+  frontend:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  postgres:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  keycloak:
+    requests:
+      cpu: "100m"
+      memory: "768Mi"
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
