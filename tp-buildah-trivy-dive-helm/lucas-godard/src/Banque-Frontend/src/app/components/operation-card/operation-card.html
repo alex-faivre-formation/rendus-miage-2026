@@ -1,0 +1,38 @@
+<section class="card">
+  <h2>
+    <span class="idx">{{ index }}</span> {{ title }}
+    <span class="chip get" style="margin-left:auto">{{ type }}</span>
+  </h2>
+  <p class="route">Gestion des requêtes vers le cluster</p>
+
+  @for (op of operations; track op.label) {
+    <div class="op">
+      <div class="desc">
+        <div class="t">{{ op.label }}</div>
+        <div class="u">{{ op.method }} {{ op.path }}</div>
+      </div>
+
+      @if (op.inputs) {
+        <div class="inputs">
+          @for (input of op.inputs; track input.id) {
+            <input
+              [id]="input.id"
+              [class.wide]="input.isWide"
+              [placeholder]="input.placeholder"
+              [(ngModel)]="inputModels[input.id]"
+              [name]="input.id"
+            />
+          }
+        </div>
+      }
+
+      <span class="chip" [class.get]="op.method === 'GET'" [class.post]="op.method === 'POST'">
+        {{ op.method }}
+      </span>
+
+      <button [class.ghost]="op.method === 'GET'" (click)="executeOperation(op)">
+        {{ op.method === 'GET' ? 'Exécuter' : 'Créer' }}
+      </button>
+    </div>
+  }
+</section>

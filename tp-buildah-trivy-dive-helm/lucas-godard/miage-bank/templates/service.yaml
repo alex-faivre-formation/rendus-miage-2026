@@ -1,0 +1,30 @@
+{{- /*
+  service.yaml - un Service ClusterIP par micro-service.
+  type ClusterIP uniquement, exposition externe réservée à l'Ingress.
+*/}}
+
+{{- /* une itération par service de values.yaml */}}
+{{- range $name, $config := .Values.microservices }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # nom DNS interne du service
+  name: {{ $name }}
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    app: {{ $name }}
+spec:
+  # accessible uniquement dans le cluster
+  type: ClusterIP
+  ports:
+    # port exposé par le Service
+    - port: {{ $config.port }}
+      # redirige vers le port "http" du conteneur
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    # route le trafic vers les pods portant ce label
+    app: {{ $name }}
+{{- end }}

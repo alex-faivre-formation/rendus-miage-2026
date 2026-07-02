@@ -1,0 +1,49 @@
+# ==========================================
+# BUILD (Maven)
+# ==========================================
+FROM docker.io/library/maven:3.9-eclipse-temurin-11 AS builder
+
+# récupération des arguments
+ARG MODULE
+
+WORKDIR /workspace
+
+# optimisation du cache Maven en copiant d'abord le pom.xml
+COPY src/${MODULE}/pom.xml .
+COPY src/${MODULE}/src ./src
+
+# compilation sans lancer les tests
+RUN mvn -B -q -DskipTests clean package && \
+    cp target/*.jar application.jar && \
+    java -Djarmode=layertools -jar application.jar extract
+
+# ==========================================
+# RUNTIME (JRE)
+# ==========================================
+FROM docker.io/library/eclipse-temurin:11-jre-jammy
+
+# récupération des arguments
+ARG APP_PORT
+
+# création utilisateur non-root (least privilege)
+RUN groupadd --system --gid 1001 spring && \
+    useradd --system --uid 1001 --gid spring --no-create-home spring
+
+WORKDIR /app
+
+# gestion du cache, copie des 4 couches du JAR, dans l'ordre moins->plus volatile
+COPY --from=builder --chown=spring:spring /workspace/dependencies/ ./
+COPY --from=builder --chown=spring:spring /workspace/spring-boot-loader/ ./
+COPY --from=builder --chown=spring:spring /workspace/snapshot-dependencies/ ./
+COPY --from=builder --chown=spring:spring /workspace/application/ ./
+
+# bascule de l'identité du conteneur sur l' utilisateur non-root
+USER spring:spring
+
+# variables d'environnement et port
+ENV APP_PORT=${APP_PORT}
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+EXPOSE ${APP_PORT}
+
+# lancement via le JarLauncher
+ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]

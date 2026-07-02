@@ -1,0 +1,25 @@
+# ==========================================
+# BUILD (Node.js)
+# ==========================================
+FROM docker.io/library/node:20-alpine AS builder
+
+WORKDIR /app
+
+# optimisation du cache NPM
+COPY src/Banque-Frontend/package*.json ./
+RUN npm ci
+
+# copie du code source et compilation
+COPY src/Banque-Frontend/ ./
+RUN npm run build -- --configuration production
+
+# ==========================================
+# RUNTIME (Serveur Web)
+# ==========================================
+FROM docker.io/library/nginx:alpine
+
+# copie des fichiers compilés depuis le builder
+COPY --from=builder /app/dist/Banque-Frontend/browser /usr/share/nginx/html
+
+# exposition du serveur web sur le port 80
+EXPOSE 80

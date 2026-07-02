@@ -1,0 +1,124 @@
+{{- /*
+  deployment.yaml - un Deployment par entrée de .Values.microservices.
+  Un seul template génère les 7 déploiements (6 services Java + frontend) en
+  bouclant sur la map "microservices" de values.yaml.
+*/}}
+
+{{- /* Boucle sur chaque service défini dans values.yaml ($name = clé, $config = ses paramètres) */}}
+{{- range $name, $config := .Values.microservices }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    app: {{ $name }}
+spec:
+  replicas: {{ $config.replicas }}
+  selector:
+    # gère les pods portant ce label
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      # label posé sur les pods (doit matcher le selector ci-dessus)
+      labels:
+        app: {{ $name }}
+    spec:
+      # ServiceAccount dédié au service (RBAC et principe de moindre privilège)
+      serviceAccountName: {{ $name }}-sa
+      containers:
+        - name: {{ $name }}
+          # image = registry globale + nom de l'image du service + tag
+          image: "{{ $.Values.global.imageRegistry }}/{{ $config.imageName }}:{{ $.Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            # port du conteneur, nommé "http" pour être réutilisé par les probes et le Service
+            - name: http
+              containerPort: {{ $config.port }}
+              protocol: TCP
+
+          env:
+            # port d'écoute communiqué à l'application
+            - name: SERVER_PORT
+              value: "{{ $config.port }}"
+
+            {{- /* les variables Spring ne sont injectées que pour les services Java */}}
+            {{- if not (eq ($config.springApp | toString) "false") }}
+
+            # adresse du serveur Eureka pour l'enregistrement et la découverte de services
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://annuaire:10001/eureka/"
+
+            {{- /* import de la config centralisée */}}
+            {{- if and (ne $name "configserver") (ne $name "annuaire") (not $config.disableConfigImport) }}
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://configserver:10003"
+            {{- end }}
+
+            {{- /* identifiants de base de données (clientservice, compteservice) */}}
+            {{- if $config.secret }}
+            - name: {{ $config.secretEnvPrefix | default "SPRING_DATASOURCE" }}_USERNAME
+              valueFrom:
+                # Secret créé par l'ExternalSecret
+                secretKeyRef:
+                  name: {{ $name }}-secret
+                  key: DB_USER
+            - name: {{ $config.secretEnvPrefix | default "SPRING_DATASOURCE" }}_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}-secret
+                  key: DB_PASSWORD
+            {{- end }}
+
+            {{- end }} {{/* fin du bloc Spring */}}
+
+            {{- /* variables d'environnement libres définies par service dans values.yaml */}}
+            {{- range $config.extraEnv }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+
+          # ressources demandées / limites
+          resources:
+            {{- toYaml $config.resources | nindent 12 }}
+
+          {{- /* Probes de santé :
+                 services Spring -> /actuator/health (défaut) ; frontend nginx -> "/". */}}
+
+          {{- /* startupProbe : seulement si startup: true. protège le démarrage des services lents,
+                 tant qu'elle n'a pas réussi, liveness et readiness sont suspendues */}}
+          {{- if $config.startup }}
+          startupProbe:
+            httpGet:
+              path: {{ $config.healthPath | default "/actuator/health" }}
+              port: http
+            failureThreshold: 30
+            # réaction rapide aux changements d'état
+            periodSeconds: 10
+            timeoutSeconds: {{ $config.probeTimeout | default 3 }}
+          {{- end }}
+
+          # livenessProbe : redémarre le conteneur s'il ne répond plus
+          livenessProbe:
+            httpGet:
+              path: {{ $config.healthPath | default "/actuator/health" }}
+              port: http
+            # laisse le temps à Spring Boot de démarrer avant la 1re sonde, pour ne pas tuer un boot en cours
+            initialDelaySeconds: {{ $config.initialDelay | default 45 }}
+            # réaction rapide aux changements d'état
+            periodSeconds: 15
+            timeoutSeconds: {{ $config.probeTimeout | default 3 }}
+
+          # readinessProbe : retire le pod du Service tant qu'il n'est pas prêt à recevoir du trafic
+          readinessProbe:
+            httpGet:
+              path: {{ $config.healthPath | default "/actuator/health" }}
+              port: http
+            # on vérifie la disponibilité plus tôt
+            initialDelaySeconds: {{ $config.readinessDelay | default 20 }}
+            # réaction rapide aux changements d'état
+            periodSeconds: 10
+            timeoutSeconds: {{ $config.probeTimeout | default 3 }}
+{{- end }} {{/* fin de la boucle sur les services */}}

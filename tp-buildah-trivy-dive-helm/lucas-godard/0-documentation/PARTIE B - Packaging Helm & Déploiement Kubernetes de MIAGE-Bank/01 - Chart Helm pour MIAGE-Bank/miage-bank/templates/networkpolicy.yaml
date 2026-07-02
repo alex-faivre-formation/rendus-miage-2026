@@ -1,0 +1,50 @@
+{{- /*
+  networkpolicy.yaml - sécurité réseau du namespace (3 politiques).
+*/}}
+
+---
+# Politique 1 — Default-deny : bloque tout le trafic entrant vers les pods du namespace.
+# podSelector vide = s'applique à tous les pods ; policyTypes Ingress sans règle "ingress"
+# = aucune entrée autorisée par défaut.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: {{ .Values.global.namespace }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+
+---
+# Politique 2 — Autorise les communications internes entre pods du namespace.
+# la gateway appelle les services, les services appellent les BDD.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-intra-namespace
+  namespace: {{ .Values.global.namespace }}
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - podSelector: {}
+
+---
+# Politique 3 — Autorise l'entrée depuis le contrôleur Traefik uniquement.
+# Sans elle, le default-deny empêcherait l'Ingress de joindre les pods.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-traefik
+  namespace: {{ .Values.global.namespace }}
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        # Traefik est dans un autre namespace -> on combine namespaceSelector (tous)
+        # et podSelector sur le label standard des pods Traefik.
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: traefik

@@ -1,0 +1,160 @@
+# =============================================================================
+#  values.yaml — MIAGE-Bank
+# =============================================================================
+
+nameOverride: ""
+fullnameOverride: ""
+
+# -----------------------------------------------------------------------------
+#  Paramètres globaux
+# -----------------------------------------------------------------------------
+global:
+  namespace: miage-bank
+  domain: miage-bank.local
+  imageRegistry: ghcr.io/llluuu02/miage-bank-devops
+
+# -----------------------------------------------------------------------------
+#  Ingress (classe Traefik)
+# -----------------------------------------------------------------------------
+ingress:
+  enabled: true
+  className: "traefik"
+
+# -----------------------------------------------------------------------------
+#  Micro-services + frontend
+#  Le template deployment.yaml boucle sur cette map.
+#  Flags par service :
+#    secret              -> génère un ExternalSecret + injecte les creds
+#    secretEnvPrefix     -> préfixe des variables de credentials
+#    disableConfigImport -> coupe l'import config server (problème avec dépot de Mr Teyssie)
+#    springApp: false    -> service NON Spring (frontend) : pas d'Eureka/config/secret
+#    healthPath          -> chemin des probes (défaut /actuator/health)
+#    startup             -> active une startupProbe (services lents à démarrer)
+#    probeTimeout        -> timeout des probes (défaut 3s)
+#    extraEnv            -> variables d'environnement additionnelles
+# -----------------------------------------------------------------------------
+microservices:
+  apigateway:
+    imageName: apigateway
+    port: 10000
+    replicas: 1
+    startup: true
+    extraEnv:
+      # Le Gateway doit trouver l'Annuaire pour router les requêtes
+      - name: SPRING_APPLICATION_JSON
+        value: '{"eureka":{"client":{"service-url":{"defaultZone":"http://annuaire:10001/eureka/"}}}}'
+    resources:
+      requests: { memory: "256Mi", cpu: "100m" }
+      limits:   { memory: "512Mi", cpu: "500m" }
+
+  annuaire:
+    imageName: annuaire
+    port: 10001
+    replicas: 1
+    startup: true
+    resources:
+      requests: { memory: "256Mi", cpu: "100m" }
+      limits:   { memory: "512Mi", cpu: "500m" }
+
+  configserver:
+    imageName: configserver
+    port: 10003
+    replicas: 1
+    probeTimeout: 5      # config server lent au boot (clone Git)
+    startup: true
+    extraEnv:
+      - name: SPRING_CLOUD_CONFIG_SERVER_GIT_URI
+        value: "https://github.com/llluuu02/miage-bank-devops-partie-a.git"
+      - name: SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL
+        value: "main"
+      - name: SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCH_PATHS
+        value: "src/Banque-configs"
+    resources:
+      requests: { memory: "256Mi", cpu: "100m" }
+      limits:   { memory: "512Mi", cpu: "500m" }
+
+  clientservice:
+    imageName: clientservice
+    port: 10011
+    replicas: 1
+    secret: true
+    secretEnvPrefix: SPRING_DATASOURCE
+    startup: true
+    extraEnv:
+      - name: SPRING_APPLICATION_NAME
+        value: "clientservice"
+      - name: SPRING_DATASOURCE_URL
+        value: "jdbc:mysql://bnkmysql:3306/banquebd?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+      - name: SPRING_ZIPKIN_ENABLED
+        value: "false"
+      - name: SPRING_SLEUTH_ENABLED
+        value: "false"
+    resources:
+      requests: { memory: "256Mi", cpu: "100m" }
+      limits:   { memory: "512Mi", cpu: "500m" }
+
+  compteservice:
+    imageName: compteservice
+    port: 10021
+    replicas: 1
+    secret: true
+    secretEnvPrefix: MONGO_CRED
+    disableConfigImport: false
+    startup: true
+    # URI Mongo unique construite depuis le Secret ESO (évite le conflit uri + champs séparés).
+    extraEnv:
+      - name: SPRING_APPLICATION_NAME
+        value: "compteservice"
+      - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+        value: "true"
+      - name: SPRING_DATA_MONGODB_URI
+        value: "mongodb://$(MONGO_CRED_USERNAME):$(MONGO_CRED_PASSWORD)@bnkmongo:27017/banquebd?authSource=admin"
+    resources:
+      requests: { memory: "256Mi", cpu: "100m" }
+      limits:   { memory: "512Mi", cpu: "500m" }
+
+  compositeservice:
+    imageName: compositeservice
+    port: 10031
+    replicas: 1
+    startup: true
+    extraEnv:
+      - name: SPRING_APPLICATION_NAME
+        value: "compositeservice"
+      - name: SPRING_ZIPKIN_ENABLED
+        value: "false"
+      - name: SPRING_SLEUTH_ENABLED
+        value: "false"
+    resources:
+      requests: { memory: "256Mi", cpu: "100m" }
+      limits:   { memory: "512Mi", cpu: "500m" }
+
+  frontend:
+    imageName: frontend
+    port: 80
+    replicas: 1
+    springApp: false      # frontend nginx : pas d'Eureka / config server / secrets
+    healthPath: "/"       # nginx sert la SPA sur /, pas d'/actuator/health
+    initialDelay: 10
+    readinessDelay: 5
+    resources:
+      requests: { memory: "128Mi", cpu: "50m" }
+      limits:   { memory: "256Mi", cpu: "250m" }
+
+# -----------------------------------------------------------------------------
+#  Bases de données (packagées dans le chart, templates/databases.yaml)
+#  Credentials tirés des Secrets générés par ESO.
+# -----------------------------------------------------------------------------
+databases:
+  mysql:
+    enabled: true
+    image: mysql:8.0
+    database: banquebd
+    storage: 1Gi
+    credentialsSecret: clientservice-secret
+  mongo:
+    enabled: true
+    image: mongo:6.0
+    database: banquebd
+    storage: 1Gi
+    credentialsSecret: compteservice-secret

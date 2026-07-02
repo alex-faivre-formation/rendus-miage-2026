@@ -1,0 +1,139 @@
+/* You can add global styles to this file, and also import other style files */
+:root{
+  --ink:#100f0c; --ink-2:#16140f; --panel:rgba(255,255,255,.025);
+  --line:rgba(200,162,74,.16); --line-soft:rgba(236,227,207,.08);
+  --gold:#c8a24a; --gold-bright:#e6c372; --parchment:#ece3cf; --muted:#968d79;
+  --ok:#74c39a; --warn:#e3b45a; --err:#e0726b; --get:#7fb0dd; --post:#74c39a;
+  --serif:"Fraunces",Georgia,serif; --sans:"Familjen Grotesk",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--ink); color:var(--parchment); font-family:var(--sans);
+  font-size:15px; line-height:1.5; min-height:100vh;
+  background-image:
+    radial-gradient(900px 500px at 12% -8%, rgba(200,162,74,.10), transparent 60%),
+    radial-gradient(700px 600px at 110% 0%, rgba(116,195,154,.05), transparent 55%);
+  background-attachment:fixed;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.5; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+}
+.wrap{position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:0 22px 64px}
+
+/* Topbar */
+header{
+  display:flex; flex-wrap:wrap; gap:18px 28px; align-items:flex-end;
+  padding:30px 0 22px; border-bottom:1px solid var(--line); margin-bottom:30px;
+}
+.brand{display:flex; flex-direction:column; gap:2px; margin-right:auto}
+.brand .mark{
+  font-family:var(--serif); font-weight:600; font-size:34px; letter-spacing:-.5px;
+  line-height:1; color:var(--parchment);
+}
+.brand .mark em{font-style:italic; color:var(--gold-bright)}
+.brand .sub{
+  font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--muted);
+}
+.conn{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.field{display:flex; flex-direction:column; gap:5px}
+.field label{font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted)}
+input{
+  font-family:var(--mono); font-size:13px; color:var(--parchment);
+  background:var(--ink-2); border:1px solid var(--line-soft); border-radius:8px;
+  padding:9px 11px; outline:none; transition:border-color .15s, box-shadow .15s;
+}
+input:focus{border-color:var(--gold); box-shadow:0 0 0 3px rgba(200,162,74,.12)}
+input.base{width:248px}
+button{
+  font-family:var(--sans); font-weight:500; font-size:13px; cursor:pointer;
+  color:var(--ink); background:var(--gold); border:1px solid var(--gold);
+  border-radius:8px; padding:9px 16px; transition:transform .08s, background .15s, box-shadow .15s;
+  box-shadow:0 1px 0 rgba(0,0,0,.3);
+}
+button:hover{background:var(--gold-bright); box-shadow:0 4px 14px rgba(200,162,74,.22)}
+button:active{transform:translateY(1px)}
+button.ghost{background:transparent; color:var(--gold-bright); border-color:var(--line)}
+button.ghost:hover{background:rgba(200,162,74,.08); box-shadow:none}
+.status{display:flex; align-items:center; gap:9px; font-family:var(--mono); font-size:12px}
+.dot{width:9px; height:9px; border-radius:50%; background:var(--muted); flex:none; box-shadow:0 0 0 0 rgba(0,0,0,0)}
+.dot.ok{background:var(--ok); animation:pulse 2s infinite}
+.dot.err{background:var(--err)}
+.dot.wait{background:var(--warn); animation:pulse 1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(116,195,154,.5)}70%{box-shadow:0 0 0 7px rgba(116,195,154,0)}100%{box-shadow:0 0 0 0 rgba(116,195,154,0)}}
+
+/* Layout */
+.grid{display:grid; grid-template-columns:1fr 420px; gap:26px; align-items:start}
+@media(max-width:980px){.grid{grid-template-columns:1fr} input.base{width:200px}}
+.ops{display:flex; flex-direction:column; gap:20px}
+
+/* Cards */
+.card{
+  background:var(--panel); border:1px solid var(--line-soft); border-radius:14px;
+  padding:20px 20px 8px; backdrop-filter:blur(2px);
+}
+.card > h2{
+  display:flex; align-items:baseline; gap:12px; margin:0 0 4px;
+  font-family:var(--serif); font-weight:500; font-size:22px; letter-spacing:-.2px;
+}
+.card > h2 .idx{font-family:var(--mono); font-size:12px; color:var(--gold); letter-spacing:.1em}
+.card > .route{font-family:var(--mono); font-size:11px; color:var(--muted); margin:0 0 16px}
+.op{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:13px 0; border-top:1px solid var(--line-soft);
+}
+.op:first-of-type{border-top:0}
+.op .desc{flex:1 1 150px; min-width:130px}
+.op .desc .t{font-weight:500; font-size:14px}
+.op .desc .u{font-family:var(--mono); font-size:11px; color:var(--muted)}
+.op .inputs{display:flex; gap:7px; flex-wrap:wrap}
+.op .inputs input{width:84px; padding:7px 9px; font-size:12px}
+.op .inputs input.wide{width:120px}
+.op button{padding:7px 13px; font-size:12px}
+.chip{
+  font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.06em;
+  padding:3px 7px; border-radius:5px; flex:none;
+}
+.chip.get{color:var(--get); background:rgba(127,176,221,.12); border:1px solid rgba(127,176,221,.25)}
+.chip.post{color:var(--post); background:rgba(116,195,154,.12); border:1px solid rgba(116,195,154,.25)}
+
+/* Console */
+.console{position:sticky; top:18px; display:flex; flex-direction:column; gap:14px}
+.resp{
+  background:var(--ink-2); border:1px solid var(--line); border-radius:14px; overflow:hidden;
+}
+.resp .head{
+  display:flex; align-items:center; gap:10px; padding:13px 16px;
+  border-bottom:1px solid var(--line-soft); flex-wrap:wrap;
+}
+.resp .head .url{font-family:var(--mono); font-size:11px; color:var(--parchment); word-break:break-all; flex:1 1 100%; margin-top:4px}
+.code{font-family:var(--mono); font-weight:600; font-size:12px; padding:3px 8px; border-radius:5px}
+.code.s2{color:var(--ok); background:rgba(116,195,154,.12)}
+.code.s4,.code.s5,.code.serr{color:var(--err); background:rgba(224,114,107,.12)}
+.ms{font-family:var(--mono); font-size:11px; color:var(--muted); margin-left:auto}
+pre.body{
+  margin:0; padding:16px; font-family:var(--mono); font-size:12.5px; line-height:1.55;
+  color:var(--parchment); white-space:pre-wrap; word-break:break-word;
+  max-height:46vh; overflow:auto; min-height:120px;
+}
+pre.body .k{color:var(--gold-bright)} pre.body .s{color:var(--ok)}
+pre.body .n{color:var(--get)} pre.body .b{color:var(--warn)}
+.placeholder{color:var(--muted); font-style:normal}
+.log{
+  background:var(--panel); border:1px solid var(--line-soft); border-radius:14px; padding:6px 8px;
+}
+.log h3{font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin:8px 10px 6px}
+.log .row{
+  display:flex; align-items:center; gap:9px; padding:7px 10px; border-radius:8px; cursor:pointer;
+  font-family:var(--mono); font-size:11.5px; transition:background .12s;
+}
+.log .row:hover{background:rgba(200,162,74,.07)}
+.log .row .m{font-weight:600; width:38px} .log .row .m.get{color:var(--get)} .log .row .m.post{color:var(--post)}
+.log .row .p{flex:1; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.log .row .c{font-weight:600} .log .row .c.ok{color:var(--ok)} .log .row .c.err{color:var(--err)}
+.log .empty{color:var(--muted); font-family:var(--mono); font-size:11px; padding:10px}
+footer{margin-top:34px; font-family:var(--mono); font-size:11px; color:var(--muted); line-height:1.7}
+.hint{color:var(--warn)}

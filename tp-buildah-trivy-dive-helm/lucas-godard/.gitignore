@@ -1,0 +1,15 @@
+# Dossiers de compilation Maven
+*/target/
+*/*.jar
+
+# Fichiers de l'IDE IntelliJ
+.idea/
+*.iml
+
+*/node_modules/
+
+*Zone.Identifier*
+
+*.DS_Store*
+
+images/

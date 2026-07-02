@@ -1,0 +1,30 @@
+<header>
+  <div class="brand">
+    <div class="mark">MIAGE&nbsp;<em>Bank</em></div>
+    <div class="sub">Console de test · micro-services</div>
+  </div>
+
+  <div class="conn">
+    <div class="field">
+      <label>URL de l'API Gateway</label>
+      <input
+        class="base"
+        spellcheck="false"
+        [(ngModel)]="gatewayUrl"
+        (keydown.enter)="testConnection()"
+      />
+    </div>
+
+    <button (click)="testConnection()">Tester</button>
+
+    <div class="status">
+      <span
+        class="dot"
+        [class.ok]="state.gatewayStatus() === 'ok'"
+        [class.err]="state.gatewayStatus() === 'err'"
+        [class.wait]="state.gatewayStatus() === 'wait'">
+      </span>
+      <span>{{ state.gatewayMessage() }}</span>
+    </div>
+  </div>
+</header>
