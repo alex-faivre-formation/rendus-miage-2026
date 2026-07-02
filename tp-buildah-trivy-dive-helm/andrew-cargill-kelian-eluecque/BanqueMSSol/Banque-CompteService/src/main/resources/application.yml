@@ -1,0 +1,10 @@
+# Proprietes de l'application
+spring:
+  application:
+    name: comptesservice                                   # nom de l'application
+  profiles:
+    active: dev
+  # Adresse du service de configuration
+  config:
+    # On rend l'adresse dynamique en lisant la variable injectée par Podman/Docker
+    import: optional:configserver:${SPRING_CLOUD_CONFIG_URI:http://banque-configserver:10003}

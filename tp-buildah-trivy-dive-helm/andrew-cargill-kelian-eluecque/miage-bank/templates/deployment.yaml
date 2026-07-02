@@ -1,0 +1,106 @@
+{{- range $name, $config := .Values.microservices }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ $name }}
+spec:
+  replicas: {{ $config.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      serviceAccountName: {{ $.Values.global.serviceAccountName }}
+      containers:
+        - name: {{ $name }}
+          image: "{{ $config.image }}:{{ $config.tag }}"
+          imagePullPolicy: IfNotPresent
+
+          # --- DÉBUT DE LA SECTION ENVIRONNEMENT ---
+          env:
+            - name: SERVER_PORT
+              value: "{{ $config.port }}"
+
+            # 1. TOUT LE MONDE a besoin de trouver l'annuaire Eureka :
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://annuaire:10001/eureka/"
+
+            # 2. LES AUTRES SERVICES (tout sauf le configserver) ont besoin de configserver et des secrets
+            {{- if ne $name "configserver" }}
+            - name: SPRING_CLOUD_CONFIG_URI
+              value: "http://configserver:10003"
+
+            # --- AJOUT DES SECRETS POUR CLIENTSERVICE (MYSQL) ---
+            {{- if eq $name "clientservice" }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: mysql-password
+            {{- end }}
+
+            # --- AJOUT DES SECRETS POUR COMPTESERVICE (MONGODB) ---
+            {{- if eq $name "compteservice" }}
+            - name: SPRING_DATA_MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: mongo-username
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: mongo-password
+            {{- end }}
+            {{- end }}
+          # --- FIN DE LA SECTION ENVIRONNEMENT ---
+
+          ports:
+            - containerPort: {{ $config.port }}
+          resources:
+            limits:
+              cpu: {{ $config.resources.limits.cpu }}
+              memory: {{ $config.resources.limits.memory }}
+            requests:
+              cpu: {{ $config.resources.requests.cpu }}
+              memory: {{ $config.resources.requests.memory }}
+
+          # --- 1. LE BOUCLIER DE DÉMARRAGE ---
+          # Kubernetes va vérifier toutes les 10s. 
+          # Il a droit à 30 échecs (soit 5 minutes de délai maximum pour démarrer).
+          startupProbe:
+            httpGet:
+              path: {{ $config.probes.livenessPath }}
+              port: {{ $config.port }}
+            periodSeconds: 10
+            failureThreshold: 100
+            timeoutSeconds: 5
+
+          # --- 2. LA SURVEILLANCE EN CONTINU ---
+          # Une fois démarré, Kubernetes vérifie toutes les 10s. 
+          # S'il y a 3 échecs consécutifs, il redémarre le pod immédiatement.
+          livenessProbe:
+            httpGet:
+              path: {{ $config.probes.livenessPath }}
+              port: {{ $config.port }}
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+
+          # --- 3. L'OUVERTURE DU TRAFIC ---
+          # Vérifie si le pod est prêt à recevoir des requêtes clients.
+          readinessProbe:
+            httpGet:
+              path: {{ $config.probes.readinessPath }}
+              port: {{ $config.port }}
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+---
+{{- end }}

@@ -1,0 +1,110 @@
+name: CI/CD Pipeline - MIAGE Bank
+
+# Se déclenche sur les push et pull requests vers la branche main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-scan:
+    name: Build & Audit - ${{ matrix.service }}
+    runs-on: ubuntu-latest # Les runners Ubuntu de GitHub incluent nativement Buildah
+
+    # La stratégie matricielle permet d'exécuter ce job en parallèle pour chaque service
+    strategy:
+      fail-fast: false # Si un service échoue, on n'annule pas le build des autres
+      matrix:
+        service:
+          - Banque-Annuaire
+          - Banque-ConfigServer
+          - Banque-APIGateway
+          - Banque-ClientService
+          - Banque-CompteService
+          - Banque-CompositeService
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration de Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Version cible pour MIAGE-Bank
+          cache: 'maven'
+
+      - name: Compilation avec Maven
+        run: mvn -f "tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/${{ matrix.service }}/pom.xml" clean package -DskipTests
+
+      - name: Linting du Containerfile avec Hadolint
+        # Obligatoire pour le bonus
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/${{ matrix.service }}/Containerfile
+
+      # --- AJOUT CRUCIAL ICI ---
+      - name: Préparation du répertoire des rapports
+        run: mkdir -p build-reports
+
+      - name: Build de l'image avec Buildah (Daemonless)
+        run: |
+          # Formatage du nom de l'image en minuscules (standard OCI)
+          IMAGE_NAME=$(echo "${{ matrix.service }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+          
+          # Construction sans démon Docker
+          buildah bud -f tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/${{ matrix.service }}/Containerfile -t $IMAGE_NAME:latest tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/${{ matrix.service }}/
+          
+          # Export de l'image en archive tar locale pour analyse
+          buildah push --remove-signatures "$IMAGE_NAME:latest" docker-archive:"build-reports/$IMAGE_NAME.tar"
+
+      - name: Scan des vulnérabilités avec Trivy (La Gate)
+        uses: aquasecurity/trivy-action@master
+        with:
+          input: build-reports/${{ env.IMAGE_NAME }}.tar
+          format: 'table'
+          exit-code: '1' # Fait échouer le build si des failles CRITICAL sont trouvées
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+          trivyignores: 'tp-buildah-trivy-dive-helm/andrew-cargill-kelian-eluecque/BanqueMSSol/.trivyignore'
+
+      - name: Génération des rapports Trivy (JSON)
+        # S'exécute uniquement si l'étape précédente (la gate) a réussi
+        if: success()
+        uses: aquasecurity/trivy-action@master
+        with:
+          input: build-reports/${{ env.IMAGE_NAME }}.tar
+          severity: 'HIGH,CRITICAL'
+          format: 'json'
+          output: 'build-reports/trivy-${{ env.IMAGE_NAME }}.json'
+
+      - name: Génération des rapports Trivy (SARIF)
+        if: success()
+        uses: aquasecurity/trivy-action@master
+        with:
+          input: build-reports/${{ env.IMAGE_NAME }}.tar
+          severity: 'HIGH,CRITICAL'
+          format: 'sarif'
+          output: 'build-reports/trivy-${{ env.IMAGE_NAME }}.sarif'
+
+      - name: Installation de Dive
+        # Dive n'est pas pré-installé sur les runners GitHub, on le télécharge
+        run: |
+          wget https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb
+          sudo apt-get install ./dive_0.12.0_linux_amd64.deb
+
+      - name: Audit de l'efficacité de l'image avec Dive
+        if: success()
+        run: CI=true dive docker-archive://build-reports/${{ env.IMAGE_NAME }}.tar
+
+      - name: Sauvegarde des rapports (Artifacts)
+        # S'exécute toujours pour récupérer les rapports même en cas d'échec
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapports-audit-${{ matrix.service }}
+          path: build-reports/
+          retention-days: 7

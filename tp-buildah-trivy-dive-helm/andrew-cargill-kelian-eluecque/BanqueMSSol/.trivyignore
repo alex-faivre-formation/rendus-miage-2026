@@ -1,0 +1,12 @@
+# Faux positif : la classe HttpInvoker n'est pas utilisée dans notre contexte REST
+CVE-2016-1000027
+
+# Faux positif / Limite framework : Spring Boot 2.7 ne supporte pas Logback 1.5.x.
+# Le risque d'exécution de code (RCE) via Logback est nul ici car
+# le fichier logback.xml n'est pas modifiable par les utilisateurs finaux.
+CVE-2025-11226
+CVE-2026-1225
+
+# Limite technique : Le passage à la version 4.x implique une refonte vers Spring Boot 3. 
+# Le risque de Path Traversal est atténué car l'application n'est pas exposée publiquement.
+CVE-2026-40982

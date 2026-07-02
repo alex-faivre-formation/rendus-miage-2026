@@ -1,0 +1,30 @@
+1. Dossiers de compilation Maven (pour tous les micro-services)
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# 2. Fichiers liés aux IDE (IntelliJ, Eclipse, VS Code)
+.idea/
+*.iml
+*.iws
+*.ipr
+.settings/
+.classpath
+.project
+.vscode/
+
+# 3. Fichiers générés par la CI et rapports locaux
+build-reports/
+build-reports*/
+*.log
+
+# 4. Fichiers systèmes et divers
+.DS_Store
+Thumbs.db
+vault.env
+
+# 5. Archives d'images OCI générées localement par Buildah/Docker
+*.tar

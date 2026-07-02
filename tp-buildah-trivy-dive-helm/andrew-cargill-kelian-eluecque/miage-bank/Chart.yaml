@@ -1,0 +1,6 @@
+apiVersion: v2
+name: miage-bank
+description: Un chart Helm pour déployer l'architecture micro-services MIAGE-Bank
+type: application
+version: 1.0.0
+appVersion: "1.0"
